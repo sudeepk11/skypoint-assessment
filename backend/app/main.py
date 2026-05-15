@@ -15,6 +15,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request as StarletteRequest
 
 from app.api.routes import applications, auth, dashboard, email, jobs, profile
+from app.config import settings
 from app.core.limiter import limiter
 from app.core.security import hash_password
 from app.database import Base, SessionLocal, engine
@@ -109,11 +110,12 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
 
 
 # ---------------------------------------------------------------------------
-# CORS — allow all origins for Docker/local dev
+# CORS — explicit origin allowlist from settings
 # ---------------------------------------------------------------------------
+_allowed_origins = [o.strip() for o in settings.ALLOWED_ORIGINS.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
