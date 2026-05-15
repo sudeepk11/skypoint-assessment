@@ -1,9 +1,20 @@
 """Tests for job posting endpoints."""
 
+import uuid
 import pytest
 from fastapi.testclient import TestClient
 
 from tests.conftest import auth_headers
+
+
+def _register_hr(client):
+    email = f"hr_{uuid.uuid4().hex[:8]}@test.com"
+    resp = client.post(
+        "/api/auth/register",
+        json={"email": email, "password": "Password@1234", "full_name": "HR User", "role": "hr"},
+    )
+    assert resp.status_code == 200
+    return resp.json()["access_token"]
 
 JOB_PAYLOAD = {
     "title": "Backend Engineer",
@@ -122,3 +133,45 @@ def test_deleted_job_not_listed(client: TestClient, hr_token: str):
     resp = client.get("/api/jobs")
     ids = [j["id"] for j in resp.json()]
     assert job_id not in ids
+
+
+# ---------------------------------------------------------------------------
+# Cross-HR authorization — HR_A must not mutate HR_B's jobs
+# ---------------------------------------------------------------------------
+
+def test_hr_cannot_edit_other_hr_job(client: TestClient):
+    """HR_A must get 403 when editing a job created by HR_B."""
+    hr_a = _register_hr(client)
+    hr_b = _register_hr(client)
+    job_id = _create_job(client, hr_b).json()["id"]
+
+    resp = client.put(
+        f"/api/jobs/{job_id}",
+        json={"title": "Hacked Title"},
+        headers=auth_headers(hr_a),
+    )
+    assert resp.status_code == 403
+
+
+def test_hr_cannot_delete_other_hr_job(client: TestClient):
+    """HR_A must get 403 when deleting a job created by HR_B."""
+    hr_a = _register_hr(client)
+    hr_b = _register_hr(client)
+    job_id = _create_job(client, hr_b).json()["id"]
+
+    resp = client.delete(f"/api/jobs/{job_id}", headers=auth_headers(hr_a))
+    assert resp.status_code == 403
+
+
+def test_hr_cannot_change_status_of_other_hr_job(client: TestClient):
+    """HR_A must get 403 when toggling the status of a job created by HR_B."""
+    hr_a = _register_hr(client)
+    hr_b = _register_hr(client)
+    job_id = _create_job(client, hr_b).json()["id"]
+
+    resp = client.patch(
+        f"/api/jobs/{job_id}/status",
+        json={"status": "closed"},
+        headers=auth_headers(hr_a),
+    )
+    assert resp.status_code == 403

@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user, get_db
-from app.api.routes.profile import _build_user_out
+from app.utils.user_utils import build_user_out
 from app.config import settings
 from app.core.limiter import limiter
 from app.core.security import create_access_token, hash_password, verify_password
@@ -58,7 +58,7 @@ def register(
 
     token = create_access_token({"sub": str(user.id)})
     _set_auth_cookie(response, token)
-    return RegisterResponse(access_token=token, token_type="bearer", user=_build_user_out(user))
+    return RegisterResponse(access_token=token, token_type="bearer", user=build_user_out(user))
 
 
 @router.post("/login", response_model=TokenResponse)
@@ -80,7 +80,7 @@ def login(
 
     token = create_access_token({"sub": str(user.id)})
     _set_auth_cookie(response, token)
-    return TokenResponse(access_token=token, token_type="bearer", user=_build_user_out(user))
+    return TokenResponse(access_token=token, token_type="bearer", user=build_user_out(user))
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
@@ -92,4 +92,4 @@ def logout(response: Response):
 @router.get("/me", response_model=UserOut)
 def get_me(current_user: User = Depends(get_current_user)):
     """Return the currently authenticated user's profile."""
-    return _build_user_out(current_user)
+    return build_user_out(current_user)
