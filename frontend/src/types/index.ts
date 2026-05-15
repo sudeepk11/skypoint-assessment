@@ -52,6 +52,12 @@ export interface Suggestion {
   shared_skills: string[];
 }
 
+export interface UserWithStatus {
+  user: UserPublic;
+  connection_status: 'none' | 'pending_sent' | 'pending_received' | 'connected';
+  connection_id: string | null;
+}
+
 export interface Job {
   id: string;
   title: string;

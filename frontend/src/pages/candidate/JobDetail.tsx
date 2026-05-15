@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, MapPin, Clock, DollarSign, CheckCircle, AlertCircle, Send, Building2 } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, DollarSign, CheckCircle, AlertCircle, Send, Building2, UserPlus, Linkedin, Github, Globe, Twitter } from 'lucide-react';
 import { CandidateLayout } from '../../components/Layout';
 import StatusBadge from '../../components/StatusBadge';
-import { jobs as jobsApi, applications as appApi } from '../../services/api';
-import type { Job, Application, EmploymentType } from '../../types';
+import { jobs as jobsApi, applications as appApi, publicUsers, connections as connectionsApi } from '../../services/api';
+import type { Job, Application, EmploymentType, UserWithStatus } from '../../types';
 
 const formatDate = (dateStr: string) => {
   const d = new Date(dateStr);
@@ -32,6 +32,8 @@ const JobDetail: React.FC = () => {
 
   const [job, setJob] = useState<Job | null>(null);
   const [existingApp, setExistingApp] = useState<Application | null>(null);
+  const [recruiter, setRecruiter] = useState<UserWithStatus | null>(null);
+  const [connectingRecruiter, setConnectingRecruiter] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'description' | 'requirements'>('description');
@@ -56,6 +58,11 @@ const JobDetail: React.FC = () => {
         setJob(jobData);
         const existing = apps.find((a) => a.job_id === id);
         if (existing) setExistingApp(existing);
+        // Fetch recruiter profile + connection status
+        try {
+          const rec = await publicUsers.get(jobData.created_by);
+          setRecruiter(rec);
+        } catch { /* recruiter card is optional */ }
       } catch {
         setError('Failed to load job details.');
       } finally {
@@ -96,6 +103,17 @@ const JobDetail: React.FC = () => {
       }
     } finally {
       setApplyLoading(false);
+    }
+  };
+
+  const handleConnectRecruiter = async () => {
+    if (!recruiter || recruiter.connection_status !== 'none') return;
+    setConnectingRecruiter(true);
+    try {
+      await connectionsApi.invite(recruiter.user.id);
+      setRecruiter({ ...recruiter, connection_status: 'pending_sent' });
+    } catch { /* silent */ } finally {
+      setConnectingRecruiter(false);
     }
   };
 
@@ -276,6 +294,81 @@ const JobDetail: React.FC = () => {
                 </button>
               </div>
             </form>
+          </div>
+        )}
+
+        {/* Recruiter Card */}
+        {recruiter && (
+          <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-5 mb-5">
+            <p className="text-xs font-semibold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-3">Posted by</p>
+            <div className="flex items-center gap-4">
+              {/* Avatar */}
+              <div
+                className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-white text-sm flex-shrink-0"
+                style={{ background: '#3b82f6' }}
+              >
+                {recruiter.user.full_name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-gray-900 dark:text-slate-100">{recruiter.user.full_name}</p>
+                {recruiter.user.headline && (
+                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">{recruiter.user.headline}</p>
+                )}
+                {recruiter.user.company_name && (
+                  <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">{recruiter.user.company_name}</p>
+                )}
+                {/* Social links */}
+                <div className="flex gap-1 mt-1.5">
+                  {recruiter.user.linkedin_url && (
+                    <a href={recruiter.user.linkedin_url} target="_blank" rel="noopener noreferrer" className="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors" title="LinkedIn">
+                      <Linkedin size={12} />
+                    </a>
+                  )}
+                  {recruiter.user.github_url && (
+                    <a href={recruiter.user.github_url} target="_blank" rel="noopener noreferrer" className="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:text-gray-700 dark:hover:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors" title="GitHub">
+                      <Github size={12} />
+                    </a>
+                  )}
+                  {recruiter.user.twitter_url && (
+                    <a href={recruiter.user.twitter_url} target="_blank" rel="noopener noreferrer" className="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors" title="Twitter">
+                      <Twitter size={12} />
+                    </a>
+                  )}
+                  {recruiter.user.portfolio_url && (
+                    <a href={recruiter.user.portfolio_url} target="_blank" rel="noopener noreferrer" className="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors" title="Portfolio">
+                      <Globe size={12} />
+                    </a>
+                  )}
+                </div>
+              </div>
+              {/* Connect button */}
+              <div className="flex-shrink-0">
+                {recruiter.connection_status === 'connected' ? (
+                  <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400">
+                    <CheckCircle size={12} /> Connected
+                  </span>
+                ) : recruiter.connection_status === 'pending_sent' ? (
+                  <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">
+                    <Clock size={12} /> Invite Sent
+                  </span>
+                ) : recruiter.connection_status === 'pending_received' ? (
+                  <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+                    <UserPlus size={12} /> They reached out!
+                  </span>
+                ) : (
+                  <button
+                    onClick={handleConnectRecruiter}
+                    disabled={connectingRecruiter}
+                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold bg-accent text-white hover:bg-blue-700 disabled:opacity-60 transition-colors"
+                  >
+                    {connectingRecruiter
+                      ? <><span className="w-3 h-3 border-2 border-white/40 border-t-white rounded-full animate-spin" />Sending…</>
+                      : <><UserPlus size={12} /> Connect</>
+                    }
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         )}
 

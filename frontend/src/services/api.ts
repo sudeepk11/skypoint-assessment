@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import type { AuthResponse, User, Job, Application, ApplicationStatus, JobStatus, Connection, Suggestion } from '../types';
+import type { AuthResponse, User, Job, Application, ApplicationStatus, JobStatus, Connection, Suggestion, UserWithStatus } from '../types';
 
 const api = axios.create({
   baseURL: '/api',
@@ -91,6 +91,11 @@ export const profile = {
     api.put<User>('/profile', data).then((r) => r.data),
   changePassword: (current_password: string, new_password: string) =>
     api.put('/profile/password', { current_password, new_password }).then((r) => r.data),
+};
+
+/** Public user lookup — profile + connection status. */
+export const publicUsers = {
+  get: (userId: string) => api.get<UserWithStatus>(`/users/${userId}`).then((r) => r.data),
 };
 
 /** Connections — suggestions, invite, accept, decline, list. */

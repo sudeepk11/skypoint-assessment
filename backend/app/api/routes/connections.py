@@ -4,6 +4,7 @@ import json
 from typing import List
 from uuid import UUID
 
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import or_, and_
@@ -52,6 +53,15 @@ class SuggestionOut(BaseModel):
     user: UserPublic
     overlap: int          # number of shared skills
     shared_skills: List[str]
+
+
+class UserWithStatus(BaseModel):
+    """Public user profile + connection status relative to the caller."""
+    model_config = ConfigDict(from_attributes=True)
+
+    user: UserPublic
+    connection_status: str                    # "none" | "pending_sent" | "pending_received" | "connected"
+    connection_id: Optional[str] = None       # set when a connection row exists
 
 
 # ---------------------------------------------------------------------------

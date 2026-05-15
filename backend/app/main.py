@@ -14,7 +14,7 @@ from sqlalchemy import text as sa_text
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request as StarletteRequest
 
-from app.api.routes import applications, auth, connections, dashboard, email, jobs, profile
+from app.api.routes import applications, auth, connections, dashboard, email, jobs, profile, users
 from app.config import settings
 from app.core.limiter import limiter
 from app.core.security import hash_password
@@ -170,6 +170,7 @@ app.include_router(email.router, prefix="/api")
 app.include_router(dashboard.router, prefix="/api")
 app.include_router(profile.router, prefix="/api")
 app.include_router(connections.router, prefix="/api")
+app.include_router(users.router, prefix="/api")
 
 
 # ---------------------------------------------------------------------------

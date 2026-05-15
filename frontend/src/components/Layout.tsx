@@ -164,6 +164,14 @@ export const CandidateLayout: React.FC<CandidateLayoutProps> = ({ children }) =>
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { isDark, toggle } = useTheme();
+  const [pendingCount, setPendingCount] = useState(0);
+
+  // Fetch pending invite count for badge
+  React.useEffect(() => {
+    import('../services/api').then(({ connections: connApi }) => {
+      connApi.pending().then((list) => setPendingCount(list.length)).catch(() => {});
+    });
+  }, [location.pathname]);
 
   const handleLogout = () => {
     logout();
@@ -235,7 +243,13 @@ export const CandidateLayout: React.FC<CandidateLayoutProps> = ({ children }) =>
             >
               <Icon size={18} />
               {label}
-              {isActive(to) && <ChevronRight size={14} className="ml-auto" />}
+              {to === '/candidate/connections' && pendingCount > 0 && (
+                <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                  {pendingCount}
+                </span>
+              )}
+              {isActive(to) && to !== '/candidate/connections' && <ChevronRight size={14} className="ml-auto" />}
+              {isActive(to) && to === '/candidate/connections' && pendingCount === 0 && <ChevronRight size={14} className="ml-auto" />}
             </Link>
           ))}
         </nav>

@@ -4,10 +4,10 @@ import { connections as connectionsApi } from '../../services/api';
 import type { Connection, Suggestion } from '../../types';
 import {
   Users, UserPlus, Clock, CheckCircle2, XCircle,
-  Linkedin, Github, Globe, Twitter, ExternalLink, Zap,
+  Linkedin, Github, Globe, Twitter, ExternalLink, Zap, Briefcase,
 } from 'lucide-react';
 
-type Tab = 'suggestions' | 'connections' | 'pending' | 'sent';
+type Tab = 'suggestions' | 'recruiters' | 'connections' | 'pending' | 'sent';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -235,7 +235,7 @@ const ConnectionCard: React.FC<{
 // ── Main page ──────────────────────────────────────────────────────────────────
 
 const Connections: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<Tab>('suggestions');
+  const [activeTab, setActiveTab] = useState<Tab>('recruiters');
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [myConnections, setMyConnections] = useState<Connection[]>([]);
   const [pending, setPending] = useState<Connection[]>([]);
@@ -297,11 +297,15 @@ const Connections: React.FC = () => {
     catch {/* silent */} finally { setActing((p) => ({ ...p, [id]: false })); }
   };
 
+  const recruiters = suggestions.filter((s) => s.user.role === 'hr');
+  const peers = suggestions.filter((s) => s.user.role !== 'hr');
+
   const tabs: { id: Tab; label: string; icon: React.ReactNode; count?: number }[] = [
-    { id: 'suggestions', label: 'Discover', icon: <Users size={14} />, count: suggestions.length },
-    { id: 'connections', label: 'Connected', icon: <CheckCircle2 size={14} />, count: myConnections.length },
-    { id: 'pending', label: 'Invites', icon: <Clock size={14} />, count: pending.length },
-    { id: 'sent', label: 'Sent', icon: <UserPlus size={14} />, count: sent.length },
+    { id: 'recruiters',  label: 'Recruiters',  icon: <Briefcase size={14} />, count: recruiters.length },
+    { id: 'suggestions', label: 'Discover',    icon: <Users size={14} />,     count: peers.length },
+    { id: 'connections', label: 'Connected',   icon: <CheckCircle2 size={14} />, count: myConnections.length },
+    { id: 'pending',     label: 'Invites',     icon: <Clock size={14} />,     count: pending.length },
+    { id: 'sent',        label: 'Sent',        icon: <UserPlus size={14} />,  count: sent.length },
   ];
 
   return (
@@ -361,9 +365,37 @@ const Connections: React.FC = () => {
           </div>
         ) : (
           <>
-            {/* Suggestions */}
+            {/* Recruiters tab */}
+            {activeTab === 'recruiters' && (
+              recruiters.length === 0 ? (
+                <EmptyState
+                  icon={<Briefcase size={40} className="text-gray-300 dark:text-slate-600" />}
+                  title="No recruiters yet"
+                  desc="Recruiters who sign up will appear here. You can reach out and connect with them directly."
+                />
+              ) : (
+                <>
+                  <p className="text-xs text-gray-400 dark:text-slate-500 mb-5">
+                    These are recruiters actively hiring on SkyHire. Connect directly to get on their radar.
+                  </p>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {recruiters.map((s) => (
+                      <SuggestionCard
+                        key={s.user.id}
+                        suggestion={s}
+                        onInvite={handleInvite}
+                        inviting={!!inviting[s.user.id]}
+                        invited={invited.has(s.user.id)}
+                      />
+                    ))}
+                  </div>
+                </>
+              )
+            )}
+
+            {/* Suggestions — peers only */}
             {activeTab === 'suggestions' && (
-              suggestions.length === 0 ? (
+              peers.length === 0 ? (
                 <EmptyState
                   icon={<Users size={40} className="text-gray-300 dark:text-slate-600" />}
                   title="No suggestions yet"
@@ -371,7 +403,7 @@ const Connections: React.FC = () => {
                 />
               ) : (
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {suggestions.map((s) => (
+                  {peers.map((s) => (
                     <SuggestionCard
                       key={s.user.id}
                       suggestion={s}
