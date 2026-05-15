@@ -4,7 +4,6 @@ import { auth } from '../services/api';
 
 interface AuthContextType {
   user: User | null;
-  token: string | null;
   login: (token: string, user: User) => void;
   logout: () => void;
   updateUser: (user: User) => void;
@@ -18,20 +17,18 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const login = useCallback((newToken: string, newUser: User) => {
-    localStorage.setItem('token', newToken);
+  // token param kept for API compatibility but the real auth is the HttpOnly cookie
+  const login = useCallback((_token: string, newUser: User) => {
     localStorage.setItem('user', JSON.stringify(newUser));
-    setToken(newToken);
     setUser(newUser);
   }, []);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem('token');
+  const logout = useCallback(async () => {
+    // Tell the backend to clear the HttpOnly cookie
+    await auth.logout();
     localStorage.removeItem('user');
-    setToken(null);
     setUser(null);
   }, []);
 
@@ -42,20 +39,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const restoreSession = async () => {
-      const storedToken = localStorage.getItem('token');
       const storedUser = localStorage.getItem('user');
-
-      if (storedToken && storedUser) {
+      if (storedUser) {
         try {
-          setToken(storedToken);
-          // Validate token by calling /api/auth/me
+          // Validate the HttpOnly cookie is still valid via /me
           const me = await auth.me();
           setUser(me);
+          localStorage.setItem('user', JSON.stringify(me));
         } catch {
-          // Token is invalid, clear storage
-          localStorage.removeItem('token');
+          // Cookie expired or invalid — clear local state
           localStorage.removeItem('user');
-          setToken(null);
           setUser(null);
         }
       }
@@ -67,11 +60,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const value: AuthContextType = {
     user,
-    token,
     login,
     logout,
     updateUser,
-    isAuthenticated: !!user && !!token,
+    isAuthenticated: !!user,
     isHR: user?.role === 'hr',
     isCandidate: user?.role === 'candidate',
     loading,

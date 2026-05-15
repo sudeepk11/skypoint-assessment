@@ -5,6 +5,8 @@ import os
 # Override DATABASE_URL BEFORE any app module is imported so that
 # app.database.engine is created pointing to SQLite, not PostgreSQL.
 os.environ["DATABASE_URL"] = "sqlite://"
+# SECRET_KEY is now required (no default) — provide a test-only value
+os.environ["SECRET_KEY"] = "test-secret-key-not-for-production"
 # Disable rate limiting during tests so fixtures that call /register
 # multiple times in rapid succession are not throttled.
 os.environ["RATELIMIT_ENABLED"] = "0"

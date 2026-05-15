@@ -6,24 +6,16 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  // Send the HttpOnly auth cookie on every request
+  withCredentials: true,
 });
 
-// Request interceptor: attach token
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-// Response interceptor: handle 401 (but not on the login endpoint itself)
+// Response interceptor: handle 401 (redirect to login, but not on the login endpoint itself)
 api.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    const isLoginRequest = error.config?.url?.includes('/auth/login');
-    if (error.response?.status === 401 && !isLoginRequest) {
-      localStorage.removeItem('token');
+    const isAuthRequest = error.config?.url?.includes('/auth/');
+    if (error.response?.status === 401 && !isAuthRequest) {
       localStorage.removeItem('user');
       window.location.href = '/login';
     }
@@ -31,13 +23,15 @@ api.interceptors.response.use(
   }
 );
 
-/** Authentication — register, login, current user. */
+/** Authentication — register, login, logout, current user. */
 export const auth = {
   register: (data: { email: string; password: string; full_name: string; role: string }) =>
     api.post<AuthResponse>('/auth/register', data).then((r) => r.data),
 
   login: (data: { email: string; password: string }) =>
     api.post<AuthResponse>('/auth/login', data).then((r) => r.data),
+
+  logout: () => api.post('/auth/logout').catch(() => {}),
 
   me: () => api.get<User>('/auth/me').then((r) => r.data),
 };

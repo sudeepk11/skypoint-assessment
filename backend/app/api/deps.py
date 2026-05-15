@@ -1,8 +1,8 @@
 """FastAPI dependency functions for database sessions and authentication."""
 
-from typing import Generator
+from typing import Generator, Optional
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
@@ -10,7 +10,9 @@ from app.core.security import decode_access_token
 from app.database import SessionLocal
 from app.models.user import User
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+# auto_error=False so it doesn't raise when there's no Authorization header
+# (we fall back to the HttpOnly cookie in that case)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login", auto_error=False)
 
 
 def get_db() -> Generator[Session, None, None]:
@@ -23,10 +25,14 @@ def get_db() -> Generator[Session, None, None]:
 
 
 def get_current_user(
-    token: str = Depends(oauth2_scheme),
+    request: Request,
+    token_header: Optional[str] = Depends(oauth2_scheme),
     db: Session = Depends(get_db),
 ) -> User:
     """Decode the JWT and return the authenticated user.
+
+    Checks the HttpOnly ``access_token`` cookie first; falls back to the
+    ``Authorization: Bearer`` header so API clients and tests still work.
 
     Raises:
         HTTPException 401: If the token is missing, invalid, or the user does not exist.
@@ -36,6 +42,12 @@ def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+
+    # Authorization header wins when explicitly provided (API clients, tests).
+    # Fall back to the HttpOnly cookie for browser requests that send no header.
+    token = token_header or request.cookies.get("access_token")
+    if not token:
+        raise credentials_exception
 
     payload = decode_access_token(token)
     if payload is None:

@@ -1,9 +1,10 @@
-"""Authentication routes: register, login, and current user."""
+"""Authentication routes: register, login, logout, and current user."""
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user, get_db
+from app.config import settings
 from app.core.limiter import limiter
 from app.core.security import create_access_token, hash_password, verify_password
 from app.models.user import User
@@ -11,10 +12,31 @@ from app.schemas.user import RegisterResponse, TokenResponse, UserLogin, UserOut
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
+_COOKIE_NAME = "access_token"
+_COOKIE_MAX_AGE = settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
+
+
+def _set_auth_cookie(response: Response, token: str) -> None:
+    """Attach the JWT as an HttpOnly cookie to *response*."""
+    response.set_cookie(
+        key=_COOKIE_NAME,
+        value=token,
+        httponly=True,
+        samesite="lax",
+        path="/",
+        max_age=_COOKIE_MAX_AGE,
+        secure=False,  # set to True when served over HTTPS
+    )
+
 
 @router.post("/register", response_model=RegisterResponse)
 @limiter.limit("5/minute")
-def register(request: Request, user_in: UserRegister, db: Session = Depends(get_db)):
+def register(
+    request: Request,
+    response: Response,
+    user_in: UserRegister,
+    db: Session = Depends(get_db),
+):
     """Register a new user and return a JWT access token.
 
     Rate-limited to 5 attempts per minute per IP.
@@ -40,6 +62,7 @@ def register(request: Request, user_in: UserRegister, db: Session = Depends(get_
     db.refresh(user)
 
     token = create_access_token({"sub": str(user.id)})
+    _set_auth_cookie(response, token)
     return RegisterResponse(
         access_token=token,
         token_type="bearer",
@@ -49,12 +72,16 @@ def register(request: Request, user_in: UserRegister, db: Session = Depends(get_
 
 @router.post("/login", response_model=TokenResponse)
 @limiter.limit("10/minute")
-def login(request: Request, credentials: UserLogin, db: Session = Depends(get_db)):
+def login(
+    request: Request,
+    response: Response,
+    credentials: UserLogin,
+    db: Session = Depends(get_db),
+):
     """Authenticate a user with email/password and return a JWT token.
 
+    The token is issued both as an HttpOnly cookie and in the response body.
     Rate-limited to 10 attempts per minute per IP.
-
-    Accepts JSON body with ``email`` and ``password``.
 
     Raises:
         HTTPException 401: If the credentials are invalid.
@@ -68,11 +95,18 @@ def login(request: Request, credentials: UserLogin, db: Session = Depends(get_db
         )
 
     token = create_access_token({"sub": str(user.id)})
+    _set_auth_cookie(response, token)
     return TokenResponse(
         access_token=token,
         token_type="bearer",
         user=UserOut.model_validate(user),
     )
+
+
+@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
+def logout(response: Response):
+    """Clear the auth cookie, effectively logging the user out."""
+    response.delete_cookie(key=_COOKIE_NAME, path="/", httponly=True)
 
 
 @router.get("/me", response_model=UserOut)
