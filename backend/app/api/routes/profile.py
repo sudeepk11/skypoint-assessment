@@ -23,12 +23,15 @@ def update_profile(
     # Explicit field updates — never allows arbitrary attribute writes
     if data.full_name is not None:
         current_user.full_name = data.full_name
-    if data.company_name is not None:
-        current_user.company_name = data.company_name
-    if data.company_website is not None:
-        current_user.company_website = data.company_website
-    if data.company_description is not None:
-        current_user.company_description = data.company_description
+    # Company fields are HR-only. Ideally these would live in a separate
+    # companies table; for now we enforce the constraint at the route level.
+    if current_user.role == "hr":
+        if data.company_name is not None:
+            current_user.company_name = data.company_name
+        if data.company_website is not None:
+            current_user.company_website = data.company_website
+        if data.company_description is not None:
+            current_user.company_description = data.company_description
     if data.headline is not None:
         current_user.headline = data.headline
     if data.skills is not None:

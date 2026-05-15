@@ -130,6 +130,20 @@ def test_hr_can_update_company_fields(client: TestClient):
     assert data["company_website"] == "https://acme.example.com"
 
 
+def test_candidate_cannot_set_company_fields(client: TestClient):
+    """Candidate submitting company fields should have them silently ignored."""
+    token = _register(client, "candidate")
+    resp = client.put(
+        "/api/profile",
+        json={"company_name": "Fake Corp", "company_website": "https://fake.example.com"},
+        headers=auth_headers(token),
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["company_name"] is None
+    assert data["company_website"] is None
+
+
 def test_profile_update_unauthenticated(client: TestClient):
     """PUT /api/profile without auth should return 401."""
     resp = client.put("/api/profile", json={"full_name": "Nobody"})
