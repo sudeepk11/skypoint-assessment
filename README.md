@@ -187,8 +187,12 @@ docker compose exec backend pytest tests/ -v --tb=short
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `DATABASE_URL` | Yes (auto-set) | PostgreSQL connection string |
-| `SECRET_KEY` | Yes | JWT signing secret |
+| `POSTGRES_USER` | No (default: `postgres`) | PostgreSQL username |
+| `POSTGRES_PASSWORD` | No (default: `postgres`) | PostgreSQL password |
+| `POSTGRES_DB` | No (default: `skypoint_db`) | PostgreSQL database name |
+| `DATABASE_URL` | Yes (auto-set in Docker) | Full PostgreSQL connection string |
+| `SECRET_KEY` | Yes | JWT signing secret — change in production |
+| `COOKIE_SECURE` | No (default: `false`) | Set to `true` when serving over HTTPS |
 | `AWS_ACCESS_KEY_ID` | For bulk email | AWS credentials |
 | `AWS_SECRET_ACCESS_KEY` | For bulk email | AWS credentials |
 | `AWS_SES_REGION` | For bulk email | SES region (default: `us-east-1`) |

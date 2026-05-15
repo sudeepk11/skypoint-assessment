@@ -25,7 +25,7 @@ def _set_auth_cookie(response: Response, token: str) -> None:
         samesite="lax",
         path="/",
         max_age=_COOKIE_MAX_AGE,
-        secure=False,  # set to True when served over HTTPS
+        secure=settings.COOKIE_SECURE,
     )
 
 
@@ -37,13 +37,7 @@ def register(
     user_in: UserRegister,
     db: Session = Depends(get_db),
 ):
-    """Register a new user and return a JWT access token.
-
-    Rate-limited to 5 attempts per minute per IP.
-
-    Raises:
-        HTTPException 400: If the email is already registered.
-    """
+    """Register a new user and return a JWT access token. Rate-limited to 5/min per IP."""
     existing = db.query(User).filter(User.email == user_in.email).first()
     if existing:
         raise HTTPException(
@@ -78,14 +72,7 @@ def login(
     credentials: UserLogin,
     db: Session = Depends(get_db),
 ):
-    """Authenticate a user with email/password and return a JWT token.
-
-    The token is issued both as an HttpOnly cookie and in the response body.
-    Rate-limited to 10 attempts per minute per IP.
-
-    Raises:
-        HTTPException 401: If the credentials are invalid.
-    """
+    """Authenticate with email/password and return a JWT token. Rate-limited to 10/min per IP."""
     user = db.query(User).filter(User.email == credentials.email).first()
     if not user or not verify_password(credentials.password, user.password_hash):
         raise HTTPException(

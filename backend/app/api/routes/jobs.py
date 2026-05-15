@@ -16,11 +16,6 @@ from app.schemas.job import JobCreate, JobOut, JobStatusUpdate, JobUpdate, JobWi
 router = APIRouter(tags=["jobs"])
 
 
-# ---------------------------------------------------------------------------
-# Public endpoints
-# ---------------------------------------------------------------------------
-
-
 @router.get("/jobs", response_model=List[JobOut])
 def list_jobs(
     search: Optional[str] = Query(None, description="Keyword search in job title"),
@@ -72,11 +67,6 @@ def get_job(job_id: UUID, db: Session = Depends(get_db)):
     creator = db.query(User).filter(User.id == job.created_by).first()
     job_dict['company_name'] = creator.company_name if creator and creator.company_name else None
     return JobOut(**job_dict)
-
-
-# ---------------------------------------------------------------------------
-# HR-only endpoints
-# ---------------------------------------------------------------------------
 
 
 @router.post("/jobs", response_model=JobOut, status_code=status.HTTP_201_CREATED)

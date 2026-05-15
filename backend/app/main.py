@@ -459,7 +459,7 @@ def seed_data() -> None:
                     "• Work with engineering teams to document new APIs before launch\n"
                     "• Build code samples in Python, Node.js, Java, and PHP for all major SDKs\n"
                     "• Audit existing docs for accuracy, completeness, and developer experience\n"
-                    "• Own the docs.razorpay.com site structure and information architecture"
+                    "• Own the developer docs site structure and information architecture"
                 ),
                 "requirements": (
                     "• 2–4 years of technical writing experience, preferably for developer-facing products\n"

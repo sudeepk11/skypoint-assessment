@@ -56,7 +56,5 @@ def change_password(
 ):
     if not verify_password(data.current_password, current_user.password_hash):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Current password is incorrect.")
-    if len(data.new_password) < 8:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="New password must be at least 8 characters.")
     current_user.password_hash = hash_password(data.new_password)
     db.commit()
