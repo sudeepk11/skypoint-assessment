@@ -340,9 +340,7 @@ const HRDashboard: React.FC = () => {
             <div className="flex-1 flex flex-col items-center justify-center py-12 text-center">
               <Users size={32} className="text-gray-200 dark:text-slate-600 mb-3" />
               <p className="text-sm text-gray-400 dark:text-slate-500">No applications yet</p>
-              <Link to="/hr/jobs/new" className="mt-2 text-xs text-accent font-medium hover:underline">
-                Post a job to get started
-              </Link>
+              <p className="mt-1 text-xs text-gray-300 dark:text-slate-600">Applications will appear here once candidates apply</p>
             </div>
           )}
         </div>
