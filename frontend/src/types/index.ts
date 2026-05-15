@@ -93,19 +93,12 @@ export interface Application {
   resume_text: string;
   cover_letter?: string;
   status: ApplicationStatus;
-  ai_evaluation?: string;  // JSON string
   applied_at: string;
   updated_at: string;
   job?: Job;
   candidate?: User;
 }
 
-export interface AIEvaluation {
-  fit_score: number;
-  strengths: string[];
-  concerns: string[];
-  recommendation: string;
-}
 
 export interface AuthResponse {
   access_token: string;

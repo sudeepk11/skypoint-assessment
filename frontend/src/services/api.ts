@@ -61,7 +61,7 @@ export const applications = {
   apply: (jobId: string, data: { resume_text: string; cover_letter?: string }) =>
     api.post<Application>(`/jobs/${jobId}/apply`, data).then((r) => r.data),
 
-  list: (params?: { job_id?: string; status?: string; candidate_id?: string }) =>
+  list: (params?: { job_id?: string; status?: string }) =>
     api.get<Application[]>('/applications', { params }).then((r) => r.data),
 
   get: (id: string) => api.get<Application>(`/applications/${id}`).then((r) => r.data),
