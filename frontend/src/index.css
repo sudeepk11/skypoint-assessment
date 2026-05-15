@@ -4,7 +4,7 @@
 
 :root {
   --color-primary: #0f172a;
-  --color-accent: #6366f1;
+  --color-accent: #3b82f6;
   --color-surface: #f8fafc;
   --color-text: #0f172a;
   --color-success: #16a34a;
@@ -114,5 +114,5 @@ body {
 input:focus, textarea:focus, select:focus {
   outline: none;
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }

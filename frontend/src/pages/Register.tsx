@@ -16,7 +16,7 @@ function getPasswordStrength(password: string): number {
 
 const STRENGTH_LABELS = ['', 'Weak', 'Fair', 'Good', 'Strong'];
 const STRENGTH_COLORS = ['', 'bg-red-500', 'bg-yellow-400', 'bg-blue-400', 'bg-green-500'];
-const STRENGTH_TEXT_COLORS = ['', 'text-red-600', 'text-yellow-600', 'text-indigo-600', 'text-green-600'];
+const STRENGTH_TEXT_COLORS = ['', 'text-red-600', 'text-yellow-600', 'text-blue-600', 'text-green-600'];
 
 function validatePasswordRules(password: string): string[] {
   const errors: string[] = [];
@@ -126,13 +126,13 @@ const Register: React.FC = () => {
       {/* ── Left panel ── */}
       <div
         className="hidden lg:flex lg:w-[42%] flex-col justify-between p-10 relative overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 55%, #312e81 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #0f172a 0%, #0f2a5e 55%, #1a3a7a 100%)' }}
       >
         {/* Decorative blobs */}
         <div className="absolute top-[-60px] right-[-60px] w-64 h-64 rounded-full opacity-20"
           style={{ background: 'radial-gradient(circle, #3b82f6, transparent)' }} />
         <div className="absolute bottom-0 left-[-80px] w-80 h-80 rounded-full opacity-10"
-          style={{ background: 'radial-gradient(circle, #6366f1, transparent)' }} />
+          style={{ background: 'radial-gradient(circle, #3b82f6, transparent)' }} />
 
         {/* Logo */}
         <Link to="/" className="relative z-10 inline-flex items-center">
@@ -219,7 +219,7 @@ const Register: React.FC = () => {
                     : 'border-gray-200 text-gray-500 hover:border-gray-300 bg-gray-50'
                 }`}
               >
-                <Briefcase size={18} className={role === 'hr' ? 'text-indigo-600' : 'text-gray-400'} />
+                <Briefcase size={18} className={role === 'hr' ? 'text-blue-600' : 'text-gray-400'} />
                 <span>Hire Talent</span>
               </button>
               <button
@@ -245,7 +245,7 @@ const Register: React.FC = () => {
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className={`w-full px-4 py-2.5 border rounded-xl text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all ${
+                className={`w-full px-4 py-2.5 border rounded-xl text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
                   errors.fullName ? 'border-red-400 bg-red-50' : 'border-gray-200'
                 }`}
                 placeholder="Priya Sharma"
@@ -261,7 +261,7 @@ const Register: React.FC = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className={`w-full px-4 py-2.5 border rounded-xl text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all ${
+                className={`w-full px-4 py-2.5 border rounded-xl text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
                   errors.email ? 'border-red-400 bg-red-50' : 'border-gray-200'
                 }`}
                 placeholder="you@company.com"
@@ -278,7 +278,7 @@ const Register: React.FC = () => {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`w-full px-4 py-2.5 border rounded-xl text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all pr-11 ${
+                  className={`w-full px-4 py-2.5 border rounded-xl text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all pr-11 ${
                     errors.password ? 'border-red-400 bg-red-50' : 'border-gray-200'
                   }`}
                   placeholder="Min. 8 characters"
@@ -327,7 +327,7 @@ const Register: React.FC = () => {
                   type={showConfirmPassword ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className={`w-full px-4 py-2.5 border rounded-xl text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all pr-11 ${
+                  className={`w-full px-4 py-2.5 border rounded-xl text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all pr-11 ${
                     errors.confirmPassword ? 'border-red-400 bg-red-50' : 'border-gray-200'
                   }`}
                   placeholder="Repeat password"
@@ -348,7 +348,7 @@ const Register: React.FC = () => {
               type="submit"
               disabled={loading}
               className="w-full py-2.5 px-4 rounded-xl text-sm font-semibold text-white flex items-center justify-center gap-2 transition-all disabled:opacity-60 disabled:cursor-not-allowed mt-1"
-              style={{ background: loading ? '#a5b4fc' : 'linear-gradient(135deg, #4338ca, #6366f1)' }}
+              style={{ background: loading ? '#93c5fd' : 'linear-gradient(135deg, #1d4ed8, #3b82f6)' }}
             >
               {loading ? (
                 <>
@@ -366,7 +366,7 @@ const Register: React.FC = () => {
 
           <p className="mt-5 text-center text-sm text-gray-500">
             Already have an account?{' '}
-            <Link to="/login" className="text-indigo-600 font-medium hover:underline">
+            <Link to="/login" className="text-blue-600 font-medium hover:underline">
               Sign in
             </Link>
           </p>

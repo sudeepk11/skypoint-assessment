@@ -51,7 +51,7 @@ interface DashboardData {
 
 const STATUS_COLORS: Record<string, string> = {
   pending:     '#f59e0b',
-  reviewing:   '#6366f1',
+  reviewing:   '#3b82f6',
   shortlisted: '#16a34a',
   rejected:    '#ef4444',
 };
@@ -128,7 +128,7 @@ const HRDashboard: React.FC = () => {
       icon: Users,
       iconBg: 'bg-violet-50',
       iconColor: 'text-violet-600',
-      valueCls: 'text-violet-700',
+      valueCls: 'text-blue-700',
     },
     {
       label: 'Shortlisted',
