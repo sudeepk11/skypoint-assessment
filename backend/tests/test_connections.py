@@ -27,7 +27,7 @@ def _register(client, role):
             "role": role,
         },
     )
-    assert resp.status_code == 200
+    assert resp.status_code == 201
     token = resp.json()["access_token"]
     user_id = client.get("/api/auth/me", headers=auth_headers(token)).json()["id"]
     return {"token": token, "id": user_id}

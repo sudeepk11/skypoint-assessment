@@ -13,7 +13,7 @@ def _register_hr(client):
         "/api/auth/register",
         json={"email": email, "password": "Password@1234", "full_name": "HR User", "role": "hr"},
     )
-    assert resp.status_code == 200
+    assert resp.status_code == 201
     return resp.json()["access_token"]
 
 JOB_PAYLOAD = {

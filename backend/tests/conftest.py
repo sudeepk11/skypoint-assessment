@@ -97,7 +97,7 @@ def hr_token(client: TestClient) -> str:
             "role": "hr",
         },
     )
-    assert resp.status_code == 200, resp.text
+    assert resp.status_code == 201, resp.text
     return resp.json()["access_token"]
 
 
@@ -114,7 +114,7 @@ def candidate_token(client: TestClient) -> str:
             "role": "candidate",
         },
     )
-    assert resp.status_code == 200, resp.text
+    assert resp.status_code == 201, resp.text
     return resp.json()["access_token"]
 
 

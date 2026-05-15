@@ -178,7 +178,7 @@ def _register_hr(client):
         "/api/auth/register",
         json={"email": email, "password": "Password@1234", "full_name": "Other HR", "role": "hr"},
     )
-    assert resp.status_code == 200
+    assert resp.status_code == 201
     return resp.json()["access_token"]
 
 
@@ -188,7 +188,7 @@ def _register_candidate(client):
         "/api/auth/register",
         json={"email": email, "password": "Password@1234", "full_name": "Candidate", "role": "candidate"},
     )
-    assert resp.status_code == 200
+    assert resp.status_code == 201
     return resp.json()["access_token"]
 
 

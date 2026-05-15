@@ -30,7 +30,7 @@ def _set_auth_cookie(response: Response, token: str) -> None:
     )
 
 
-@router.post("/register", response_model=RegisterResponse)
+@router.post("/register", response_model=RegisterResponse, status_code=201)
 @limiter.limit("5/minute")
 def register(
     request: Request,

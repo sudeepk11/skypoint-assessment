@@ -31,7 +31,7 @@ def _register(client, role):
             "role": role,
         },
     )
-    assert resp.status_code == 200
+    assert resp.status_code == 201
     return resp.json()["access_token"]
 
 

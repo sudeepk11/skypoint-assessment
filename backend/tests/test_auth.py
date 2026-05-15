@@ -21,10 +21,10 @@ def _register(client, email, role="candidate"):
 
 
 def test_register_hr(client: TestClient):
-    """Registering with role=hr should return 200 and a user object."""
+    """Registering with role=hr should return 201 and a user object."""
     email = f"hr_{uuid.uuid4().hex[:8]}@test.com"
     resp = _register(client, email, role="hr")
-    assert resp.status_code == 200
+    assert resp.status_code == 201
     data = resp.json()
     assert data["user"]["role"] == "hr"
     assert data["user"]["email"] == email
@@ -32,10 +32,10 @@ def test_register_hr(client: TestClient):
 
 
 def test_register_candidate(client: TestClient):
-    """Registering with role=candidate should return 200 and a user object."""
+    """Registering with role=candidate should return 201 and a user object."""
     email = f"cand_{uuid.uuid4().hex[:8]}@test.com"
     resp = _register(client, email, role="candidate")
-    assert resp.status_code == 200
+    assert resp.status_code == 201
     data = resp.json()
     assert data["user"]["role"] == "candidate"
 
