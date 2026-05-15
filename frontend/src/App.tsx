@@ -25,6 +25,7 @@ import JobBoard from './pages/candidate/JobBoard';
 import JobDetail from './pages/candidate/JobDetail';
 import MyApplications from './pages/candidate/MyApplications';
 import Connections from './pages/candidate/Connections';
+import TalentNetwork from './pages/hr/TalentNetwork';
 
 // Root redirect based on auth state
 const RootRedirect: React.FC = () => {
@@ -148,6 +149,15 @@ const AppRoutes: React.FC = () => {
         element={
           <ProtectedRoute requiredRole="candidate">
             <MyApplications />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/hr/talent-network"
+        element={
+          <ProtectedRoute requiredRole="hr">
+            <TalentNetwork />
           </ProtectedRoute>
         }
       />

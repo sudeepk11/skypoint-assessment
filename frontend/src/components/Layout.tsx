@@ -35,11 +35,12 @@ export const HRLayout: React.FC<HRLayoutProps> = ({ children }) => {
   };
 
   const navLinks = [
-    { to: '/hr/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/hr/jobs', label: 'Manage Jobs', icon: Briefcase },
-    { to: '/hr/applications', label: 'Applications', icon: Inbox },
-    { to: '/profile', label: 'My Profile', icon: UserCircle },
-    { to: '/hr/jobs/new', label: 'Post New Job', icon: PlusCircle, highlight: true },
+    { to: '/hr/dashboard',       label: 'Dashboard',      icon: LayoutDashboard },
+    { to: '/hr/jobs',            label: 'Manage Jobs',     icon: Briefcase },
+    { to: '/hr/applications',    label: 'Applications',    icon: Inbox },
+    { to: '/hr/talent-network',  label: 'Talent Network',  icon: Users },
+    { to: '/profile',            label: 'My Profile',      icon: UserCircle },
+    { to: '/hr/jobs/new',        label: 'Post New Job',    icon: PlusCircle, highlight: true },
   ];
 
   const isActive = (path: string) => location.pathname === path;
