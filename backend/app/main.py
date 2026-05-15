@@ -39,16 +39,16 @@ async def lifespan(app: FastAPI):
             conn.execute(sa_text("ALTER TABLE users ADD COLUMN IF NOT EXISTS company_website VARCHAR(255)"))
             conn.execute(sa_text("ALTER TABLE users ADD COLUMN IF NOT EXISTS company_description TEXT"))
             conn.commit()
-    except Exception:
-        pass  # Columns already exist or not PostgreSQL
+    except Exception as exc:
+        logger.warning("Migration (user company columns) skipped: %s", exc)
     # Ensure skills column is JSON type (fix if was previously added as TEXT)
     try:
         with engine.connect() as conn:
             conn.execute(sa_text("ALTER TABLE jobs DROP COLUMN IF EXISTS skills"))
             conn.execute(sa_text("ALTER TABLE jobs ADD COLUMN IF NOT EXISTS skills JSON DEFAULT '[]'"))
             conn.commit()
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.warning("Migration (jobs skills column) skipped: %s", exc)
     # Social + profile columns on users (idempotent)
     try:
         with engine.connect() as conn:
@@ -63,8 +63,8 @@ async def lifespan(app: FastAPI):
             ]:
                 conn.execute(sa_text(col))
             conn.commit()
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.warning("Migration (user profile columns) skipped: %s", exc)
     # Connections table: add job_id and message columns, drop old unique constraint and recreate
     try:
         with engine.connect() as conn:
@@ -79,8 +79,8 @@ async def lifespan(app: FastAPI):
                 "END IF; END $$"
             ))
             conn.commit()
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.warning("Migration (connections columns) skipped: %s", exc)
     seed_data()
     yield
 

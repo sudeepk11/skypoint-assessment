@@ -4,14 +4,14 @@ from datetime import datetime
 from typing import List, Literal, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ApplicationCreate(BaseModel):
     """Schema for submitting a job application."""
 
-    resume_text: str
-    cover_letter: Optional[str] = None
+    resume_text: str = Field(..., min_length=1, max_length=50_000)
+    cover_letter: Optional[str] = Field(None, max_length=10_000)
 
 
 class ApplicationStatusUpdate(BaseModel):
