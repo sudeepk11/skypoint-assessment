@@ -1,27 +1,16 @@
 """Email routes for bulk HR communications via AWS SES."""
 
-from typing import List
-from uuid import UUID
-
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, require_hr
 from app.models.application import Application
 from app.models.job import Job
 from app.models.user import User
+from app.schemas.email import BulkEmailRequest
 from app.services.email_service import send_bulk_email
 
 router = APIRouter(prefix="/email", tags=["email"])
-
-
-class BulkEmailRequest(BaseModel):
-    """Request schema for sending bulk emails to applicants."""
-
-    application_ids: List[UUID]
-    subject: str = Field(..., min_length=1, max_length=200)
-    body: str = Field(..., min_length=1, max_length=10_000)
 
 
 @router.post("/bulk")
