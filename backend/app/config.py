@@ -9,9 +9,10 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/jobportal"
-    SECRET_KEY: str = "skypoint-secret-key"
+    SECRET_KEY: str
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
+    ALLOWED_ORIGINS: str = "http://localhost:3000"
 
     AWS_ACCESS_KEY_ID: str = ""
     AWS_SECRET_ACCESS_KEY: str = ""
