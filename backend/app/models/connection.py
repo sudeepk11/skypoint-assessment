@@ -3,7 +3,8 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, DateTime, Enum, ForeignKey, Text, UniqueConstraint
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, Index, Text
+from sqlalchemy import text as sa_text
 from sqlalchemy.orm import relationship
 
 from app.database import Base
@@ -15,7 +16,24 @@ class Connection(Base):
 
     __tablename__ = "connections"
     __table_args__ = (
-        UniqueConstraint("requester_id", "receiver_id", "job_id", name="uq_invite_per_job"),
+        # Two partial unique indexes replace the old nullable unique constraint.
+        # A standard UniqueConstraint on (requester_id, receiver_id, job_id) is
+        # bypassed when job_id IS NULL because NULL != NULL in SQL — meaning
+        # duplicate no-job invites could be created silently.
+        Index(
+            "uq_invite_with_job",
+            "requester_id", "receiver_id", "job_id",
+            unique=True,
+            postgresql_where=sa_text("job_id IS NOT NULL"),
+            sqlite_where=sa_text("job_id IS NOT NULL"),
+        ),
+        Index(
+            "uq_invite_no_job",
+            "requester_id", "receiver_id",
+            unique=True,
+            postgresql_where=sa_text("job_id IS NULL"),
+            sqlite_where=sa_text("job_id IS NULL"),
+        ),
     )
 
     id = Column(GUID, primary_key=True, default=uuid.uuid4, index=True)
