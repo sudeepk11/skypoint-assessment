@@ -14,6 +14,8 @@ import {
   Moon,
   Sun,
   Users,
+  Bell,
+  Search,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -131,7 +133,28 @@ export const HRLayout: React.FC<HRLayoutProps> = ({ children }) => {
           >
             <Menu size={20} />
           </button>
+
+          {/* Page title */}
+          <div className="hidden sm:block">
+            <p className="text-xs text-gray-400 dark:text-slate-500 font-medium leading-none mb-0.5">HR Portal</p>
+            <p className="text-sm font-semibold text-gray-800 dark:text-slate-100">
+              {navLinks.find(l => location.pathname.startsWith(l.to) && l.to !== '/hr/dashboard')?.label
+                ?? (location.pathname === '/hr/dashboard' ? 'Dashboard' : '')}
+            </p>
+          </div>
+
           <div className="flex-1" />
+
+          {/* Quick action */}
+          <Link
+            to="/hr/jobs/new"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-accent text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <PlusCircle size={13} />
+            Post Job
+          </Link>
+
+          {/* Dark mode */}
           <button
             onClick={toggle}
             className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-700 transition-all"
@@ -139,12 +162,14 @@ export const HRLayout: React.FC<HRLayoutProps> = ({ children }) => {
           >
             {isDark ? <Sun size={16} /> : <Moon size={16} />}
           </button>
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-300">
+
+          {/* Avatar + name */}
+          <Link to="/profile" className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-slate-100 transition-colors">
             <div className="w-7 h-7 rounded-full bg-accent text-white flex items-center justify-center text-xs font-bold">
               {user?.full_name?.charAt(0).toUpperCase()}
             </div>
             <span className="hidden sm:block font-medium">{user?.full_name}</span>
-          </div>
+          </Link>
         </header>
 
         {/* Page content */}
@@ -273,7 +298,40 @@ export const CandidateLayout: React.FC<CandidateLayoutProps> = ({ children }) =>
           <button className="lg:hidden text-gray-600 hover:text-gray-900 dark:text-slate-400 dark:hover:text-slate-100" onClick={() => setSidebarOpen(true)}>
             <Menu size={20} />
           </button>
+
+          {/* Page title */}
+          <div className="hidden sm:block">
+            <p className="text-xs text-gray-400 dark:text-slate-500 font-medium leading-none mb-0.5">Candidate Portal</p>
+            <p className="text-sm font-semibold text-gray-800 dark:text-slate-100">
+              {navLinks.find(l => location.pathname.startsWith(l.to) && l.to !== '/candidate/dashboard')?.label
+                ?? (location.pathname === '/candidate/dashboard' ? 'Dashboard' : '')}
+            </p>
+          </div>
+
           <div className="flex-1" />
+
+          {/* Browse jobs quick action */}
+          <Link
+            to="/candidate/jobs"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-accent text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Search size={13} />
+            Browse Jobs
+          </Link>
+
+          {/* Pending invites bell */}
+          <Link
+            to="/candidate/connections"
+            className="relative w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-700 transition-all"
+            aria-label="Job invites"
+          >
+            <Bell size={16} />
+            {pendingCount > 0 && (
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+            )}
+          </Link>
+
+          {/* Dark mode */}
           <button
             onClick={toggle}
             className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-700 transition-all"
@@ -281,12 +339,14 @@ export const CandidateLayout: React.FC<CandidateLayoutProps> = ({ children }) =>
           >
             {isDark ? <Sun size={16} /> : <Moon size={16} />}
           </button>
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-300">
+
+          {/* Avatar + name */}
+          <Link to="/profile" className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-slate-100 transition-colors">
             <div className="w-7 h-7 rounded-full bg-accent text-white flex items-center justify-center text-xs font-bold">
               {user?.full_name?.charAt(0).toUpperCase()}
             </div>
             <span className="hidden sm:block font-medium">{user?.full_name}</span>
-          </div>
+          </Link>
         </header>
 
         {/* Page content */}

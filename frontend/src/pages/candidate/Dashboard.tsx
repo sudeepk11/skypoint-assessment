@@ -8,6 +8,10 @@ import {
   Briefcase,
   ArrowRight,
   Search,
+  Lightbulb,
+  FileText,
+  UserCheck,
+  Repeat2,
 } from 'lucide-react';
 import { CandidateLayout } from '../../components/Layout';
 import StatusBadge from '../../components/StatusBadge';
@@ -284,6 +288,27 @@ const CandidateDashboard: React.FC = () => {
                   ))}
                 </div>
               )}
+            </div>
+
+            {/* tips */}
+            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-2xl border border-amber-100 dark:border-amber-800/30 p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <Lightbulb size={14} className="text-amber-500" />
+                <h3 className="text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide">Job Search Tips</h3>
+              </div>
+              <div className="space-y-3">
+                {[
+                  { icon: FileText, text: 'Upload a clean, single-page PDF resume for best results.' },
+                  { icon: UserCheck, text: 'Complete your profile — recruiters check it before reaching out.' },
+                  { icon: Send,     text: 'Add a cover letter to stand out from other applicants.' },
+                  { icon: Repeat2,  text: "Don't get discouraged by rejections — apply broadly and often." },
+                ].map((item) => (
+                  <div key={item.text} className="flex items-start gap-2.5">
+                    <item.icon size={13} className="text-amber-500 flex-shrink-0 mt-0.5" />
+                    <p className="text-xs text-amber-800 dark:text-amber-300 leading-relaxed">{item.text}</p>
+                  </div>
+                ))}
+              </div>
             </div>
 
           </div>

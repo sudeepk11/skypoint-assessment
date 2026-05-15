@@ -9,6 +9,11 @@ import {
   Eye,
   ArrowRight,
   Circle,
+  Lightbulb,
+  FileText,
+  Clock,
+  Mail,
+  Target,
 } from 'lucide-react';
 import {
   PieChart,
@@ -457,6 +462,58 @@ const HRDashboard: React.FC = () => {
             </Link>
           </div>
         )}
+      </div>
+
+      {/* ── HR Tips ── */}
+      <div className="mt-5 bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <div className="w-7 h-7 bg-amber-50 dark:bg-amber-900/30 rounded-lg flex items-center justify-center">
+            <Lightbulb size={14} className="text-amber-500" />
+          </div>
+          <h2 className="text-sm font-semibold text-gray-800 dark:text-slate-100">Recruiter Tips</h2>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {[
+            {
+              icon: FileText,
+              color: 'text-blue-500',
+              bg: 'bg-blue-50 dark:bg-blue-900/20',
+              title: 'Write clear JDs',
+              tip: 'Include required skills, salary range, and work mode. Clear descriptions attract better-matched candidates.',
+            },
+            {
+              icon: Clock,
+              color: 'text-amber-500',
+              bg: 'bg-amber-50 dark:bg-amber-900/20',
+              title: 'Review within 48 hrs',
+              tip: 'Top candidates move fast. Reviewing applications quickly improves your offer acceptance rate.',
+            },
+            {
+              icon: Mail,
+              color: 'text-purple-500',
+              bg: 'bg-purple-50 dark:bg-purple-900/20',
+              title: 'Keep candidates informed',
+              tip: 'Use bulk email to update all applicants at once. Transparency builds your employer brand.',
+            },
+            {
+              icon: Target,
+              color: 'text-green-500',
+              bg: 'bg-green-50 dark:bg-green-900/20',
+              title: 'Shortlist early',
+              tip: 'Move strong applicants to Shortlisted quickly. The best candidates often have multiple offers.',
+            },
+          ].map((item) => (
+            <div key={item.title} className="flex gap-3 p-3.5 rounded-xl bg-gray-50 dark:bg-slate-700/50">
+              <div className={`w-8 h-8 ${item.bg} rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5`}>
+                <item.icon size={14} className={item.color} />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-gray-700 dark:text-slate-200 mb-0.5">{item.title}</p>
+                <p className="text-xs text-gray-400 dark:text-slate-400 leading-relaxed">{item.tip}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
     </HRLayout>
