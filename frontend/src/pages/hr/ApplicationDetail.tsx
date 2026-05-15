@@ -5,7 +5,12 @@ import {
   User,
   Briefcase,
   FileText,
+  Clock,
+  Eye,
+  Star,
+  XCircle,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { HRLayout } from '../../components/Layout';
 import StatusBadge from '../../components/StatusBadge';
 import { applications as appApi } from '../../services/api';
@@ -26,11 +31,11 @@ const formatType = (t: string) => {
   return map[t] ?? t;
 };
 
-const statusOptions: { value: ApplicationStatus; label: string }[] = [
-  { value: 'pending', label: 'Pending' },
-  { value: 'reviewing', label: 'Reviewing' },
-  { value: 'shortlisted', label: 'Shortlisted' },
-  { value: 'rejected', label: 'Rejected' },
+const statusOptions: { value: ApplicationStatus; label: string; icon: LucideIcon; activeColor: string }[] = [
+  { value: 'pending',     label: 'Pending',     icon: Clock,    activeColor: 'bg-yellow-500 border-yellow-500 text-white' },
+  { value: 'reviewing',   label: 'Reviewing',   icon: Eye,      activeColor: 'bg-blue-500 border-blue-500 text-white' },
+  { value: 'shortlisted', label: 'Shortlisted', icon: Star,     activeColor: 'bg-green-500 border-green-500 text-white' },
+  { value: 'rejected',    label: 'Rejected',    icon: XCircle,  activeColor: 'bg-red-500 border-red-500 text-white' },
 ];
 
 const HRApplicationDetail: React.FC = () => {
@@ -166,24 +171,29 @@ const HRApplicationDetail: React.FC = () => {
           <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-5">
             <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300 mb-3">Update Status</h3>
             <div className="space-y-2">
-              {statusOptions.map((opt) => (
-                <button
-                  key={opt.value}
-                  onClick={() => handleStatusChange(opt.value)}
-                  disabled={statusLoading || app.status === opt.value}
-                  className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium border transition-all ${
-                    app.status === opt.value
-                      ? 'bg-primary text-white border-primary'
-                      : 'border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700'
-                  } disabled:cursor-not-allowed`}
-                >
-                  {statusLoading && app.status === opt.value ? (
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  ) : (
-                    opt.label
-                  )}
-                </button>
-              ))}
+              {statusOptions.map((opt) => {
+                const Icon = opt.icon;
+                const isActive = app.status === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    onClick={() => handleStatusChange(opt.value)}
+                    disabled={statusLoading || isActive}
+                    className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium border transition-all disabled:cursor-not-allowed ${
+                      isActive
+                        ? opt.activeColor
+                        : 'border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700'
+                    }`}
+                  >
+                    {statusLoading && isActive ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Icon size={15} />
+                    )}
+                    {opt.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
