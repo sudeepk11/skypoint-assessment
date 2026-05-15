@@ -55,6 +55,16 @@ def create_test_tables():
     Base.metadata.drop_all(bind=test_engine)
 
 
+@pytest.fixture(autouse=True)
+def reset_db(create_test_tables):
+    """Delete all rows from every table after each test to prevent state leakage."""
+    yield
+    with TestingSessionLocal() as session:
+        for table in reversed(Base.metadata.sorted_tables):
+            session.execute(table.delete())
+        session.commit()
+
+
 @pytest.fixture
 def client(create_test_tables):
     """Return a FastAPI TestClient with the DB override applied.
