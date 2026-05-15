@@ -101,6 +101,13 @@ The database is automatically seeded with the following test accounts on first s
 
 ## Feature Walkthrough
 
+### Public (unauthenticated)
+
+| Feature | How to Access |
+|---------|--------------|
+| Browse open job listings | `/jobs` — no login required |
+| View full job detail | Click any job card on the public board |
+
 ### HR Role
 
 | Feature | How to Access |
@@ -112,10 +119,12 @@ The database is automatically seeded with the following test accounts on first s
 | Delete a job | Jobs table → trash icon → confirm dialog |
 | View all applications | Sidebar → "Applications" |
 | Filter applications by job or status | Applications page → filter toolbar |
-| Change application status | Applications → "View" → Status dropdown |
+| View application detail (resume + cover letter) | Applications → "View" on any row |
+| Change application status | Application Detail → Status buttons |
 | **Bulk Email** | Applications → select candidates → "Send Bulk Email" (requires AWS SES config) |
 | Talent Network — browse candidates | Sidebar → "Talent Network" |
 | Send job invite to a candidate | Talent Network → "Invite" button |
+| Edit profile & company info | Top-right avatar → "Profile" |
 
 ### Candidate Role
 
@@ -128,6 +137,13 @@ The database is automatically seeded with the following test accounts on first s
 | Track application status | Sidebar → "My Applications" |
 | View HR job invitations | Sidebar → "Connections" |
 | Accept or decline an invitation | Connections → pending invite row |
+| Edit profile, skills & social links | Top-right avatar → "Profile" |
+
+### Both Roles
+
+| Feature | How to Access |
+|---------|--------------|
+| Change password | Profile page → "Change Password" section |
 
 ---
 
