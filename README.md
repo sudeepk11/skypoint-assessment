@@ -177,7 +177,6 @@ docker compose exec backend pytest tests/ -v --tb=short
 
 ## Known Limitations
 
-- **AI features** require a valid `ANTHROPIC_API_KEY` in `.env`. Without it, the AI buttons return a 503 with a clear message.
 - **Bulk email** requires AWS SES credentials. Without them, clicking "Send Emails" shows: *"Email service not configured — please add AWS SES credentials to your .env file."* The UI and backend code are fully implemented.
 - Resume upload is text-based (paste resume content). File upload (PDF/DOCX) is out of scope for this assessment.
 - The frontend JS bundle is unoptimized (single chunk ~694KB) — code splitting would be the next production step.
