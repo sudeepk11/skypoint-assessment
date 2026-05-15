@@ -1,6 +1,6 @@
 # Skypoint Job Portal
 
-> AI-powered recruitment platform built for modern teams — powered by Skypoint AI
+> Full-stack recruitment platform built for modern teams — powered by Skypoint AI
 
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?style=flat&logo=fastapi)
 ![React](https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react)
@@ -11,13 +11,13 @@
 
 ## Project Overview
 
-A full-stack Applicant Tracking System (ATS) with two distinct user roles — **HR** and **Candidate**. HR teams can post jobs, review applications, and leverage AI to generate job descriptions and evaluate resumes. Candidates can browse open positions, apply, and track their application status in real time.
+A full-stack Applicant Tracking System (ATS) with two distinct user roles — **HR** and **Candidate**. HR teams can post jobs, review applications, and manage the full hiring pipeline. Candidates can browse open positions, apply, and track their application status in real time.
 
 Key highlights:
-- **AI Job Description Generator** — Claude AI writes polished job descriptions from a title + skills
-- **AI Resume Evaluator** — Claude AI scores candidate fit (1–10) with strengths, concerns, and a recommendation
+- Role-based access control — HR and Candidate roles with separate dashboards and permissions
 - **Bulk Email** — HR can select multiple candidates and send templated emails via AWS SES
 - Fully Dockerized — runs with a single command, zero manual setup
+- 24 backend tests covering auth, job CRUD, and application workflows
 
 ---
 
@@ -39,8 +39,7 @@ Key highlights:
 └─────────────────────────────────────────────────────┘
 
 External Services (optional):
-  - Anthropic Claude API  → AI features (job description & resume eval)
-  - AWS SES               → Bulk email notifications
+  - AWS SES  → Bulk email notifications
 ```
 
 - **Frontend**: React 18 + Vite + TypeScript, served by nginx. All `/api/*` requests are proxied to the backend.
@@ -64,13 +63,10 @@ cd skypoint-assessment
 # 2. Copy the environment file
 cp .env.example .env
 
-# 3. (Optional) Add your Anthropic API key to enable AI features
-#    Edit .env and set: ANTHROPIC_API_KEY=your-key-here
-
-# 4. Start the application
+# 3. Start the application
 docker compose up --build
 
-# 5. Open the app
+# 4. Open the app
 open http://localhost:3000
 ```
 
@@ -89,7 +85,7 @@ The database is automatically seeded with the following test accounts on first s
 | **HR** | `hr@test.com` | `HR@1234` |
 | **Candidate** | `candidate@test.com` | `Candidate@1234` |
 
-3 sample job postings (Software Engineer, Product Manager, Data Analyst) are also pre-loaded.
+8 sample job postings are also pre-loaded (Senior Software Engineer, Product Manager, Data Scientist, Frontend Engineer, DevOps Engineer, Business Analyst, Android Engineer, Technical Writer).
 
 ---
 
@@ -102,14 +98,14 @@ The database is automatically seeded with the following test accounts on first s
 | Dashboard with KPIs & charts | Login → auto-redirected to `/hr/dashboard` |
 | View & manage all jobs | Sidebar → "Manage Jobs" |
 | Create a new job posting | "Manage Jobs" → "Post New Job" button |
-| **AI Job Description Generator** | Create/Edit Job → click "Generate with AI ✦" panel (requires `ANTHROPIC_API_KEY`) |
 | Edit or close a job | Jobs table → pencil / toggle icon |
 | Delete a job | Jobs table → trash icon → confirm dialog |
 | View all applications | Sidebar → "Applications" |
 | Filter applications by job or status | Applications page → filter toolbar |
 | Change application status | Applications → "View" → Status dropdown |
-| **AI Resume Evaluator** | Application Detail → "Evaluate with AI ✦" button (requires `ANTHROPIC_API_KEY`) |
 | **Bulk Email** | Applications → select candidates → "Send Bulk Email" (requires AWS SES config) |
+| Talent Network — browse candidates | Sidebar → "Talent Network" |
+| Send job invite to a candidate | Talent Network → "Invite" button |
 
 ### Candidate Role
 
@@ -120,7 +116,8 @@ The database is automatically seeded with the following test accounts on first s
 | Search & filter jobs | Job Board → search bar + type/location filters |
 | Apply to a job | Job Detail → "Apply Now" → fill resume + cover letter |
 | Track application status | Sidebar → "My Applications" |
-| View submitted resume | My Applications → click any row |
+| View HR job invitations | Sidebar → "Connections" |
+| Accept or decline an invitation | Connections → pending invite row |
 
 ---
 
@@ -137,7 +134,6 @@ The database is automatically seeded with the following test accounts on first s
 | ORM | SQLAlchemy 2.0 |
 | Auth | JWT (python-jose), bcrypt (passlib) |
 | Database | PostgreSQL 15 |
-| AI | Anthropic Claude API (`claude-3-5-haiku-20241022`) |
 | Email | AWS SES via boto3 |
 | Testing | pytest, httpx |
 | Containerisation | Docker, Docker Compose |
@@ -167,7 +163,6 @@ docker compose exec backend pytest tests/ -v --tb=short
 |----------|----------|-------------|
 | `DATABASE_URL` | Yes (auto-set) | PostgreSQL connection string |
 | `SECRET_KEY` | Yes | JWT signing secret |
-| `ANTHROPIC_API_KEY` | For AI features | Your Anthropic API key |
 | `AWS_ACCESS_KEY_ID` | For bulk email | AWS credentials |
 | `AWS_SECRET_ACCESS_KEY` | For bulk email | AWS credentials |
 | `AWS_SES_REGION` | For bulk email | SES region (default: `us-east-1`) |
@@ -179,4 +174,3 @@ docker compose exec backend pytest tests/ -v --tb=short
 
 - **Bulk email** requires AWS SES credentials. Without them, clicking "Send Emails" shows: *"Email service not configured — please add AWS SES credentials to your .env file."* The UI and backend code are fully implemented.
 - Resume upload is text-based (paste resume content). File upload (PDF/DOCX) is out of scope for this assessment.
-- The frontend JS bundle is unoptimized (single chunk ~694KB) — code splitting would be the next production step.

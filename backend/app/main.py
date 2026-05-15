@@ -241,7 +241,7 @@ def seed_data() -> None:
                 full_name="Priya Sharma",
                 role="hr",
                 company_name="SkyPoint.Ai",
-                company_website="https://razorpay.com",
+                company_website="https://skypoint.ai",
                 company_description=(
                     "SkyPoint.Ai is India's leading full-stack financial solutions company. "
                     "We help businesses accept, process and disburse payments and manage their "
@@ -255,7 +255,7 @@ def seed_data() -> None:
             # Update existing seed user with company info if missing
             if not hr_user.company_name:
                 hr_user.company_name = "SkyPoint.Ai"
-                hr_user.company_website = "https://razorpay.com"
+                hr_user.company_website = "https://skypoint.ai"
                 hr_user.company_description = (
                     "SkyPoint.Ai is India's leading full-stack financial solutions company. "
                     "Trusted by 8 million+ businesses including Zomato, IRCTC and Ola."
