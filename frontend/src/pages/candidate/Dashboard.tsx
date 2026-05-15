@@ -290,27 +290,58 @@ const CandidateDashboard: React.FC = () => {
               )}
             </div>
 
-            {/* tips */}
-            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-2xl border border-amber-100 dark:border-amber-800/30 p-5">
-              <div className="flex items-center gap-2 mb-3">
-                <Lightbulb size={14} className="text-amber-500" />
-                <h3 className="text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide">Job Search Tips</h3>
-              </div>
-              <div className="space-y-3">
-                {[
-                  { icon: FileText, text: 'Upload a clean, single-page PDF resume for best results.' },
-                  { icon: UserCheck, text: 'Complete your profile — recruiters check it before reaching out.' },
-                  { icon: Send,     text: 'Add a cover letter to stand out from other applicants.' },
-                  { icon: Repeat2,  text: "Don't get discouraged by rejections — apply broadly and often." },
-                ].map((item) => (
-                  <div key={item.text} className="flex items-start gap-2.5">
-                    <item.icon size={13} className="text-amber-500 flex-shrink-0 mt-0.5" />
-                    <p className="text-xs text-amber-800 dark:text-amber-300 leading-relaxed">{item.text}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+          </div>
+        </div>
 
+        {/* ── Job Search Tips ── */}
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-7 h-7 bg-amber-50 dark:bg-amber-900/30 rounded-lg flex items-center justify-center">
+              <Lightbulb size={14} className="text-amber-500" />
+            </div>
+            <h2 className="text-sm font-semibold text-gray-800 dark:text-slate-100">Job Search Tips</h2>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {[
+              {
+                icon: FileText,
+                color: 'text-blue-500',
+                bg: 'bg-blue-50 dark:bg-blue-900/20',
+                title: 'Clean PDF resume',
+                tip: 'Upload a single-page PDF resume. Recruiters spend seconds scanning — make it easy to read.',
+              },
+              {
+                icon: UserCheck,
+                color: 'text-green-500',
+                bg: 'bg-green-50 dark:bg-green-900/20',
+                title: 'Complete your profile',
+                tip: 'Recruiters check profiles before reaching out. A full profile doubles your chances.',
+              },
+              {
+                icon: Send,
+                color: 'text-purple-500',
+                bg: 'bg-purple-50 dark:bg-purple-900/20',
+                title: 'Add a cover letter',
+                tip: 'Even a short cover letter sets you apart. Personalise it for each role you apply to.',
+              },
+              {
+                icon: Repeat2,
+                color: 'text-amber-500',
+                bg: 'bg-amber-50 dark:bg-amber-900/20',
+                title: 'Apply broadly',
+                tip: "Rejections are part of the process. Apply to many roles and keep refining your approach.",
+              },
+            ].map((item) => (
+              <div key={item.title} className="flex gap-3 p-3.5 rounded-xl bg-gray-50 dark:bg-slate-700/50">
+                <div className={`w-8 h-8 ${item.bg} rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5`}>
+                  <item.icon size={14} className={item.color} />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-gray-700 dark:text-slate-200 mb-0.5">{item.title}</p>
+                  <p className="text-xs text-gray-400 dark:text-slate-400 leading-relaxed">{item.tip}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
