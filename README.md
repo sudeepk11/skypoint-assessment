@@ -200,3 +200,4 @@ docker compose exec backend pytest tests/ -v --tb=short
 
 - **Bulk email** requires AWS SES credentials. Without them, clicking "Send Emails" shows: *"Email service not configured — please add AWS SES credentials to your .env file."* The UI and backend code are fully implemented.
 - Resume upload is text-based (paste resume content). File upload (PDF/DOCX) is out of scope for this assessment.
+- Rate limiting is per-IP and in-memory — not shared across multiple backend replicas. A Redis-backed store would be needed for multi-instance deployments.
