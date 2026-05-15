@@ -16,7 +16,7 @@ export interface User {
   company_description?: string;
   // Candidate / shared
   headline?: string;
-  skills?: string;          // JSON string — string[]
+  skills?: string[];
   // Social
   linkedin_url?: string;
   github_url?: string;
@@ -30,7 +30,7 @@ export interface UserPublic {
   full_name: string;
   role: UserRole;
   headline?: string;
-  skills?: string;
+  skills?: string[];
   linkedin_url?: string;
   github_url?: string;
   glassdoor_url?: string;

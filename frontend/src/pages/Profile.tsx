@@ -206,9 +206,7 @@ const Profile: React.FC = () => {
 
   /* social */
   const [headline, setHeadline] = useState(user?.headline ?? '');
-  const [skills, setSkills] = useState<string[]>(() => {
-    try { return JSON.parse(user?.skills ?? '[]') as string[]; } catch { return []; }
-  });
+  const [skills, setSkills] = useState<string[]>(user?.skills ?? []);
   const [linkedinUrl, setLinkedinUrl] = useState(user?.linkedin_url ?? '');
   const [githubUrl, setGithubUrl] = useState(user?.github_url ?? '');
   const [glassdoorUrl, setGlassdoorUrl] = useState(user?.glassdoor_url ?? '');
@@ -233,7 +231,7 @@ const Profile: React.FC = () => {
       setCompanyWebsite(data.company_website ?? '');
       setCompanyDescription(data.company_description ?? '');
       setHeadline(data.headline ?? '');
-      try { setSkills(JSON.parse(data.skills ?? '[]') as string[]); } catch { setSkills([]); }
+      setSkills(data.skills ?? []);
       setLinkedinUrl(data.linkedin_url ?? '');
       setGithubUrl(data.github_url ?? '');
       setGlassdoorUrl(data.glassdoor_url ?? '');
@@ -272,7 +270,7 @@ const Profile: React.FC = () => {
     try {
       const updated = await profileApi.update({
         headline,
-        skills: JSON.stringify(skills),
+        skills,
         linkedin_url: linkedinUrl,
         github_url: githubUrl,
         glassdoor_url: glassdoorUrl,

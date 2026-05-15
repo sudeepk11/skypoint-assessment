@@ -54,7 +54,7 @@ async def lifespan(app: FastAPI):
         with engine.connect() as conn:
             for col in [
                 "ALTER TABLE users ADD COLUMN IF NOT EXISTS headline VARCHAR(255)",
-                "ALTER TABLE users ADD COLUMN IF NOT EXISTS skills TEXT",
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS skills JSON",
                 "ALTER TABLE users ADD COLUMN IF NOT EXISTS linkedin_url VARCHAR(500)",
                 "ALTER TABLE users ADD COLUMN IF NOT EXISTS github_url VARCHAR(500)",
                 "ALTER TABLE users ADD COLUMN IF NOT EXISTS glassdoor_url VARCHAR(500)",
@@ -65,6 +65,15 @@ async def lifespan(app: FastAPI):
             conn.commit()
     except Exception as exc:
         logger.warning("Migration (user profile columns) skipped: %s", exc)
+    # Convert users.skills from TEXT to JSON if it was added before this fix
+    try:
+        with engine.connect() as conn:
+            conn.execute(sa_text(
+                "ALTER TABLE users ALTER COLUMN skills TYPE JSON USING skills::JSON"
+            ))
+            conn.commit()
+    except Exception as exc:
+        logger.warning("Migration (users skills TEXT→JSON) skipped: %s", exc)
     # Connections table: add job_id and message columns, drop old unique constraint and recreate
     try:
         with engine.connect() as conn:

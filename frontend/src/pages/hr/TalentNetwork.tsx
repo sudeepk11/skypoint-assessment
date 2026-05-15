@@ -12,11 +12,6 @@ type Tab = 'pool' | 'sent' | 'accepted';
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
-function parseSkills(json: string | undefined): string[] {
-  if (!json) return [];
-  try { return JSON.parse(json); } catch { return []; }
-}
-
 function initials(name: string) {
   return name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2);
 }
@@ -149,7 +144,7 @@ const CandidateCard: React.FC<{
   inviteStatus: 'none' | 'sent' | 'accepted';
   onInvite: (c: UserPublic) => void;
 }> = ({ candidate, inviteStatus, onInvite }) => {
-  const skills = parseSkills(candidate.skills);
+  const skills = candidate.skills ?? [];
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-5 flex flex-col gap-4 hover:shadow-md transition-shadow">
@@ -221,7 +216,7 @@ const InviteCard: React.FC<{
   acting: boolean;
 }> = ({ conn, currentUserId, onRemove, acting }) => {
   const other = conn.requester.id === currentUserId ? conn.receiver : conn.requester;
-  const skills = parseSkills(other.skills);
+  const skills = other.skills ?? [];
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-5 flex items-start gap-4 hover:shadow-md transition-shadow">
@@ -336,7 +331,7 @@ const TalentNetwork: React.FC = () => {
     setFiltered(candidates.filter((c) =>
       c.full_name.toLowerCase().includes(q) ||
       c.headline?.toLowerCase().includes(q) ||
-      parseSkills(c.skills).some((s) => s.toLowerCase().includes(q))
+      (c.skills ?? []).some((s) => s.toLowerCase().includes(q))
     ));
   }, [search, candidates]);
 

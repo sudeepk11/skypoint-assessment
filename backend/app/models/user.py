@@ -3,7 +3,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, Enum, String, Text
+from sqlalchemy import JSON, Column, DateTime, Enum, String, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import TypeDecorator, CHAR
 import sqlalchemy.dialects.postgresql as pg
@@ -59,7 +59,7 @@ class User(Base):
     company_description = Column(Text, nullable=True)
     # Candidate / shared fields
     headline = Column(String(255), nullable=True)          # e.g. "Senior React Developer"
-    skills = Column(Text, nullable=True)                   # JSON array stored as text
+    skills = Column(JSON, nullable=True)                    # list of skill tags
     # Social links
     linkedin_url = Column(String(500), nullable=True)
     github_url = Column(String(500), nullable=True)

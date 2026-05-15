@@ -2,7 +2,7 @@
 
 import re
 from datetime import datetime
-from typing import Literal, Optional
+from typing import List, Literal, Optional
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, EmailStr, field_validator
@@ -66,7 +66,7 @@ class UserOut(BaseModel):
     company_website: Optional[str] = None
     company_description: Optional[str] = None
     headline: Optional[str] = None
-    skills: Optional[str] = None          # JSON string — list of skill tags
+    skills: Optional[List[str]] = None
     linkedin_url: Optional[str] = None
     github_url: Optional[str] = None
     glassdoor_url: Optional[str] = None
@@ -98,7 +98,7 @@ class UpdateProfile(BaseModel):
     company_description: Optional[str] = None
     # Shared
     headline: Optional[str] = None
-    skills: Optional[str] = None          # JSON string
+    skills: Optional[List[str]] = None
     # Social
     linkedin_url: Optional[str] = None
     github_url: Optional[str] = None

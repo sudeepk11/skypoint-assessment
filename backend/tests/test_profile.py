@@ -59,16 +59,16 @@ def test_update_full_name(client: TestClient, candidate_token: str):
 
 
 def test_update_headline_and_skills(client: TestClient, candidate_token: str):
-    """Candidate should be able to update headline and skills."""
+    """Candidate should be able to update headline and skills as a list."""
     resp = client.put(
         "/api/profile",
-        json={"headline": "Python Developer", "skills": '["Python","FastAPI"]'},
+        json={"headline": "Python Developer", "skills": ["Python", "FastAPI"]},
         headers=auth_headers(candidate_token),
     )
     assert resp.status_code == 200
     data = resp.json()
     assert data["headline"] == "Python Developer"
-    assert data["skills"] == '["Python","FastAPI"]'
+    assert data["skills"] == ["Python", "FastAPI"]
 
 
 def test_update_social_links(client: TestClient, candidate_token: str):
@@ -96,7 +96,7 @@ def test_partial_update_preserves_other_fields(client: TestClient):
     # First set both headline and skills.
     client.put(
         "/api/profile",
-        json={"headline": "First Headline", "skills": '["Go"]'},
+        json={"headline": "First Headline", "skills": ["Go"]},
         headers=auth_headers(token),
     )
 
@@ -109,7 +109,7 @@ def test_partial_update_preserves_other_fields(client: TestClient):
     assert resp.status_code == 200
     data = resp.json()
     assert data["headline"] == "Updated Headline"
-    assert data["skills"] == '["Go"]'  # skills must be untouched
+    assert data["skills"] == ["Go"]  # skills must be untouched
 
 
 def test_hr_can_update_company_fields(client: TestClient):

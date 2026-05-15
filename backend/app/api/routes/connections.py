@@ -1,6 +1,5 @@
 """Connections — HR invites candidates to apply for a specific job."""
 
-import json
 from typing import List, Optional
 from uuid import UUID
 
@@ -24,7 +23,7 @@ class UserPublic(BaseModel):
     full_name: str
     role: str
     headline: Optional[str] = None
-    skills: Optional[str] = None
+    skills: Optional[List[str]] = None
     linkedin_url: Optional[str] = None
     github_url: Optional[str] = None
     glassdoor_url: Optional[str] = None
@@ -63,7 +62,7 @@ class CandidateOut(BaseModel):
     id: UUID
     full_name: str
     headline: Optional[str] = None
-    skills: Optional[str] = None
+    skills: Optional[List[str]] = None
     linkedin_url: Optional[str] = None
     github_url: Optional[str] = None
     glassdoor_url: Optional[str] = None
@@ -82,15 +81,6 @@ class UserWithStatus(BaseModel):
     user: UserPublic
     connection_status: str
     connection_id: Optional[str] = None
-
-
-def _parse_skills(s: Optional[str]) -> set:
-    if not s:
-        return set()
-    try:
-        return {x.strip().lower() for x in json.loads(s) if x.strip()}
-    except Exception:
-        return set()
 
 
 def _existing_connection(db: Session, a: UUID, b: UUID) -> Optional[Connection]:
