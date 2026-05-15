@@ -113,8 +113,6 @@ def test_logout_clears_cookie(client: TestClient):
 
 def test_register_password_too_short(client: TestClient):
     """Password shorter than 8 characters should return 422."""
-    resp = _register(client, f"short_{uuid.uuid4().hex[:8]}@test.com")
-    # patch only the password field
     resp = client.post(
         "/api/auth/register",
         json={

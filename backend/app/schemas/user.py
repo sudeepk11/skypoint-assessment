@@ -80,10 +80,7 @@ class TokenResponse(BaseModel):
     user: UserOut
 
 
-class RegisterResponse(BaseModel):
-    access_token: str
-    token_type: str = "bearer"
-    user: UserOut
+RegisterResponse = TokenResponse
 
 
 class UpdateProfile(BaseModel):
