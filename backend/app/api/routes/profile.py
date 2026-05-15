@@ -20,8 +20,15 @@ def update_profile(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    for field, value in data.model_dump(exclude_unset=True).items():
-        setattr(current_user, field, value)
+    # Explicit field updates — never allows arbitrary attribute writes
+    if data.full_name is not None:
+        current_user.full_name = data.full_name
+    if data.company_name is not None:
+        current_user.company_name = data.company_name
+    if data.company_website is not None:
+        current_user.company_website = data.company_website
+    if data.company_description is not None:
+        current_user.company_description = data.company_description
     db.commit()
     db.refresh(current_user)
     return current_user
