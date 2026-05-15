@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   Briefcase,
   Inbox,
+  FileText,
   PlusCircle,
   LogOut,
   Menu,
@@ -12,8 +13,6 @@ import {
   UserCircle,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import Navbar from './Navbar';
-import Footer from './Footer';
 
 interface HRLayoutProps {
   children: React.ReactNode;
@@ -58,9 +57,8 @@ export const HRLayout: React.FC<HRLayoutProps> = ({ children }) => {
       >
         {/* Logo */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
-          <Link to="/hr/dashboard" className="flex items-center gap-1">
-            <span className="text-xl font-bold text-white">Skypoint</span>
-            <span className="text-xl font-bold text-blue-400">.ai</span>
+          <Link to="/hr/dashboard" className="flex items-center">
+            <span className="text-xl font-bold text-white">Sky</span><span className="text-xl font-bold text-blue-400">Hire</span>
           </Link>
           <button
             className="lg:hidden text-white/70 hover:text-white"
@@ -148,13 +146,116 @@ interface CandidateLayoutProps {
 }
 
 export const CandidateLayout: React.FC<CandidateLayoutProps> = ({ children }) => {
+  const { user, logout } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+  const navLinks = [
+    { to: '/candidate/dashboard', label: 'Dashboard',       icon: LayoutDashboard },
+    { to: '/candidate/jobs',      label: 'Browse Jobs',     icon: Briefcase },
+    { to: '/candidate/applications', label: 'My Applications', icon: FileText },
+    { to: '/profile',             label: 'My Profile',      icon: UserCircle },
+  ];
+
+  const isActive = (path: string) => location.pathname === path;
+
   return (
-    <div className="min-h-screen bg-surface flex flex-col">
-      <Navbar />
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-        {children}
-      </main>
-      <Footer />
+    <div className="flex h-screen overflow-hidden bg-surface">
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`fixed inset-y-0 left-0 w-64 bg-primary z-50 flex flex-col transition-transform duration-300 lg:relative lg:translate-x-0 lg:flex-shrink-0 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        {/* Logo */}
+        <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
+          <Link to="/candidate/dashboard" className="flex items-center">
+            <span className="text-xl font-bold text-white">Sky</span>
+            <span className="text-xl font-bold text-blue-400">Hire</span>
+          </Link>
+          <button className="lg:hidden text-white/70 hover:text-white" onClick={() => setSidebarOpen(false)}>
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* User info */}
+        <div className="px-6 py-4 border-b border-white/10">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-accent flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+              {user?.full_name?.charAt(0).toUpperCase()}
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-white truncate">{user?.full_name}</p>
+              <p className="text-xs text-white/50 truncate">{user?.email}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Nav */}
+        <nav className="flex-1 px-3 py-4 space-y-1">
+          {navLinks.map(({ to, label, icon: Icon }) => (
+            <Link
+              key={to}
+              to={to}
+              onClick={() => setSidebarOpen(false)}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                isActive(to)
+                  ? 'bg-white/15 text-white'
+                  : 'text-white/70 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              <Icon size={18} />
+              {label}
+              {isActive(to) && <ChevronRight size={14} className="ml-auto" />}
+            </Link>
+          ))}
+        </nav>
+
+        {/* Logout */}
+        <div className="px-3 py-4 border-t border-white/10">
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-sm font-medium text-white/60 hover:bg-white/10 hover:text-white transition-all"
+          >
+            <LogOut size={18} />
+            Sign Out
+          </button>
+        </div>
+      </aside>
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Top bar */}
+        <header className="bg-white border-b border-gray-200 px-4 sm:px-6 h-14 flex items-center gap-3 flex-shrink-0 z-30">
+          <button className="lg:hidden text-gray-600 hover:text-gray-900" onClick={() => setSidebarOpen(true)}>
+            <Menu size={20} />
+          </button>
+          <div className="flex-1" />
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <div className="w-7 h-7 rounded-full bg-accent text-white flex items-center justify-center text-xs font-bold">
+              {user?.full_name?.charAt(0).toUpperCase()}
+            </div>
+            <span className="hidden sm:block font-medium">{user?.full_name}</span>
+          </div>
+        </header>
+
+        {/* Page content */}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">{children}</main>
+      </div>
     </div>
   );
 };
