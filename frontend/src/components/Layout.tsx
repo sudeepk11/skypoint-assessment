@@ -44,7 +44,7 @@ export const HRLayout: React.FC<HRLayoutProps> = ({ children }) => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-surface dark:bg-slate-900">
+    <div className="flex h-screen overflow-hidden bg-surface dark:bg-[#131c2e]">
       {/* Sidebar overlay (mobile) */}
       {sidebarOpen && (
         <div
@@ -55,7 +55,7 @@ export const HRLayout: React.FC<HRLayoutProps> = ({ children }) => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 w-64 bg-primary z-50 flex flex-col transition-transform duration-300 lg:relative lg:translate-x-0 lg:flex-shrink-0 ${
+        className={`fixed inset-y-0 left-0 w-64 bg-primary z-50 flex flex-col transition-transform duration-300 lg:relative lg:translate-x-0 lg:flex-shrink-0 dark:border-r dark:border-white/5 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -146,7 +146,7 @@ export const HRLayout: React.FC<HRLayoutProps> = ({ children }) => {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto dark:bg-slate-900">{children}</main>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto dark:bg-[#131c2e]">{children}</main>
       </div>
     </div>
   );
@@ -178,7 +178,7 @@ export const CandidateLayout: React.FC<CandidateLayoutProps> = ({ children }) =>
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-surface dark:bg-slate-900">
+    <div className="flex h-screen overflow-hidden bg-surface dark:bg-[#131c2e]">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -189,7 +189,7 @@ export const CandidateLayout: React.FC<CandidateLayoutProps> = ({ children }) =>
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 w-64 bg-primary z-50 flex flex-col transition-transform duration-300 lg:relative lg:translate-x-0 lg:flex-shrink-0 ${
+        className={`fixed inset-y-0 left-0 w-64 bg-primary z-50 flex flex-col transition-transform duration-300 lg:relative lg:translate-x-0 lg:flex-shrink-0 dark:border-r dark:border-white/5 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -273,7 +273,7 @@ export const CandidateLayout: React.FC<CandidateLayoutProps> = ({ children }) =>
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto dark:bg-slate-900">{children}</main>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto dark:bg-[#131c2e]">{children}</main>
       </div>
     </div>
   );
