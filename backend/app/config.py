@@ -16,6 +16,8 @@ class Settings(BaseSettings):
 
     COOKIE_SECURE: bool = False
 
+    UPLOAD_DIR: str = "/app/uploads"
+
     AWS_ACCESS_KEY_ID: str = ""
     AWS_SECRET_ACCESS_KEY: str = ""
     AWS_SES_REGION: str = "us-east-1"

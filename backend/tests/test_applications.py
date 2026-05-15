@@ -13,10 +13,15 @@ JOB_PAYLOAD = {
     "employment_type": "remote",
 }
 
-APPLICATION_PAYLOAD = {
-    "resume_text": "5 years of QA experience with pytest and Selenium.",
-    "cover_letter": "I am excited to apply for this role.",
-}
+# Minimal valid PDF bytes (just enough to not crash the multipart parser)
+_FAKE_PDF = b"%PDF-1.4 fake resume content for testing"
+
+def _apply_payload():
+    """Return files/data kwargs for a multipart apply request."""
+    return {
+        "files": {"resume": ("resume.pdf", _FAKE_PDF, "application/pdf")},
+        "data": {"cover_letter": "I am excited to apply for this role."},
+    }
 
 
 def _create_job(client, hr_token):
@@ -31,8 +36,8 @@ def test_candidate_apply_to_job(client: TestClient, hr_token: str, candidate_tok
     job_id = _create_job(client, hr_token)
     resp = client.post(
         f"/api/jobs/{job_id}/apply",
-        json=APPLICATION_PAYLOAD,
         headers=auth_headers(candidate_token),
+        **_apply_payload(),
     )
     assert resp.status_code == 201
     data = resp.json()
@@ -43,16 +48,8 @@ def test_candidate_apply_to_job(client: TestClient, hr_token: str, candidate_tok
 def test_duplicate_application_blocked(client: TestClient, hr_token: str, candidate_token: str):
     """Applying to the same job twice should return 400."""
     job_id = _create_job(client, hr_token)
-    client.post(
-        f"/api/jobs/{job_id}/apply",
-        json=APPLICATION_PAYLOAD,
-        headers=auth_headers(candidate_token),
-    )
-    resp = client.post(
-        f"/api/jobs/{job_id}/apply",
-        json=APPLICATION_PAYLOAD,
-        headers=auth_headers(candidate_token),
-    )
+    client.post(f"/api/jobs/{job_id}/apply", headers=auth_headers(candidate_token), **_apply_payload())
+    resp = client.post(f"/api/jobs/{job_id}/apply", headers=auth_headers(candidate_token), **_apply_payload())
     assert resp.status_code == 400
     assert "already applied" in resp.json()["detail"].lower()
 
@@ -65,11 +62,7 @@ def test_apply_to_closed_job_blocked(client: TestClient, hr_token: str, candidat
         json={"status": "closed"},
         headers=auth_headers(hr_token),
     )
-    resp = client.post(
-        f"/api/jobs/{job_id}/apply",
-        json=APPLICATION_PAYLOAD,
-        headers=auth_headers(candidate_token),
-    )
+    resp = client.post(f"/api/jobs/{job_id}/apply", headers=auth_headers(candidate_token), **_apply_payload())
     assert resp.status_code == 400
     assert "closed" in resp.json()["detail"].lower()
 
@@ -77,11 +70,7 @@ def test_apply_to_closed_job_blocked(client: TestClient, hr_token: str, candidat
 def test_hr_views_own_job_applications(client: TestClient, hr_token: str, candidate_token: str):
     """HR should only see applications for jobs they created."""
     job_id = _create_job(client, hr_token)
-    client.post(
-        f"/api/jobs/{job_id}/apply",
-        json=APPLICATION_PAYLOAD,
-        headers=auth_headers(candidate_token),
-    )
+    client.post(f"/api/jobs/{job_id}/apply", headers=auth_headers(candidate_token), **_apply_payload())
     resp = client.get("/api/applications", headers=auth_headers(hr_token))
     assert resp.status_code == 200
     assert len(resp.json()) >= 1
@@ -92,15 +81,10 @@ def test_candidate_views_own_applications(
 ):
     """A candidate should only see their own applications."""
     job_id = _create_job(client, hr_token)
-    client.post(
-        f"/api/jobs/{job_id}/apply",
-        json=APPLICATION_PAYLOAD,
-        headers=auth_headers(candidate_token),
-    )
+    client.post(f"/api/jobs/{job_id}/apply", headers=auth_headers(candidate_token), **_apply_payload())
     resp = client.get("/api/applications", headers=auth_headers(candidate_token))
     assert resp.status_code == 200
     apps = resp.json()
-    # Get the candidate's user ID from the token
     me_resp = client.get("/api/auth/me", headers=auth_headers(candidate_token))
     candidate_id = me_resp.json()["id"]
     for app in apps:
@@ -113,9 +97,7 @@ def test_hr_updates_application_status(
     """HR should be able to update the status of an application."""
     job_id = _create_job(client, hr_token)
     apply_resp = client.post(
-        f"/api/jobs/{job_id}/apply",
-        json=APPLICATION_PAYLOAD,
-        headers=auth_headers(candidate_token),
+        f"/api/jobs/{job_id}/apply", headers=auth_headers(candidate_token), **_apply_payload()
     )
     app_id = apply_resp.json()["id"]
 
@@ -134,9 +116,7 @@ def test_candidate_cannot_update_status(
     """A candidate should receive 403 when trying to update application status."""
     job_id = _create_job(client, hr_token)
     apply_resp = client.post(
-        f"/api/jobs/{job_id}/apply",
-        json=APPLICATION_PAYLOAD,
-        headers=auth_headers(candidate_token),
+        f"/api/jobs/{job_id}/apply", headers=auth_headers(candidate_token), **_apply_payload()
     )
     app_id = apply_resp.json()["id"]
 
@@ -154,9 +134,7 @@ def test_hr_views_application_detail(
     """HR should be able to retrieve a specific application by ID."""
     job_id = _create_job(client, hr_token)
     apply_resp = client.post(
-        f"/api/jobs/{job_id}/apply",
-        json=APPLICATION_PAYLOAD,
-        headers=auth_headers(candidate_token),
+        f"/api/jobs/{job_id}/apply", headers=auth_headers(candidate_token), **_apply_payload()
     )
     app_id = apply_resp.json()["id"]
 
@@ -200,7 +178,7 @@ def test_hr_cannot_list_other_hr_applications(client: TestClient):
 
     # HR_B creates a job; candidate applies
     job_id = _create_job(client, hr_b)
-    client.post(f"/api/jobs/{job_id}/apply", json=APPLICATION_PAYLOAD, headers=auth_headers(candidate))
+    client.post(f"/api/jobs/{job_id}/apply", headers=auth_headers(candidate), **_apply_payload())
 
     # HR_A should see an empty list
     resp = client.get("/api/applications", headers=auth_headers(hr_a))
@@ -216,7 +194,7 @@ def test_hr_cannot_fetch_other_hr_application_by_id(client: TestClient):
 
     job_id = _create_job(client, hr_b)
     apply_resp = client.post(
-        f"/api/jobs/{job_id}/apply", json=APPLICATION_PAYLOAD, headers=auth_headers(candidate)
+        f"/api/jobs/{job_id}/apply", headers=auth_headers(candidate), **_apply_payload()
     )
     app_id = apply_resp.json()["id"]
 

@@ -14,10 +14,13 @@ JOB_PAYLOAD = {
     "employment_type": "remote",
 }
 
-APPLICATION_PAYLOAD = {
-    "resume_text": "Experienced tester.",
-    "cover_letter": "I would like to apply.",
-}
+_FAKE_PDF = b"%PDF-1.4 fake resume"
+
+def _apply_payload():
+    return {
+        "files": {"resume": ("resume.pdf", _FAKE_PDF, "application/pdf")},
+        "data": {"cover_letter": "I would like to apply."},
+    }
 
 
 def _register(client, role):
@@ -79,8 +82,8 @@ def test_hr_dashboard_metrics_reflect_data(client: TestClient):
     job_ids = [j["id"] for j in jobs]
     client.post(
         f"/api/jobs/{job_ids[0]}/apply",
-        json=APPLICATION_PAYLOAD,
         headers=auth_headers(candidate_token),
+        **_apply_payload(),
     )
 
     resp = client.get("/api/dashboard/hr", headers=auth_headers(hr_token))
@@ -123,8 +126,8 @@ def test_candidate_dashboard_metrics_reflect_data(client: TestClient):
 
     client.post(
         f"/api/jobs/{job_id}/apply",
-        json=APPLICATION_PAYLOAD,
         headers=auth_headers(cand_token),
+        **_apply_payload(),
     )
 
     resp = client.get("/api/dashboard/candidate", headers=auth_headers(cand_token))

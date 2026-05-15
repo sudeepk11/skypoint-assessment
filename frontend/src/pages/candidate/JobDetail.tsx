@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, MapPin, Clock, DollarSign, CheckCircle, AlertCircle, Send, Building2, Linkedin, Globe, Twitter } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, DollarSign, CheckCircle, AlertCircle, Send, Building2, Linkedin, Globe, Twitter, UploadCloud, FileText, X } from 'lucide-react';
 import { CandidateLayout } from '../../components/Layout';
 import StatusBadge from '../../components/StatusBadge';
 import { jobs as jobsApi, applications as appApi, publicUsers } from '../../services/api';
@@ -39,12 +39,29 @@ const JobDetail: React.FC = () => {
 
   // Apply form
   const [showApplyForm, setShowApplyForm] = useState(false);
-  const [resumeText, setResumeText] = useState('');
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [coverLetter, setCoverLetter] = useState('');
   const [applyError, setApplyError] = useState<string | null>(null);
   const [applyLoading, setApplyLoading] = useState(false);
   const [applySuccess, setApplySuccess] = useState(false);
   const [resumeError, setResumeError] = useState<string | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const ACCEPTED = ['application/pdf'];
+
+  const handleFileSelect = useCallback((file: File) => {
+    if (!ACCEPTED.includes(file.type)) {
+      setResumeError('Only PDF files are accepted.');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setResumeError('File must be under 5 MB.');
+      return;
+    }
+    setResumeFile(file);
+    setResumeError(null);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,8 +90,8 @@ const JobDetail: React.FC = () => {
 
   const handleApply = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!resumeText.trim()) {
-      setResumeError('Resume text is required.');
+    if (!resumeFile) {
+      setResumeError('Please upload your resume.');
       return;
     }
     if (!id) return;
@@ -84,10 +101,7 @@ const JobDetail: React.FC = () => {
     setResumeError(null);
 
     try {
-      const app = await appApi.apply(id, {
-        resume_text: resumeText,
-        cover_letter: coverLetter.trim() || undefined,
-      });
+      const app = await appApi.apply(id, resumeFile, coverLetter.trim() || undefined);
       setExistingApp(app);
       setApplySuccess(true);
       setShowApplyForm(false);
@@ -228,19 +242,55 @@ const JobDetail: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
                   Resume <span className="text-red-500">*</span>
+                  <span className="text-gray-400 dark:text-slate-500 font-normal ml-1">(PDF, max 5 MB)</span>
                 </label>
-                <textarea
-                  value={resumeText}
-                  onChange={(e) => {
-                    setResumeText(e.target.value);
-                    if (e.target.value) setResumeError(null);
-                  }}
-                  rows={8}
-                  placeholder="Paste your resume text here..."
-                  className={`w-full px-3.5 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent resize-none dark:bg-slate-700 dark:text-slate-100 dark:placeholder-slate-400 ${
-                    resumeError ? 'border-red-400 bg-red-50' : 'border-gray-300 dark:border-slate-600'
-                  }`}
-                />
+
+                {resumeFile ? (
+                  <div className="flex items-center gap-3 p-3.5 border border-green-300 bg-green-50 dark:bg-green-900/20 dark:border-green-700 rounded-lg">
+                    <FileText size={18} className="text-green-600 flex-shrink-0" />
+                    <span className="text-sm text-green-800 dark:text-green-300 flex-1 truncate">{resumeFile.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => { setResumeFile(null); if (fileInputRef.current) fileInputRef.current.value = ''; }}
+                      className="p-1 rounded hover:bg-green-100 dark:hover:bg-green-800 text-green-600 transition-colors"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ) : (
+                  <div
+                    onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                    onDragLeave={() => setDragOver(false)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setDragOver(false);
+                      const file = e.dataTransfer.files[0];
+                      if (file) handleFileSelect(file);
+                    }}
+                    onClick={() => fileInputRef.current?.click()}
+                    className={`flex flex-col items-center justify-center gap-2 p-8 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+                      dragOver
+                        ? 'border-accent bg-accent/5'
+                        : resumeError
+                        ? 'border-red-400 bg-red-50 dark:bg-red-900/10'
+                        : 'border-gray-300 dark:border-slate-600 hover:border-accent hover:bg-accent/5'
+                    }`}
+                  >
+                    <UploadCloud size={28} className={dragOver ? 'text-accent' : 'text-gray-400'} />
+                    <p className="text-sm text-gray-600 dark:text-slate-300">
+                      <span className="font-medium text-accent">Click to upload</span> or drag and drop
+                    </p>
+                    <p className="text-xs text-gray-400 dark:text-slate-500">PDF up to 5 MB</p>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".pdf,application/pdf"
+                      className="hidden"
+                      onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFileSelect(f); }}
+                    />
+                  </div>
+                )}
+
                 {resumeError && <p className="mt-1 text-xs text-red-600">{resumeError}</p>}
               </div>
 

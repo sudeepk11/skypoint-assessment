@@ -90,7 +90,8 @@ export interface Application {
   id: string;
   job_id: string;
   candidate_id: string;
-  resume_text: string;
+  resume_filename?: string;
+  resume_url?: string;
   cover_letter?: string;
   status: ApplicationStatus;
   applied_at: string;

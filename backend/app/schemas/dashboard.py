@@ -50,7 +50,7 @@ class CandidateRecentApplication(BaseModel):
     id: str
     job_id: str
     candidate_id: str
-    resume_text: str
+    resume_text: Optional[str] = None
     cover_letter: Optional[str] = None
     status: str
     applied_at: str

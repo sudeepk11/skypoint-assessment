@@ -15,10 +15,13 @@ JOB_PAYLOAD = {
     "employment_type": "remote",
 }
 
-APPLICATION_PAYLOAD = {
-    "resume_text": "Email test applicant.",
-    "cover_letter": "Applying for the email test role.",
-}
+_FAKE_PDF = b"%PDF-1.4 fake resume"
+
+def _apply_payload():
+    return {
+        "files": {"resume": ("resume.pdf", _FAKE_PDF, "application/pdf")},
+        "data": {"cover_letter": "Applying for the email test role."},
+    }
 
 
 def _register(client, role):
@@ -43,8 +46,8 @@ def _create_application(client, hr_token, candidate_token):
     ).json()["id"]
     app = client.post(
         f"/api/jobs/{job_id}/apply",
-        json=APPLICATION_PAYLOAD,
         headers=auth_headers(candidate_token),
+        **_apply_payload(),
     )
     assert app.status_code == 201
     return app.json()["id"]

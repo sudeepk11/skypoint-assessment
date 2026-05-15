@@ -8,6 +8,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, status as http_status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -110,6 +111,11 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
         content={"detail": "An internal server error occurred. Please try again later."},
     )
 
+
+# Serve uploaded resumes (internal — requires knowing the UUID filename)
+import os as _os
+_os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
 
 # Routers
 app.include_router(auth.router, prefix="/api")

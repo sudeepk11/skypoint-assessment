@@ -1,18 +1,26 @@
 """Application routes for candidates and HR."""
 
+import os
+import uuid as uuid_lib
 from typing import List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
 from sqlalchemy.orm import Session, joinedload
 
 from app.api.deps import get_current_user, get_db, require_candidate, require_hr
 from app.models.application import Application
 from app.models.job import Job
 from app.models.user import User
-from app.schemas.application import ApplicationCreate, ApplicationOut, ApplicationStatusUpdate
+from app.schemas.application import ApplicationOut, ApplicationStatusUpdate
 
 router = APIRouter(tags=["applications"])
+
+from app.config import settings
+
+UPLOAD_DIR = settings.UPLOAD_DIR
+ALLOWED_MIME_TYPES = {"application/pdf"}
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
 
 
 @router.post(
@@ -22,15 +30,18 @@ router = APIRouter(tags=["applications"])
 )
 def apply_to_job(
     job_id: UUID,
-    application_in: ApplicationCreate,
+    resume: UploadFile = File(...),
+    cover_letter: Optional[str] = Form(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_candidate),
 ):
     """Submit an application for a job. Candidate only.
 
+    Accepts a PDF or DOCX resume file via multipart/form-data.
+
     Raises:
         HTTPException 404: Job not found.
-        HTTPException 400: Job is closed or duplicate application.
+        HTTPException 400: Job is closed, duplicate application, or invalid file type.
     """
     job = db.query(Job).filter(Job.id == job_id).first()
     if not job:
@@ -56,11 +67,32 @@ def apply_to_job(
             detail="You have already applied to this job",
         )
 
+    if resume.content_type not in ALLOWED_MIME_TYPES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only PDF files are accepted",
+        )
+
+    file_bytes = resume.file.read()
+    if len(file_bytes) > MAX_FILE_SIZE:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="File exceeds 5 MB limit",
+        )
+
+    # Persist file to disk
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
+    stored_filename = f"{uuid_lib.uuid4()}.pdf"
+    file_path = os.path.join(UPLOAD_DIR, stored_filename)
+    with open(file_path, "wb") as f:
+        f.write(file_bytes)
+
     application = Application(
         job_id=job_id,
         candidate_id=current_user.id,
-        resume_text=application_in.resume_text,
-        cover_letter=application_in.cover_letter,
+        resume_file_path=file_path,
+        resume_filename=resume.filename,
+        cover_letter=cover_letter,
     )
     db.add(application)
     db.commit()

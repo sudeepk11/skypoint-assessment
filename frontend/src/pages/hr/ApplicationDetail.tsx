@@ -4,6 +4,7 @@ import {
   ArrowLeft,
   User,
   Briefcase,
+  FileText,
 } from 'lucide-react';
 import { HRLayout } from '../../components/Layout';
 import StatusBadge from '../../components/StatusBadge';
@@ -190,14 +191,20 @@ const HRApplicationDetail: React.FC = () => {
         {/* Right column */}
         <div className="lg:col-span-3 space-y-4">
           {/* Resume */}
-          <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-6">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300 mb-3">Resume</h3>
-            <div className="bg-gray-50 dark:bg-slate-700 rounded-lg border border-gray-200 dark:border-slate-600 p-4 max-h-80 overflow-y-auto">
-              <pre className="text-xs text-gray-700 dark:text-slate-300 whitespace-pre-wrap break-words font-mono leading-relaxed">
-                {app.resume_text}
-              </pre>
+          {app.resume_url && (
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-6">
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300 mb-3">Resume</h3>
+              <a
+                href={app.resume_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2.5 border border-accent text-accent text-sm font-medium rounded-lg hover:bg-accent hover:text-white transition-colors"
+              >
+                <FileText size={15} />
+                {app.resume_filename ?? 'View Resume'}
+              </a>
             </div>
-          </div>
+          )}
 
           {/* Cover letter */}
           {app.cover_letter && (

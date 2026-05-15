@@ -26,6 +26,8 @@ services:
       - .env
     ports:
       - "${BACKEND_PORT:-8000}:8000"
+    volumes:
+      - resume_uploads:/app/uploads
     depends_on:
       db:
         condition: service_healthy
@@ -55,6 +57,7 @@ services:
 
 volumes:
   postgres_data:
+  resume_uploads:
 
 networks:
   skypoint_network:

@@ -1,16 +1,17 @@
 """Pydantic schemas for application-related requests and responses."""
 
+import os
 from datetime import datetime
-from typing import List, Literal, Optional
+from typing import Literal, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class ApplicationCreate(BaseModel):
-    """Schema for submitting a job application."""
+    """Schema for submitting a job application (JSON fallback, not used by file-upload endpoint)."""
 
-    resume_text: str = Field(..., min_length=1, max_length=50_000)
+    resume_text: Optional[str] = Field(None, min_length=1, max_length=50_000)
     cover_letter: Optional[str] = Field(None, max_length=10_000)
 
 
@@ -55,7 +56,9 @@ class ApplicationOut(BaseModel):
     id: UUID
     job_id: UUID
     candidate_id: UUID
-    resume_text: str
+    resume_filename: Optional[str] = None
+    resume_file_path: Optional[str] = Field(None, exclude=True)
+    resume_url: Optional[str] = None
     cover_letter: Optional[str]
     status: str
     applied_at: datetime
@@ -64,3 +67,9 @@ class ApplicationOut(BaseModel):
     # Nested relations — populated when loaded with joinedload
     candidate: Optional[CandidateInfo] = None
     job: Optional[JobInfo] = None
+
+    @model_validator(mode="after")
+    def build_resume_url(self) -> "ApplicationOut":
+        if self.resume_file_path:
+            self.resume_url = f"/uploads/{os.path.basename(self.resume_file_path)}"
+        return self

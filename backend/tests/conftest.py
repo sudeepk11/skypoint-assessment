@@ -7,6 +7,9 @@ import os
 os.environ["DATABASE_URL"] = "sqlite://"
 # SECRET_KEY is now required (no default) — provide a test-only value
 os.environ["SECRET_KEY"] = "test-secret-key-not-for-production"
+# Use a writable temp dir for resume uploads during tests
+import tempfile as _tempfile
+os.environ["UPLOAD_DIR"] = _tempfile.mkdtemp(prefix="skyhire_test_uploads_")
 # Disable rate limiting during tests so fixtures that call /register
 # multiple times in rapid succession are not throttled.
 os.environ["RATELIMIT_ENABLED"] = "0"

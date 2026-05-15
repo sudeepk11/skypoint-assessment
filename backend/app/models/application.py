@@ -3,7 +3,7 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, DateTime, Enum, ForeignKey, Text, UniqueConstraint  # noqa: F401
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, String, Text, UniqueConstraint  # noqa: F401
 from sqlalchemy.orm import relationship
 
 from app.database import Base
@@ -18,7 +18,9 @@ class Application(Base):
     id = Column(GUID, primary_key=True, default=uuid.uuid4, index=True)
     job_id = Column(GUID, ForeignKey("jobs.id"), nullable=False)
     candidate_id = Column(GUID, ForeignKey("users.id"), nullable=False)
-    resume_text = Column(Text, nullable=False)
+    resume_text = Column(Text, nullable=True)
+    resume_file_path = Column(String(500), nullable=True)
+    resume_filename = Column(String(255), nullable=True)
     cover_letter = Column(Text, nullable=True)
     status = Column(
         Enum("pending", "reviewing", "shortlisted", "rejected", name="application_status"),

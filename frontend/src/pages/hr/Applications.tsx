@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Mail, Eye, Inbox, AlertCircle } from 'lucide-react';
+import { Mail, Eye, Inbox, AlertCircle, FileText } from 'lucide-react';
 import { HRLayout } from '../../components/Layout';
 import StatusBadge from '../../components/StatusBadge';
 import BulkEmailModal from '../../components/BulkEmailModal';
@@ -241,13 +241,26 @@ const HRApplications: React.FC = () => {
                       <StatusBadge status={app.status} />
                     </td>
                     <td className="px-4 py-4">
-                      <button
-                        onClick={() => navigate(`/hr/applications/${app.id}`)}
-                        className="flex items-center gap-1 text-xs text-accent font-medium hover:underline"
-                      >
-                        <Eye size={13} />
-                        View
-                      </button>
+                      <div className="flex items-center gap-3">
+                        {app.resume_url && (
+                          <a
+                            href={app.resume_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-xs text-gray-500 dark:text-slate-400 font-medium hover:text-accent transition-colors"
+                          >
+                            <FileText size={13} />
+                            Resume
+                          </a>
+                        )}
+                        <button
+                          onClick={() => navigate(`/hr/applications/${app.id}`)}
+                          className="flex items-center gap-1 text-xs text-accent font-medium hover:underline"
+                        >
+                          <Eye size={13} />
+                          View
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
