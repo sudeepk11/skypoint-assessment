@@ -10,17 +10,18 @@ export interface User {
   full_name: string;
   role: UserRole;
   created_at: string;
-  // HR
+  // HR — company
   company_name?: string;
   company_website?: string;
   company_description?: string;
-  // Candidate / shared
+  company_linkedin_url?: string;
+  company_twitter_url?: string;
+  company_glassdoor_url?: string;
+  // Candidate
   headline?: string;
   skills?: string[];
-  // Social
   linkedin_url?: string;
   github_url?: string;
-  glassdoor_url?: string;
   twitter_url?: string;
   portfolio_url?: string;
 }
@@ -31,12 +32,16 @@ export interface UserPublic {
   role: UserRole;
   headline?: string;
   skills?: string[];
+  // Candidate socials
   linkedin_url?: string;
   github_url?: string;
-  glassdoor_url?: string;
   twitter_url?: string;
   portfolio_url?: string;
+  // HR / company socials
   company_name?: string;
+  company_linkedin_url?: string;
+  company_twitter_url?: string;
+  company_glassdoor_url?: string;
 }
 
 export interface JobBrief {

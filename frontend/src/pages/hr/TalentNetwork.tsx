@@ -4,7 +4,7 @@ import { connections as connectionsApi, jobs as jobsApi } from '../../services/a
 import type { Connection, UserPublic, Job } from '../../types';
 import {
   Users, UserPlus, Clock, CheckCircle2, XCircle,
-  Linkedin, Github, Globe, Twitter, ExternalLink,
+  Linkedin, Github, Globe, Twitter,
   Search, Briefcase, Send, ChevronDown, X,
 } from 'lucide-react';
 
@@ -185,7 +185,6 @@ const CandidateCard: React.FC<{
           <SocialLink href={candidate.github_url}   icon={<Github size={13}/>}   label="GitHub"/>
           <SocialLink href={candidate.twitter_url}  icon={<Twitter size={13}/>}  label="Twitter"/>
           <SocialLink href={candidate.portfolio_url} icon={<Globe size={13}/>}   label="Portfolio"/>
-          <SocialLink href={candidate.glassdoor_url} icon={<ExternalLink size={13}/>} label="Glassdoor"/>
         </div>
 
         {inviteStatus === 'accepted' ? (

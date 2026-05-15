@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, MapPin, Clock, DollarSign, CheckCircle, AlertCircle, Send, Building2, Linkedin, Github, Globe, Twitter } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, DollarSign, CheckCircle, AlertCircle, Send, Building2, Linkedin, Globe, Twitter } from 'lucide-react';
 import { CandidateLayout } from '../../components/Layout';
 import StatusBadge from '../../components/StatusBadge';
 import { jobs as jobsApi, applications as appApi, publicUsers } from '../../services/api';
@@ -305,25 +305,20 @@ const JobDetail: React.FC = () => {
                 {recruiter.user.company_name && (
                   <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">{recruiter.user.company_name}</p>
                 )}
-                {/* Social links */}
+                {/* Company social links */}
                 <div className="flex gap-1 mt-1.5">
-                  {recruiter.user.linkedin_url && (
-                    <a href={recruiter.user.linkedin_url} target="_blank" rel="noopener noreferrer" className="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors" title="LinkedIn">
+                  {recruiter.user.company_linkedin_url && (
+                    <a href={recruiter.user.company_linkedin_url} target="_blank" rel="noopener noreferrer" className="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors" title="LinkedIn">
                       <Linkedin size={12} />
                     </a>
                   )}
-                  {recruiter.user.github_url && (
-                    <a href={recruiter.user.github_url} target="_blank" rel="noopener noreferrer" className="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:text-gray-700 dark:hover:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors" title="GitHub">
-                      <Github size={12} />
-                    </a>
-                  )}
-                  {recruiter.user.twitter_url && (
-                    <a href={recruiter.user.twitter_url} target="_blank" rel="noopener noreferrer" className="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors" title="Twitter">
+                  {recruiter.user.company_twitter_url && (
+                    <a href={recruiter.user.company_twitter_url} target="_blank" rel="noopener noreferrer" className="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors" title="Twitter">
                       <Twitter size={12} />
                     </a>
                   )}
-                  {recruiter.user.portfolio_url && (
-                    <a href={recruiter.user.portfolio_url} target="_blank" rel="noopener noreferrer" className="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors" title="Portfolio">
+                  {recruiter.user.company_glassdoor_url && (
+                    <a href={recruiter.user.company_glassdoor_url} target="_blank" rel="noopener noreferrer" className="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors" title="Glassdoor">
                       <Globe size={12} />
                     </a>
                   )}

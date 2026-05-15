@@ -205,12 +205,13 @@ const Profile: React.FC = () => {
   const [companyError, setCompanyError] = useState<string | null>(null);
 
   /* social */
+  const isHR = user?.role === 'hr';
   const [headline, setHeadline] = useState(user?.headline ?? '');
   const [skills, setSkills] = useState<string[]>(user?.skills ?? []);
-  const [linkedinUrl, setLinkedinUrl] = useState(user?.linkedin_url ?? '');
+  const [linkedinUrl, setLinkedinUrl] = useState(isHR ? (user?.company_linkedin_url ?? '') : (user?.linkedin_url ?? ''));
   const [githubUrl, setGithubUrl] = useState(user?.github_url ?? '');
-  const [glassdoorUrl, setGlassdoorUrl] = useState(user?.glassdoor_url ?? '');
-  const [twitterUrl, setTwitterUrl] = useState(user?.twitter_url ?? '');
+  const [glassdoorUrl, setGlassdoorUrl] = useState(user?.company_glassdoor_url ?? '');
+  const [twitterUrl, setTwitterUrl] = useState(isHR ? (user?.company_twitter_url ?? '') : (user?.twitter_url ?? ''));
   const [portfolioUrl, setPortfolioUrl] = useState(user?.portfolio_url ?? '');
   const [socialLoading, setSocialLoading] = useState(false);
   const [socialSuccess, setSocialSuccess] = useState<string | null>(null);
@@ -232,10 +233,11 @@ const Profile: React.FC = () => {
       setCompanyDescription(data.company_description ?? '');
       setHeadline(data.headline ?? '');
       setSkills(data.skills ?? []);
-      setLinkedinUrl(data.linkedin_url ?? '');
+      const isHRUser = data.role === 'hr';
+      setLinkedinUrl(isHRUser ? (data.company_linkedin_url ?? '') : (data.linkedin_url ?? ''));
       setGithubUrl(data.github_url ?? '');
-      setGlassdoorUrl(data.glassdoor_url ?? '');
-      setTwitterUrl(data.twitter_url ?? '');
+      setGlassdoorUrl(data.company_glassdoor_url ?? '');
+      setTwitterUrl(isHRUser ? (data.company_twitter_url ?? '') : (data.twitter_url ?? ''));
       setPortfolioUrl(data.portfolio_url ?? '');
     }).catch(() => {});
   }, []);
@@ -268,15 +270,10 @@ const Profile: React.FC = () => {
     e.preventDefault();
     setSocialLoading(true); setSocialSuccess(null); setSocialError(null);
     try {
-      const updated = await profileApi.update({
-        headline,
-        skills,
-        linkedin_url: linkedinUrl,
-        github_url: githubUrl,
-        glassdoor_url: glassdoorUrl,
-        twitter_url: twitterUrl,
-        portfolio_url: portfolioUrl,
-      });
+      const payload = isHR
+        ? { company_linkedin_url: linkedinUrl, company_twitter_url: twitterUrl, company_glassdoor_url: glassdoorUrl }
+        : { headline, skills, linkedin_url: linkedinUrl, github_url: githubUrl, twitter_url: twitterUrl, portfolio_url: portfolioUrl };
+      const updated = await profileApi.update(payload);
       updateUser(updated);
       setSocialSuccess('Social profile saved.');
     } catch {
@@ -455,13 +452,16 @@ const Profile: React.FC = () => {
               )}
               <div className="pt-2 border-t border-gray-50 dark:border-slate-700 space-y-3">
                 <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">Social Links</p>
-                {[
+                {(isHR ? [
+                  { icon: <Linkedin size={15} className="text-[#0a66c2]" />, label: 'LinkedIn URL', val: linkedinUrl, set: setLinkedinUrl, ph: 'https://linkedin.com/company/yourcompany' },
+                  { icon: <Twitter size={15} className="text-[#1da1f2]" />, label: 'Twitter / X URL', val: twitterUrl, set: setTwitterUrl, ph: 'https://twitter.com/yourcompany' },
+                  { icon: <ExternalLink size={15} className="text-green-600" />, label: 'Glassdoor URL', val: glassdoorUrl, set: setGlassdoorUrl, ph: 'https://glassdoor.com/...' },
+                ] : [
                   { icon: <Linkedin size={15} className="text-[#0a66c2]" />, label: 'LinkedIn URL', val: linkedinUrl, set: setLinkedinUrl, ph: 'https://linkedin.com/in/yourname' },
                   { icon: <Github size={15} className="text-gray-700 dark:text-slate-300" />, label: 'GitHub URL', val: githubUrl, set: setGithubUrl, ph: 'https://github.com/yourname' },
-                  { icon: <ExternalLink size={15} className="text-green-600" />, label: 'Glassdoor URL', val: glassdoorUrl, set: setGlassdoorUrl, ph: 'https://glassdoor.com/...' },
                   { icon: <Twitter size={15} className="text-[#1da1f2]" />, label: 'Twitter / X URL', val: twitterUrl, set: setTwitterUrl, ph: 'https://twitter.com/yourname' },
                   { icon: <Globe size={15} className="text-purple-500" />, label: 'Portfolio / Website', val: portfolioUrl, set: setPortfolioUrl, ph: 'https://yourportfolio.com' },
-                ].map(({ icon, label, val, set, ph }) => (
+                ]).map(({ icon, label, val, set, ph }) => (
                   <div key={label} className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-gray-50 dark:bg-slate-700 flex items-center justify-center flex-shrink-0">
                       {icon}
