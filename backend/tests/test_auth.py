@@ -98,3 +98,100 @@ def test_get_me_unauthenticated(client: TestClient):
     """GET /api/auth/me without a token should return 401."""
     resp = client.get("/api/auth/me")
     assert resp.status_code == 401
+
+
+def test_logout_clears_cookie(client: TestClient):
+    """POST /api/auth/logout should return 204 and clear the auth cookie."""
+    resp = client.post("/api/auth/logout")
+    assert resp.status_code == 204
+
+
+# ---------------------------------------------------------------------------
+# Input validation — password strength and field constraints
+# ---------------------------------------------------------------------------
+
+
+def test_register_password_too_short(client: TestClient):
+    """Password shorter than 8 characters should return 422."""
+    resp = _register(client, f"short_{uuid.uuid4().hex[:8]}@test.com")
+    # patch only the password field
+    resp = client.post(
+        "/api/auth/register",
+        json={
+            "email": f"short_{uuid.uuid4().hex[:8]}@test.com",
+            "password": "Ab1",
+            "full_name": "Test User",
+            "role": "candidate",
+        },
+    )
+    assert resp.status_code == 422
+
+
+def test_register_password_no_uppercase(client: TestClient):
+    """Password without an uppercase letter should return 422."""
+    resp = client.post(
+        "/api/auth/register",
+        json={
+            "email": f"noup_{uuid.uuid4().hex[:8]}@test.com",
+            "password": "password@1234",
+            "full_name": "Test User",
+            "role": "candidate",
+        },
+    )
+    assert resp.status_code == 422
+
+
+def test_register_password_no_digit(client: TestClient):
+    """Password without a digit should return 422."""
+    resp = client.post(
+        "/api/auth/register",
+        json={
+            "email": f"nodig_{uuid.uuid4().hex[:8]}@test.com",
+            "password": "PasswordOnly",
+            "full_name": "Test User",
+            "role": "candidate",
+        },
+    )
+    assert resp.status_code == 422
+
+
+def test_register_invalid_email_format(client: TestClient):
+    """Malformed email address should return 422."""
+    resp = client.post(
+        "/api/auth/register",
+        json={
+            "email": "not-an-email",
+            "password": "Password@1234",
+            "full_name": "Test User",
+            "role": "candidate",
+        },
+    )
+    assert resp.status_code == 422
+
+
+def test_register_invalid_role(client: TestClient):
+    """Role value outside 'hr'/'candidate' should return 422."""
+    resp = client.post(
+        "/api/auth/register",
+        json={
+            "email": f"role_{uuid.uuid4().hex[:8]}@test.com",
+            "password": "Password@1234",
+            "full_name": "Test User",
+            "role": "admin",
+        },
+    )
+    assert resp.status_code == 422
+
+
+def test_register_name_too_short(client: TestClient):
+    """Full name shorter than 2 characters should return 422."""
+    resp = client.post(
+        "/api/auth/register",
+        json={
+            "email": f"name_{uuid.uuid4().hex[:8]}@test.com",
+            "password": "Password@1234",
+            "full_name": "X",
+            "role": "candidate",
+        },
+    )
+    assert resp.status_code == 422
