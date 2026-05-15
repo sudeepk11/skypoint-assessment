@@ -126,7 +126,7 @@ const Profile: React.FC = () => {
     <div className="max-w-2xl mx-auto py-8 px-4 sm:px-6">
 
       {/* ── profile header card ── */}
-      <div className="bg-white dark:bg-slate-700 rounded-2xl border border-gray-100 dark:border-slate-700 px-6 py-5 flex items-center gap-4 mb-6 shadow-sm">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 px-6 py-5 flex items-center gap-4 mb-6 shadow-sm">
         <div className="w-14 h-14 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
           <span className="text-xl font-bold text-white">{initials}</span>
         </div>
@@ -150,7 +150,7 @@ const Profile: React.FC = () => {
             onClick={() => setActiveTab(tab.id)}
             className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
               activeTab === tab.id
-                ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 shadow-sm'
+                ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 shadow-sm'
                 : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'
             }`}
           >
@@ -161,7 +161,7 @@ const Profile: React.FC = () => {
       </div>
 
       {/* ── tab panels ── */}
-      <div className="bg-white dark:bg-slate-700 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
 
         {/* Personal */}
         {activeTab === 'personal' && (

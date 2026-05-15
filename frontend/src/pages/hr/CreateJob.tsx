@@ -106,7 +106,7 @@ const CreateJob: React.FC = () => {
         {/* Main form */}
         <div className="lg:col-span-2">
           <form onSubmit={handleSubmit}>
-            <div className="bg-white dark:bg-slate-700 rounded-xl border border-gray-100 dark:border-slate-700 p-6 space-y-5">
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-6 space-y-5">
               {submitError && (
                 <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
                   <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />

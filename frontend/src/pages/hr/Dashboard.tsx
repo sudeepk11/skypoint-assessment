@@ -177,7 +177,7 @@ const HRDashboard: React.FC = () => {
           </Link>
           <Link
             to="/hr/applications"
-            className="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-300 text-sm font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-300 text-sm font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
           >
             <Eye size={15} />
             Applications
@@ -204,7 +204,7 @@ const HRDashboard: React.FC = () => {
           : kpis.map((k) => (
               <div
                 key={k.label}
-                className="bg-white dark:bg-slate-700 rounded-2xl p-5 border border-gray-100 dark:border-slate-700 hover:shadow-md transition-shadow"
+                className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-gray-100 dark:border-slate-700 hover:shadow-md transition-shadow"
               >
                 <div className="flex items-start justify-between mb-4">
                   <p className="text-xs font-medium text-gray-500 dark:text-slate-400">{k.label}</p>
@@ -222,7 +222,7 @@ const HRDashboard: React.FC = () => {
       <div className="grid lg:grid-cols-5 gap-5 mb-5">
 
         {/* donut chart */}
-        <div className="lg:col-span-2 bg-white dark:bg-slate-700 rounded-2xl border border-gray-100 dark:border-slate-700 p-6 flex flex-col">
+        <div className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-6 flex flex-col">
           <h2 className="text-sm font-semibold text-gray-800 dark:text-slate-100 mb-1">Application Pipeline</h2>
           <p className="text-xs text-gray-400 dark:text-slate-500 mb-4">Status breakdown</p>
 
@@ -282,7 +282,7 @@ const HRDashboard: React.FC = () => {
         </div>
 
         {/* recent applications */}
-        <div className="lg:col-span-3 bg-white dark:bg-slate-700 rounded-2xl border border-gray-100 dark:border-slate-700 overflow-hidden flex flex-col">
+        <div className="lg:col-span-3 bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 overflow-hidden flex flex-col">
           <div className="px-6 py-4 border-b border-gray-50 dark:border-slate-700 flex items-center justify-between">
             <div>
               <h2 className="text-sm font-semibold text-gray-800 dark:text-slate-100">Recent Applications</h2>
@@ -349,7 +349,7 @@ const HRDashboard: React.FC = () => {
       </div>
 
       {/* ── jobs performance ── */}
-      <div className="bg-white dark:bg-slate-700 rounded-2xl border border-gray-100 dark:border-slate-700 overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-50 dark:border-slate-700 flex items-center justify-between">
           <div>
             <h2 className="text-sm font-semibold text-gray-800 dark:text-slate-100">Jobs Performance</h2>
