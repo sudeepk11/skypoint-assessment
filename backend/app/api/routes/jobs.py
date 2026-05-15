@@ -109,10 +109,12 @@ def update_job(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_hr),
 ):
-    """Update an existing job posting. HR only."""
+    """Update an existing job posting. HR only — must own the job."""
     job = db.query(Job).filter(Job.id == job_id).first()
     if not job:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
+    if job.created_by != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorised to edit this job")
 
     for field, value in job_in.model_dump(exclude_unset=True).items():
         setattr(job, field, value)
@@ -129,10 +131,12 @@ def update_job_status(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_hr),
 ):
-    """Toggle a job's open/closed status. HR only."""
+    """Toggle a job's open/closed status. HR only — must own the job."""
     job = db.query(Job).filter(Job.id == job_id).first()
     if not job:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
+    if job.created_by != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorised to update this job")
 
     job.status = status_in.status
     db.commit()
@@ -146,10 +150,12 @@ def delete_job(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_hr),
 ):
-    """Delete a job posting and its applications. HR only."""
+    """Delete a job posting and its applications. HR only — must own the job."""
     job = db.query(Job).filter(Job.id == job_id).first()
     if not job:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
+    if job.created_by != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorised to delete this job")
 
     db.delete(job)
     db.commit()
