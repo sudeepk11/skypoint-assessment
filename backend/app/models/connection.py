@@ -1,7 +1,7 @@
 """Connection model — HR invites a candidate to apply for a specific job."""
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import Column, DateTime, Enum, ForeignKey, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
@@ -28,8 +28,8 @@ class Connection(Base):
         default="pending",
         nullable=False,
     )
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
 
     requester = relationship("User", foreign_keys=[requester_id], backref="invites_sent")
     receiver  = relationship("User", foreign_keys=[receiver_id],  backref="invites_received")
