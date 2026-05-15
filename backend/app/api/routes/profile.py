@@ -29,6 +29,20 @@ def update_profile(
         current_user.company_website = data.company_website
     if data.company_description is not None:
         current_user.company_description = data.company_description
+    if data.headline is not None:
+        current_user.headline = data.headline
+    if data.skills is not None:
+        current_user.skills = data.skills
+    if data.linkedin_url is not None:
+        current_user.linkedin_url = data.linkedin_url
+    if data.github_url is not None:
+        current_user.github_url = data.github_url
+    if data.glassdoor_url is not None:
+        current_user.glassdoor_url = data.glassdoor_url
+    if data.twitter_url is not None:
+        current_user.twitter_url = data.twitter_url
+    if data.portfolio_url is not None:
+        current_user.portfolio_url = data.portfolio_url
     db.commit()
     db.refresh(current_user)
     return current_user

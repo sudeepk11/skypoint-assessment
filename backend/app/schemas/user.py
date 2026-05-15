@@ -65,6 +65,13 @@ class UserOut(BaseModel):
     company_name: Optional[str] = None
     company_website: Optional[str] = None
     company_description: Optional[str] = None
+    headline: Optional[str] = None
+    skills: Optional[str] = None          # JSON string — list of skill tags
+    linkedin_url: Optional[str] = None
+    github_url: Optional[str] = None
+    glassdoor_url: Optional[str] = None
+    twitter_url: Optional[str] = None
+    portfolio_url: Optional[str] = None
 
 
 class TokenResponse(BaseModel):
@@ -85,9 +92,19 @@ class RegisterResponse(BaseModel):
 
 class UpdateProfile(BaseModel):
     full_name: Optional[str] = None
+    # HR
     company_name: Optional[str] = None
     company_website: Optional[str] = None
     company_description: Optional[str] = None
+    # Shared
+    headline: Optional[str] = None
+    skills: Optional[str] = None          # JSON string
+    # Social
+    linkedin_url: Optional[str] = None
+    github_url: Optional[str] = None
+    glassdoor_url: Optional[str] = None
+    twitter_url: Optional[str] = None
+    portfolio_url: Optional[str] = None
 
 
 class ChangePassword(BaseModel):

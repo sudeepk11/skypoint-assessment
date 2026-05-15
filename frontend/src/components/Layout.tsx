@@ -13,6 +13,7 @@ import {
   UserCircle,
   Moon,
   Sun,
+  Users,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -169,10 +170,11 @@ export const CandidateLayout: React.FC<CandidateLayoutProps> = ({ children }) =>
   };
 
   const navLinks = [
-    { to: '/candidate/dashboard', label: 'Dashboard',       icon: LayoutDashboard },
-    { to: '/candidate/jobs',      label: 'Browse Jobs',     icon: Briefcase },
+    { to: '/candidate/dashboard',    label: 'Dashboard',       icon: LayoutDashboard },
+    { to: '/candidate/jobs',         label: 'Browse Jobs',     icon: Briefcase },
     { to: '/candidate/applications', label: 'My Applications', icon: FileText },
-    { to: '/profile',             label: 'My Profile',      icon: UserCircle },
+    { to: '/candidate/connections',  label: 'Connections',     icon: Users },
+    { to: '/profile',                label: 'My Profile',      icon: UserCircle },
   ];
 
   const isActive = (path: string) => location.pathname === path;

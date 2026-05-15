@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import type { AuthResponse, User, Job, Application, ApplicationStatus, JobStatus } from '../types';
+import type { AuthResponse, User, Job, Application, ApplicationStatus, JobStatus, Connection, Suggestion } from '../types';
 
 const api = axios.create({
   baseURL: '/api',
@@ -87,10 +87,22 @@ export const dashboard = {
 /** Profile — get, update, change password. */
 export const profile = {
   get: () => api.get<User>('/profile').then((r) => r.data),
-  update: (data: Partial<User & { company_name?: string; company_website?: string; company_description?: string }>) =>
+  update: (data: Partial<User>) =>
     api.put<User>('/profile', data).then((r) => r.data),
   changePassword: (current_password: string, new_password: string) =>
     api.put('/profile/password', { current_password, new_password }).then((r) => r.data),
+};
+
+/** Connections — suggestions, invite, accept, decline, list. */
+export const connections = {
+  suggestions: () => api.get<Suggestion[]>('/connections/suggestions').then((r) => r.data),
+  list: () => api.get<Connection[]>('/connections').then((r) => r.data),
+  pending: () => api.get<Connection[]>('/connections/pending').then((r) => r.data),
+  sent: () => api.get<Connection[]>('/connections/sent').then((r) => r.data),
+  invite: (userId: string) => api.post<Connection>(`/connections/${userId}`).then((r) => r.data),
+  accept: (connectionId: string) => api.patch<Connection>(`/connections/${connectionId}/accept`).then((r) => r.data),
+  decline: (connectionId: string) => api.patch<Connection>(`/connections/${connectionId}/decline`).then((r) => r.data),
+  remove: (connectionId: string) => api.delete(`/connections/${connectionId}`).then((r) => r.data),
 };
 
 export default api;

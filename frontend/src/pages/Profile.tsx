@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { profile as profileApi } from '../services/api';
 import { HRLayout, CandidateLayout } from '../components/Layout';
-import { UserCircle, Building2, Lock, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { UserCircle, Building2, Lock, CheckCircle, AlertCircle, Loader2, Link2, Linkedin, Github, Globe, Twitter, ExternalLink } from 'lucide-react';
 
 const ROLE_LABELS: Record<string, string> = {
   hr: 'HR / Recruiter',
   candidate: 'Job Seeker',
 };
 
-type Tab = 'personal' | 'company' | 'security';
+type Tab = 'personal' | 'company' | 'social' | 'security';
 
 const inputCls =
   'w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-colors dark:bg-slate-700 dark:border-slate-600 dark:text-slate-100 dark:placeholder-slate-400';
@@ -47,6 +47,20 @@ const Profile: React.FC = () => {
   const [companySuccess, setCompanySuccess] = useState<string | null>(null);
   const [companyError, setCompanyError] = useState<string | null>(null);
 
+  /* social */
+  const [headline, setHeadline] = useState(user?.headline ?? '');
+  const [skills, setSkills] = useState(() => {
+    try { return (JSON.parse(user?.skills ?? '[]') as string[]).join(', '); } catch { return ''; }
+  });
+  const [linkedinUrl, setLinkedinUrl] = useState(user?.linkedin_url ?? '');
+  const [githubUrl, setGithubUrl] = useState(user?.github_url ?? '');
+  const [glassdoorUrl, setGlassdoorUrl] = useState(user?.glassdoor_url ?? '');
+  const [twitterUrl, setTwitterUrl] = useState(user?.twitter_url ?? '');
+  const [portfolioUrl, setPortfolioUrl] = useState(user?.portfolio_url ?? '');
+  const [socialLoading, setSocialLoading] = useState(false);
+  const [socialSuccess, setSocialSuccess] = useState<string | null>(null);
+  const [socialError, setSocialError] = useState<string | null>(null);
+
   /* security */
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -61,6 +75,13 @@ const Profile: React.FC = () => {
       setCompanyName(data.company_name ?? '');
       setCompanyWebsite(data.company_website ?? '');
       setCompanyDescription(data.company_description ?? '');
+      setHeadline(data.headline ?? '');
+      try { setSkills((JSON.parse(data.skills ?? '[]') as string[]).join(', ')); } catch { setSkills(''); }
+      setLinkedinUrl(data.linkedin_url ?? '');
+      setGithubUrl(data.github_url ?? '');
+      setGlassdoorUrl(data.glassdoor_url ?? '');
+      setTwitterUrl(data.twitter_url ?? '');
+      setPortfolioUrl(data.portfolio_url ?? '');
     }).catch(() => {});
   }, []);
 
@@ -88,6 +109,28 @@ const Profile: React.FC = () => {
     } finally { setCompanyLoading(false); }
   };
 
+  const handleSaveSocial = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSocialLoading(true); setSocialSuccess(null); setSocialError(null);
+    try {
+      // Convert comma-separated skills string → JSON array string
+      const skillsArr = skills.split(',').map((s) => s.trim()).filter(Boolean);
+      const updated = await profileApi.update({
+        headline,
+        skills: JSON.stringify(skillsArr),
+        linkedin_url: linkedinUrl,
+        github_url: githubUrl,
+        glassdoor_url: glassdoorUrl,
+        twitter_url: twitterUrl,
+        portfolio_url: portfolioUrl,
+      });
+      updateUser(updated);
+      setSocialSuccess('Social profile saved.');
+    } catch {
+      setSocialError('Failed to save. Please try again.');
+    } finally { setSocialLoading(false); }
+  };
+
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setPasswordSuccess(null); setPasswordError(null);
@@ -109,6 +152,7 @@ const Profile: React.FC = () => {
   const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
     { id: 'personal',  label: 'Profile',  icon: <UserCircle size={14} /> },
     ...(user?.role === 'hr' ? [{ id: 'company' as Tab, label: 'Company', icon: <Building2 size={14} /> }] : []),
+    { id: 'social',    label: 'Socials',  icon: <Link2 size={14} /> },
     { id: 'security',  label: 'Password', icon: <Lock size={14} /> },
   ];
 
@@ -224,6 +268,71 @@ const Profile: React.FC = () => {
               {companyError && <Toast type="error" message={companyError} />}
               {!companySuccess && !companyError && <span />}
               <SaveButton loading={companyLoading} label="Save details" />
+            </div>
+          </form>
+        )}
+
+        {/* Social */}
+        {activeTab === 'social' && (
+          <form onSubmit={handleSaveSocial}>
+            <div className="px-6 py-5 border-b border-gray-50 dark:border-slate-700">
+              <p className="text-sm font-semibold text-gray-900 dark:text-slate-100">Social Profiles & Links</p>
+              <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">Shown to connections and recruiters on your profile.</p>
+            </div>
+            <div className="px-6 py-5 space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-600 dark:text-slate-300 mb-1.5 uppercase tracking-wide">Headline</label>
+                <input
+                  type="text"
+                  value={headline}
+                  onChange={(e) => setHeadline(e.target.value)}
+                  placeholder="e.g. Senior React Developer · Open to work"
+                  maxLength={255}
+                  className={inputCls}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 dark:text-slate-300 mb-1.5 uppercase tracking-wide">
+                  Skills <span className="normal-case text-gray-400 font-normal">(comma separated)</span>
+                </label>
+                <input
+                  type="text"
+                  value={skills}
+                  onChange={(e) => setSkills(e.target.value)}
+                  placeholder="e.g. React, TypeScript, Node.js, PostgreSQL"
+                  className={inputCls}
+                />
+                <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">Used to match you with relevant connections and jobs.</p>
+              </div>
+              <div className="pt-2 border-t border-gray-50 dark:border-slate-700 space-y-3">
+                <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">Social Links</p>
+                {[
+                  { icon: <Linkedin size={15} className="text-[#0a66c2]" />, label: 'LinkedIn URL', val: linkedinUrl, set: setLinkedinUrl, ph: 'https://linkedin.com/in/yourname' },
+                  { icon: <Github size={15} className="text-gray-700 dark:text-slate-300" />, label: 'GitHub URL', val: githubUrl, set: setGithubUrl, ph: 'https://github.com/yourname' },
+                  { icon: <ExternalLink size={15} className="text-green-600" />, label: 'Glassdoor URL', val: glassdoorUrl, set: setGlassdoorUrl, ph: 'https://glassdoor.com/...' },
+                  { icon: <Twitter size={15} className="text-[#1da1f2]" />, label: 'Twitter / X URL', val: twitterUrl, set: setTwitterUrl, ph: 'https://twitter.com/yourname' },
+                  { icon: <Globe size={15} className="text-purple-500" />, label: 'Portfolio / Website', val: portfolioUrl, set: setPortfolioUrl, ph: 'https://yourportfolio.com' },
+                ].map(({ icon, label, val, set, ph }) => (
+                  <div key={label} className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-gray-50 dark:bg-slate-700 flex items-center justify-center flex-shrink-0">
+                      {icon}
+                    </div>
+                    <input
+                      type="url"
+                      value={val}
+                      onChange={(e) => set(e.target.value)}
+                      placeholder={ph}
+                      className={`${inputCls} flex-1`}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="px-6 py-4 bg-gray-50 dark:bg-slate-700/50 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between">
+              {socialSuccess && <Toast type="success" message={socialSuccess} />}
+              {socialError && <Toast type="error" message={socialError} />}
+              {!socialSuccess && !socialError && <span />}
+              <SaveButton loading={socialLoading} label="Save socials" />
             </div>
           </form>
         )}

@@ -14,7 +14,7 @@ from sqlalchemy import text as sa_text
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request as StarletteRequest
 
-from app.api.routes import applications, auth, dashboard, email, jobs, profile
+from app.api.routes import applications, auth, connections, dashboard, email, jobs, profile
 from app.config import settings
 from app.core.limiter import limiter
 from app.core.security import hash_password
@@ -46,9 +46,24 @@ async def lifespan(app: FastAPI):
     # Ensure skills column is JSON type (fix if was previously added as TEXT)
     try:
         with engine.connect() as conn:
-            # Drop and re-add as JSON if it exists as TEXT (idempotent via IF NOT EXISTS on JSON col)
             conn.execute(sa_text("ALTER TABLE jobs DROP COLUMN IF EXISTS skills"))
             conn.execute(sa_text("ALTER TABLE jobs ADD COLUMN IF NOT EXISTS skills JSON DEFAULT '[]'"))
+            conn.commit()
+    except Exception:
+        pass
+    # Social + profile columns on users (idempotent)
+    try:
+        with engine.connect() as conn:
+            for col in [
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS headline VARCHAR(255)",
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS skills TEXT",
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS linkedin_url VARCHAR(500)",
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS github_url VARCHAR(500)",
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS glassdoor_url VARCHAR(500)",
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS twitter_url VARCHAR(500)",
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS portfolio_url VARCHAR(500)",
+            ]:
+                conn.execute(sa_text(col))
             conn.commit()
     except Exception:
         pass
@@ -154,6 +169,7 @@ app.include_router(applications.router, prefix="/api")
 app.include_router(email.router, prefix="/api")
 app.include_router(dashboard.router, prefix="/api")
 app.include_router(profile.router, prefix="/api")
+app.include_router(connections.router, prefix="/api")
 
 
 # ---------------------------------------------------------------------------

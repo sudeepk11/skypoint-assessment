@@ -2,6 +2,7 @@ export type UserRole = 'hr' | 'candidate';
 export type JobStatus = 'open' | 'closed';
 export type EmploymentType = 'full_time' | 'part_time' | 'contract' | 'remote';
 export type ApplicationStatus = 'pending' | 'reviewing' | 'shortlisted' | 'rejected';
+export type ConnectionStatus = 'pending' | 'accepted' | 'declined';
 
 export interface User {
   id: string;
@@ -9,9 +10,46 @@ export interface User {
   full_name: string;
   role: UserRole;
   created_at: string;
+  // HR
   company_name?: string;
   company_website?: string;
   company_description?: string;
+  // Candidate / shared
+  headline?: string;
+  skills?: string;          // JSON string — string[]
+  // Social
+  linkedin_url?: string;
+  github_url?: string;
+  glassdoor_url?: string;
+  twitter_url?: string;
+  portfolio_url?: string;
+}
+
+export interface UserPublic {
+  id: string;
+  full_name: string;
+  role: UserRole;
+  headline?: string;
+  skills?: string;
+  linkedin_url?: string;
+  github_url?: string;
+  glassdoor_url?: string;
+  twitter_url?: string;
+  portfolio_url?: string;
+  company_name?: string;
+}
+
+export interface Connection {
+  id: string;
+  status: ConnectionStatus;
+  requester: UserPublic;
+  receiver: UserPublic;
+}
+
+export interface Suggestion {
+  user: UserPublic;
+  overlap: number;
+  shared_skills: string[];
 }
 
 export interface Job {
