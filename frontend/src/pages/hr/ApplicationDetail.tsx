@@ -124,7 +124,7 @@ const HRApplicationDetail: React.FC = () => {
         {/* Left column */}
         <div className="lg:col-span-2 space-y-4">
           {/* Candidate info */}
-          <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-5">
+          <div className="bg-white dark:bg-slate-700 rounded-xl border border-gray-100 dark:border-slate-700 p-5">
             <div className="flex items-center gap-2 mb-4">
               <User size={16} className="text-gray-400 dark:text-slate-500" />
               <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300">Candidate</h3>
@@ -146,7 +146,7 @@ const HRApplicationDetail: React.FC = () => {
           </div>
 
           {/* Job info */}
-          <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-5">
+          <div className="bg-white dark:bg-slate-700 rounded-xl border border-gray-100 dark:border-slate-700 p-5">
             <div className="flex items-center gap-2 mb-4">
               <Briefcase size={16} className="text-gray-400 dark:text-slate-500" />
               <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300">Position</h3>
@@ -162,7 +162,7 @@ const HRApplicationDetail: React.FC = () => {
           </div>
 
           {/* Status changer */}
-          <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-5">
+          <div className="bg-white dark:bg-slate-700 rounded-xl border border-gray-100 dark:border-slate-700 p-5">
             <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300 mb-3">Update Status</h3>
             <div className="space-y-2">
               {statusOptions.map((opt) => (
@@ -190,7 +190,7 @@ const HRApplicationDetail: React.FC = () => {
         {/* Right column */}
         <div className="lg:col-span-3 space-y-4">
           {/* Resume */}
-          <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-6">
+          <div className="bg-white dark:bg-slate-700 rounded-xl border border-gray-100 dark:border-slate-700 p-6">
             <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300 mb-3">Resume</h3>
             <div className="bg-gray-50 dark:bg-slate-700 rounded-lg border border-gray-200 dark:border-slate-600 p-4 max-h-80 overflow-y-auto">
               <pre className="text-xs text-gray-700 dark:text-slate-300 whitespace-pre-wrap break-words font-mono leading-relaxed">
@@ -201,7 +201,7 @@ const HRApplicationDetail: React.FC = () => {
 
           {/* Cover letter */}
           {app.cover_letter && (
-            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-6">
+            <div className="bg-white dark:bg-slate-700 rounded-xl border border-gray-100 dark:border-slate-700 p-6">
               <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300 mb-3">Cover Letter</h3>
               <div className="bg-gray-50 dark:bg-slate-700 rounded-lg border border-gray-200 dark:border-slate-600 p-4 max-h-60 overflow-y-auto">
                 <pre className="text-xs text-gray-700 dark:text-slate-300 whitespace-pre-wrap break-words leading-relaxed">

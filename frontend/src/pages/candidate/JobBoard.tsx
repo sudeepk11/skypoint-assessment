@@ -153,7 +153,7 @@ const JobBoard: React.FC = () => {
       </div>
 
       {/* Search + filters */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-4 mb-6 space-y-3">
+      <div className="bg-white dark:bg-slate-700 rounded-xl border border-gray-100 dark:border-slate-700 p-4 mb-6 space-y-3">
         {/* Search bar */}
         <div className="relative">
           <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500" />
@@ -262,7 +262,7 @@ const JobBoard: React.FC = () => {
       {loading ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-5 animate-pulse">
+            <div key={i} className="bg-white dark:bg-slate-700 rounded-xl border border-gray-100 dark:border-slate-700 p-5 animate-pulse">
               <div className="h-5 w-3/4 skeleton rounded mb-3" />
               <div className="h-4 w-1/2 skeleton rounded mb-4" />
               <div className="h-8 skeleton rounded" />
@@ -270,7 +270,7 @@ const JobBoard: React.FC = () => {
           ))}
         </div>
       ) : filteredJobs.length === 0 ? (
-        <div className="py-16 text-center bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700">
+        <div className="py-16 text-center bg-white dark:bg-slate-700 rounded-xl border border-gray-100 dark:border-slate-700">
           <div className="w-16 h-16 bg-gray-50 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
             <Briefcase size={28} className="text-gray-300 dark:text-slate-500" />
           </div>
@@ -294,7 +294,7 @@ const JobBoard: React.FC = () => {
             return (
               <div
                 key={job.id}
-                className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+                className="bg-white dark:bg-slate-700 rounded-xl border border-gray-100 dark:border-slate-700 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
               >
                 {/* Job type badge */}
                 <div className="flex items-start justify-between mb-3">

@@ -60,7 +60,7 @@ const MyApplications: React.FC = () => {
         </div>
       )}
 
-      <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 overflow-hidden">
+      <div className="bg-white dark:bg-slate-700 rounded-xl border border-gray-100 dark:border-slate-700 overflow-hidden">
         {loading ? (
           <div className="p-6 space-y-4">
             {Array.from({ length: 5 }).map((_, i) => (

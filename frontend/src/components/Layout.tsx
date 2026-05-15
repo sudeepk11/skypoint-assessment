@@ -44,7 +44,7 @@ export const HRLayout: React.FC<HRLayoutProps> = ({ children }) => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-surface dark:bg-slate-900">
+    <div className="flex h-screen overflow-hidden bg-surface dark:bg-slate-700">
       {/* Sidebar overlay (mobile) */}
       {sidebarOpen && (
         <div
@@ -122,7 +122,7 @@ export const HRLayout: React.FC<HRLayoutProps> = ({ children }) => {
       {/* Main content — takes remaining width, scrolls independently */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top bar */}
-        <header className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 px-4 sm:px-6 h-14 flex items-center gap-3 flex-shrink-0 z-30">
+        <header className="bg-white dark:bg-slate-700 border-b border-gray-200 dark:border-slate-700 px-4 sm:px-6 h-14 flex items-center gap-3 flex-shrink-0 z-30">
           <button
             className="lg:hidden text-gray-600 hover:text-gray-900 dark:text-slate-400 dark:hover:text-slate-100"
             onClick={() => setSidebarOpen(true)}
@@ -146,7 +146,7 @@ export const HRLayout: React.FC<HRLayoutProps> = ({ children }) => {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto dark:bg-slate-900">{children}</main>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto dark:bg-slate-700">{children}</main>
       </div>
     </div>
   );
@@ -178,7 +178,7 @@ export const CandidateLayout: React.FC<CandidateLayoutProps> = ({ children }) =>
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-surface dark:bg-slate-900">
+    <div className="flex h-screen overflow-hidden bg-surface dark:bg-slate-700">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -252,7 +252,7 @@ export const CandidateLayout: React.FC<CandidateLayoutProps> = ({ children }) =>
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top bar */}
-        <header className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 px-4 sm:px-6 h-14 flex items-center gap-3 flex-shrink-0 z-30">
+        <header className="bg-white dark:bg-slate-700 border-b border-gray-200 dark:border-slate-700 px-4 sm:px-6 h-14 flex items-center gap-3 flex-shrink-0 z-30">
           <button className="lg:hidden text-gray-600 hover:text-gray-900 dark:text-slate-400 dark:hover:text-slate-100" onClick={() => setSidebarOpen(true)}>
             <Menu size={20} />
           </button>
@@ -273,7 +273,7 @@ export const CandidateLayout: React.FC<CandidateLayoutProps> = ({ children }) =>
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto dark:bg-slate-900">{children}</main>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto dark:bg-slate-700">{children}</main>
       </div>
     </div>
   );

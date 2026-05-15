@@ -118,7 +118,7 @@ const HRApplications: React.FC = () => {
       )}
 
       {/* Filter toolbar */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-4 mb-5">
+      <div className="bg-white dark:bg-slate-700 rounded-xl border border-gray-100 dark:border-slate-700 p-4 mb-5">
         <div className="flex flex-wrap items-center gap-3">
           {/* Job filter */}
           <select
@@ -154,7 +154,7 @@ const HRApplications: React.FC = () => {
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 overflow-hidden">
+      <div className="bg-white dark:bg-slate-700 rounded-xl border border-gray-100 dark:border-slate-700 overflow-hidden">
         {loading ? (
           <div className="p-6 space-y-4">
             {Array.from({ length: 5 }).map((_, i) => (

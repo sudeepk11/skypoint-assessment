@@ -137,7 +137,7 @@ const CandidateDashboard: React.FC = () => {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {loading
             ? Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-gray-100 dark:border-slate-700">
+                <div key={i} className="bg-white dark:bg-slate-700 rounded-2xl p-4 border border-gray-100 dark:border-slate-700">
                   <Sk className="h-3 w-16 mb-4" />
                   <Sk className="h-8 w-10 mb-1" />
                   <Sk className="h-2 w-12" />
@@ -146,7 +146,7 @@ const CandidateDashboard: React.FC = () => {
             : kpis.map((k) => (
                 <div
                   key={k.label}
-                  className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-gray-100 dark:border-slate-700 hover:shadow-md transition-shadow"
+                  className="bg-white dark:bg-slate-700 rounded-2xl p-4 border border-gray-100 dark:border-slate-700 hover:shadow-md transition-shadow"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <p className="text-xs font-medium text-gray-500 dark:text-slate-400">{k.label}</p>
@@ -163,7 +163,7 @@ const CandidateDashboard: React.FC = () => {
         <div className="grid sm:grid-cols-5 gap-5">
 
           {/* recent applications — wider */}
-          <div className="sm:col-span-3 bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 overflow-hidden">
+          <div className="sm:col-span-3 bg-white dark:bg-slate-700 rounded-2xl border border-gray-100 dark:border-slate-700 overflow-hidden">
             <div className="px-5 py-4 border-b border-gray-50 dark:border-slate-700 flex items-center justify-between">
               <div>
                 <h2 className="text-sm font-semibold text-gray-800 dark:text-slate-100">Recent Applications</h2>
@@ -230,7 +230,7 @@ const CandidateDashboard: React.FC = () => {
           <div className="sm:col-span-2 space-y-4">
 
             {/* success rate card */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-5">
+            <div className="bg-white dark:bg-slate-700 rounded-2xl border border-gray-100 dark:border-slate-700 p-5">
               <h3 className="text-sm font-semibold text-gray-800 dark:text-slate-100 mb-1">Shortlist Rate</h3>
               <p className="text-xs text-gray-400 dark:text-slate-500 mb-4">Based on your applications</p>
 
@@ -256,7 +256,7 @@ const CandidateDashboard: React.FC = () => {
             </div>
 
             {/* status breakdown */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-5">
+            <div className="bg-white dark:bg-slate-700 rounded-2xl border border-gray-100 dark:border-slate-700 p-5">
               <h3 className="text-sm font-semibold text-gray-800 dark:text-slate-100 mb-4">Status Breakdown</h3>
               {loading ? (
                 <div className="space-y-3">

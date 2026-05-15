@@ -134,7 +134,7 @@ const JobDetail: React.FC = () => {
         </button>
 
         {/* Job header */}
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-6 mb-5">
+        <div className="bg-white dark:bg-slate-700 rounded-xl border border-gray-100 dark:border-slate-700 p-6 mb-5">
           <div className="flex items-start justify-between gap-4 mb-4">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100 mb-1">{job.title}</h1>
@@ -208,7 +208,7 @@ const JobDetail: React.FC = () => {
 
         {/* Apply form (inline) */}
         {showApplyForm && !existingApp && !applySuccess && (
-          <div className="bg-white dark:bg-slate-800 rounded-xl border border-accent/30 p-6 mb-5">
+          <div className="bg-white dark:bg-slate-700 rounded-xl border border-accent/30 p-6 mb-5">
             <h2 className="text-base font-semibold text-gray-800 dark:text-slate-100 mb-4">Submit Your Application</h2>
 
             {applyError && (
@@ -281,7 +281,7 @@ const JobDetail: React.FC = () => {
 
         {/* Required Skills */}
         {job.skills && job.skills.length > 0 && (
-          <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-6 mb-5">
+          <div className="bg-white dark:bg-slate-700 rounded-xl border border-gray-100 dark:border-slate-700 p-6 mb-5">
             <h3 className="text-base font-semibold text-gray-800 dark:text-slate-100 mb-3">Required Skills</h3>
             <div className="flex flex-wrap gap-2">
               {job.skills.map(skill => (
@@ -294,7 +294,7 @@ const JobDetail: React.FC = () => {
         )}
 
         {/* Job details tabs */}
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 overflow-hidden">
+        <div className="bg-white dark:bg-slate-700 rounded-xl border border-gray-100 dark:border-slate-700 overflow-hidden">
           <div className="flex border-b border-gray-100 dark:border-slate-700">
             {(['description', 'requirements'] as const).map((tab) => (
               <button
