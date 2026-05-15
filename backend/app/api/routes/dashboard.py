@@ -20,24 +20,44 @@ def hr_dashboard(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_hr),
 ):
-    """Return summary analytics for the HR dashboard. HR only."""
-    total_jobs = db.query(func.count(Job.id)).scalar()
-    open_jobs = db.query(func.count(Job.id)).filter(Job.status == "open").scalar()
-    total_applications = db.query(func.count(Application.id)).scalar()
+    """Return summary analytics for the HR dashboard. HR only.
+
+    All metrics are scoped to jobs posted by the current HR user only.
+    """
+    uid = current_user.id
+
+    total_jobs = (
+        db.query(func.count(Job.id)).filter(Job.created_by == uid).scalar()
+    )
+    open_jobs = (
+        db.query(func.count(Job.id))
+        .filter(Job.created_by == uid, Job.status == "open")
+        .scalar()
+    )
+    total_applications = (
+        db.query(func.count(Application.id))
+        .join(Job, Application.job_id == Job.id)
+        .filter(Job.created_by == uid)
+        .scalar()
+    )
 
     one_week_ago = datetime.utcnow() - timedelta(days=7)
     shortlisted_this_week = (
         db.query(func.count(Application.id))
+        .join(Job, Application.job_id == Job.id)
         .filter(
+            Job.created_by == uid,
             Application.status == "shortlisted",
             Application.updated_at >= one_week_ago,
         )
         .scalar()
     )
 
-    # Applications grouped by status
+    # Applications grouped by status — scoped to this HR's jobs
     status_counts_raw = (
         db.query(Application.status, func.count(Application.id))
+        .join(Job, Application.job_id == Job.id)
+        .filter(Job.created_by == uid)
         .group_by(Application.status)
         .all()
     )
@@ -51,10 +71,12 @@ def hr_dashboard(
         if s in applications_by_status:
             applications_by_status[s] = count
 
-    # Recent applications (last 10) — eager-load relations to avoid N+1
+    # Recent applications (last 10) — scoped to this HR's jobs
     recent_applications = (
         db.query(Application)
         .options(joinedload(Application.candidate), joinedload(Application.job))
+        .join(Job, Application.job_id == Job.id)
+        .filter(Job.created_by == uid)
         .order_by(Application.applied_at.desc())
         .limit(10)
         .all()
@@ -71,10 +93,11 @@ def hr_dashboard(
         for app in recent_applications
     ]
 
-    # Jobs performance
+    # Jobs performance — scoped to this HR user
     jobs_perf_raw = (
         db.query(Job, func.count(Application.id).label("applicant_count"))
         .outerjoin(Application, Application.job_id == Job.id)
+        .filter(Job.created_by == uid)
         .group_by(Job.id)
         .order_by(func.count(Application.id).desc())
         .limit(10)
