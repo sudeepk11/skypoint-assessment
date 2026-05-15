@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import type { AuthResponse, User, Job, Application, ApplicationStatus, JobStatus, Connection, UserPublic, UserWithStatus } from '../types';
+import type { AuthResponse, User, Job, JobInput, JobUpdate, ProfileUpdate, Application, ApplicationStatus, JobStatus, Connection, UserPublic, UserWithStatus } from '../types';
 
 const api = axios.create({
   baseURL: '/api',
@@ -43,9 +43,9 @@ export const jobs = {
 
   get: (id: string) => api.get<Job>(`/jobs/${id}`).then((r) => r.data),
 
-  create: (data: Partial<Job>) => api.post<Job>('/jobs', data).then((r) => r.data),
+  create: (data: JobInput) => api.post<Job>('/jobs', data).then((r) => r.data),
 
-  update: (id: string, data: Partial<Job>) =>
+  update: (id: string, data: JobUpdate) =>
     api.put<Job>(`/jobs/${id}`, data).then((r) => r.data),
 
   toggleStatus: (id: string, status: JobStatus) =>
@@ -87,7 +87,7 @@ export const dashboard = {
 /** Profile — get, update, change password. */
 export const profile = {
   get: () => api.get<User>('/profile').then((r) => r.data),
-  update: (data: Partial<User>) =>
+  update: (data: ProfileUpdate) =>
     api.put<User>('/profile', data).then((r) => r.data),
   changePassword: (current_password: string, new_password: string) =>
     api.put('/profile/password', { current_password, new_password }).then((r) => r.data),

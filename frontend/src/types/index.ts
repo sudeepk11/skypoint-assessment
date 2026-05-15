@@ -105,3 +105,37 @@ export interface AuthResponse {
   token_type: string;
   user: User;
 }
+
+/** Fields accepted when creating a job posting. */
+export interface JobInput {
+  title: string;
+  description: string;
+  requirements: string;
+  location: string;
+  employment_type: EmploymentType;
+  salary_range?: string;
+  skills?: string[];
+  status?: JobStatus;
+}
+
+/** All fields optional for partial updates to a job posting. */
+export type JobUpdate = Partial<JobInput>;
+
+/** Fields accepted when updating a user profile. */
+export interface ProfileUpdate {
+  full_name?: string;
+  // HR — company fields
+  company_name?: string;
+  company_website?: string;
+  company_description?: string;
+  company_linkedin_url?: string;
+  company_twitter_url?: string;
+  company_glassdoor_url?: string;
+  // Candidate fields
+  headline?: string;
+  skills?: string[];
+  linkedin_url?: string;
+  github_url?: string;
+  twitter_url?: string;
+  portfolio_url?: string;
+}
