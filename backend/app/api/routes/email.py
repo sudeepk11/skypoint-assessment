@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, require_hr
 from app.models.application import Application
+from app.models.job import Job
 from app.models.user import User
 from app.services.email_service import send_bulk_email
 
@@ -40,7 +41,11 @@ def send_bulk(
     """
     applications = (
         db.query(Application)
-        .filter(Application.id.in_([str(aid) for aid in request.application_ids]))
+        .join(Job, Application.job_id == Job.id)
+        .filter(
+            Application.id.in_([str(aid) for aid in request.application_ids]),
+            Job.created_by == current_user.id,
+        )
         .all()
     )
 
