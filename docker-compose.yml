@@ -46,8 +46,13 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: skypoint_frontend
+    environment:
+      VITE_BACKEND_URL: http://backend:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     ports:
-      - "${APP_PORT:-3000}:80"
+      - "${APP_PORT:-3000}:5173"
     depends_on:
       - backend
     networks:

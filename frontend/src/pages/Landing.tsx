@@ -120,138 +120,310 @@ const Landing: React.FC = () => {
 
       {/* ── Hero ───────────────────────────────────────────────────────────── */}
       <section
-        className="relative min-h-screen flex items-center justify-center overflow-hidden"
-        style={{ background: '#0f172a' }}
+        className="relative min-h-screen flex items-center overflow-hidden"
+        style={{ background: 'linear-gradient(160deg, #060e1e 0%, #0a1628 55%, #0d1f3c 100%)' }}
       >
-        {/* Animated gradient blobs */}
+        {/* Dot grid pattern */}
         <div
-          className="absolute top-0 left-0 w-[700px] h-[700px] rounded-full opacity-30 pointer-events-none"
+          className="absolute inset-0 pointer-events-none opacity-[0.18]"
           style={{
-            background: 'radial-gradient(circle, #2563eb 0%, transparent 70%)',
-            transform: 'translate(-30%, -30%)',
-            filter: 'blur(80px)',
-          }}
-        />
-        <div
-          className="absolute bottom-0 right-0 w-[600px] h-[600px] rounded-full opacity-25 pointer-events-none"
-          style={{
-            background: 'radial-gradient(circle, #3b82f6 0%, transparent 70%)',
-            transform: 'translate(30%, 30%)',
-            filter: 'blur(80px)',
-          }}
-        />
-        <div
-          className="absolute top-1/2 left-1/2 w-[400px] h-[400px] rounded-full opacity-10 pointer-events-none"
-          style={{
-            background: 'radial-gradient(circle, #06b6d4 0%, transparent 70%)',
-            transform: 'translate(-50%, -50%)',
-            filter: 'blur(60px)',
+            backgroundImage: 'radial-gradient(circle, #3b82f6 1px, transparent 1px)',
+            backgroundSize: '34px 34px',
           }}
         />
 
-        {/* Floating glassmorphism stat cards — desktop only */}
+        {/* Top accent line */}
         <div
-          className="hidden lg:flex absolute top-32 right-16 items-center gap-3 px-5 py-4 rounded-2xl border border-white/20"
-          style={{ background: 'rgba(255,255,255,0.07)', backdropFilter: 'blur(12px)', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}
-        >
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #3b82f6, #2563eb)' }}>
-            <Briefcase size={18} className="text-white" />
-          </div>
-          <div>
-            <p className="text-white font-bold text-lg leading-none">482</p>
-            <p className="text-white/60 text-xs mt-0.5">Jobs Posted</p>
-          </div>
-        </div>
+          className="absolute top-0 left-0 right-0 h-px pointer-events-none"
+          style={{ background: 'linear-gradient(90deg, transparent 0%, #3b82f6 40%, #06b6d4 60%, transparent 100%)' }}
+        />
 
+        {/* Gradient orbs */}
         <div
-          className="hidden lg:flex absolute top-56 left-12 items-center gap-3 px-5 py-4 rounded-2xl border border-white/20"
-          style={{ background: 'rgba(255,255,255,0.07)', backdropFilter: 'blur(12px)', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}
-        >
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #2563eb, #db2777)' }}>
-            <Users size={18} className="text-white" />
-          </div>
-          <div>
-            <p className="text-white font-bold text-lg leading-none">2,100+</p>
-            <p className="text-white/60 text-xs mt-0.5">Applications</p>
-          </div>
-        </div>
-
+          className="absolute -top-40 -left-40 w-[700px] h-[700px] rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle, rgba(29,78,216,0.35), transparent 65%)', filter: 'blur(90px)' }}
+        />
         <div
-          className="hidden lg:flex absolute bottom-40 right-20 items-center gap-3 px-5 py-4 rounded-2xl border border-white/20"
-          style={{ background: 'rgba(255,255,255,0.07)', backdropFilter: 'blur(12px)', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}
-        >
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #059669, #3b82f6)' }}>
-            <CheckCircle size={18} className="text-white" />
+          className="absolute -bottom-32 -right-32 w-[550px] h-[550px] rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle, rgba(14,165,233,0.2), transparent 65%)', filter: 'blur(90px)' }}
+        />
+        <div
+          className="absolute top-1/3 right-1/3 w-[300px] h-[300px] rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.12), transparent 70%)', filter: 'blur(60px)' }}
+        />
+
+        {/* Main content grid */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-28 lg:py-0 lg:min-h-screen lg:flex lg:items-center w-full">
+          <div className="grid lg:grid-cols-[1fr,1.05fr] gap-10 xl:gap-16 items-center w-full">
+
+            {/* ── LEFT: Copy ── */}
+            <div className="text-center lg:text-left">
+
+              {/* Eyebrow badge */}
+              <div
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold mb-8 border"
+                style={{ background: 'rgba(59,130,246,0.1)', borderColor: 'rgba(59,130,246,0.25)', color: '#93c5fd' }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse inline-block flex-shrink-0" />
+                Powered by Skypoint AI · Now in Beta
+              </div>
+
+              {/* Headline */}
+              <h1 className="font-black text-white leading-[1.02] tracking-tight mb-6">
+                <span className="block" style={{ fontSize: 'clamp(42px, 6.5vw, 80px)' }}>Recruit</span>
+                <span
+                  className="block"
+                  style={{
+                    fontSize: 'clamp(42px, 6.5vw, 80px)',
+                    background: 'linear-gradient(90deg, #60a5fa 0%, #38bdf8 60%, #34d399 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                  }}
+                >
+                  Smarter.
+                </span>
+                <span className="block" style={{ fontSize: 'clamp(42px, 6.5vw, 80px)' }}>Hire</span>
+                <span
+                  className="block"
+                  style={{
+                    fontSize: 'clamp(42px, 6.5vw, 80px)',
+                    background: 'linear-gradient(90deg, #60a5fa 0%, #38bdf8 60%, #34d399 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                  }}
+                >
+                  Faster.
+                </span>
+              </h1>
+
+              {/* Subtitle */}
+              <p className="text-white/55 text-lg leading-relaxed max-w-xl mx-auto lg:mx-0 mb-10">
+                The all-in-one ATS for modern teams. AI-generated job descriptions,
+                intelligent resume screening, and bulk candidate communication — fully automated.
+              </p>
+
+              {/* CTAs */}
+              <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4 mb-12">
+                <Link
+                  to="/register?role=hr"
+                  className="group flex items-center gap-2 px-7 py-3.5 rounded-xl text-white font-semibold text-sm transition-all hover:scale-[1.03] active:scale-[0.99]"
+                  style={{
+                    background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
+                    boxShadow: '0 0 0 1px rgba(59,130,246,0.4), 0 10px 36px rgba(37,99,235,0.45)',
+                  }}
+                >
+                  Start Hiring Free
+                  <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+                </Link>
+                <Link
+                  to="/register"
+                  className="group flex items-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-sm border transition-all hover:bg-white/[0.06] active:scale-[0.99]"
+                  style={{ color: 'rgba(255,255,255,0.75)', borderColor: 'rgba(255,255,255,0.15)' }}
+                >
+                  Find Jobs
+                  <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </div>
+
+              {/* Trust strip */}
+              <div className="flex items-center justify-center lg:justify-start gap-4 flex-wrap">
+                {/* Avatars */}
+                <div className="flex -space-x-2.5">
+                  {(
+                    [
+                      { bg: '#3b82f6', letter: 'S' },
+                      { bg: '#06b6d4', letter: 'K' },
+                      { bg: '#10b981', letter: 'A' },
+                      { bg: '#8b5cf6', letter: 'R' },
+                      { bg: '#f59e0b', letter: 'M' },
+                    ] as { bg: string; letter: string }[]
+                  ).map((av, i) => (
+                    <div
+                      key={i}
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white border-2 flex-shrink-0"
+                      style={{ borderColor: '#060e1e', background: av.bg }}
+                    >
+                      {av.letter}
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  <div className="flex items-center gap-0.5 mb-0.5">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <span key={s} className="text-amber-400 text-xs">★</span>
+                    ))}
+                  </div>
+                  <p className="text-white/40 text-xs leading-none">
+                    Trusted by <span className="text-white/60 font-semibold">500+</span> companies · <span className="text-white/60 font-semibold">8k+</span> job seekers
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* ── RIGHT: Dashboard mockup ── */}
+            <div className="hidden lg:block relative mt-8 lg:mt-0">
+
+              {/* Floating chip — top left */}
+              <div
+                className="absolute -top-5 -left-5 z-20 flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold"
+                style={{
+                  background: 'rgba(6,14,30,0.92)',
+                  border: '1px solid rgba(16,185,129,0.3)',
+                  backdropFilter: 'blur(16px)',
+                  boxShadow: '0 8px 28px rgba(0,0,0,0.4)',
+                  color: '#34d399',
+                }}
+              >
+                <CheckCircle size={14} />
+                94% Hire Rate
+              </div>
+
+              {/* Floating chip — bottom right */}
+              <div
+                className="absolute -bottom-5 -right-5 z-20 flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold"
+                style={{
+                  background: 'rgba(6,14,30,0.92)',
+                  border: '1px solid rgba(251,191,36,0.3)',
+                  backdropFilter: 'blur(16px)',
+                  boxShadow: '0 8px 28px rgba(0,0,0,0.4)',
+                  color: '#fbbf24',
+                }}
+              >
+                <Zap size={13} />
+                2× Faster Hiring
+              </div>
+
+              {/* Main mock card */}
+              <div
+                className="relative rounded-2xl overflow-hidden"
+                style={{
+                  background: 'rgba(10,20,40,0.88)',
+                  border: '1px solid rgba(255,255,255,0.07)',
+                  backdropFilter: 'blur(20px)',
+                  boxShadow: '0 0 0 1px rgba(59,130,246,0.08), 0 40px 90px rgba(0,0,0,0.6)',
+                }}
+              >
+                {/* Window chrome */}
+                <div
+                  className="flex items-center justify-between px-5 py-3 border-b"
+                  style={{ borderColor: 'rgba(255,255,255,0.06)' }}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex gap-1.5">
+                      <div className="w-2.5 h-2.5 rounded-full" style={{ background: 'rgba(239,68,68,0.7)' }} />
+                      <div className="w-2.5 h-2.5 rounded-full" style={{ background: 'rgba(245,158,11,0.7)' }} />
+                      <div className="w-2.5 h-2.5 rounded-full" style={{ background: 'rgba(34,197,94,0.7)' }} />
+                    </div>
+                    <span className="text-white/30 text-xs font-medium ml-1">SkyHire — Applications</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse inline-block" />
+                    <span className="text-green-400 text-[11px] font-semibold">Live</span>
+                  </div>
+                </div>
+
+                {/* Mini stats row */}
+                <div
+                  className="grid grid-cols-3"
+                  style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+                >
+                  {(
+                    [
+                      { label: 'Open Jobs',   value: '24', delta: '+3 this week',  deltaColor: '#34d399' },
+                      { label: 'Applicants',  value: '138', delta: '+12 today',    deltaColor: '#34d399' },
+                      { label: 'Shortlisted', value: '31',  delta: '22% rate',     deltaColor: '#60a5fa' },
+                    ] as { label: string; value: string; delta: string; deltaColor: string }[]
+                  ).map((s, i) => (
+                    <div
+                      key={i}
+                      className="px-4 py-3"
+                      style={{ borderRight: i < 2 ? '1px solid rgba(255,255,255,0.06)' : undefined }}
+                    >
+                      <p className="text-white/35 text-[9px] font-semibold uppercase tracking-wide mb-1">{s.label}</p>
+                      <p className="text-white font-bold text-xl leading-none mb-0.5">{s.value}</p>
+                      <p className="text-[10px] font-medium" style={{ color: s.deltaColor }}>{s.delta}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Candidate list */}
+                <div className="px-4 py-4">
+                  <p className="text-white/30 text-[9px] uppercase tracking-widest font-bold mb-3 px-1">Recent Applications</p>
+                  <div className="space-y-0.5">
+                    {(
+                      [
+                        { name: 'Sarah Kim',    role: 'Senior Frontend Dev',  status: 'Shortlisted', sColor: '#34d399', sBg: 'rgba(52,211,153,0.1)',  av: '#3b82f6', init: 'SK', score: '9.2' },
+                        { name: 'James Thorne', role: 'Product Manager',      status: 'Reviewing',   sColor: '#60a5fa', sBg: 'rgba(96,165,250,0.1)',  av: '#8b5cf6', init: 'JT', score: '8.7' },
+                        { name: 'Anika Patel',  role: 'Data Analyst',         status: 'Pending',     sColor: '#fbbf24', sBg: 'rgba(251,191,36,0.1)',  av: '#06b6d4', init: 'AP', score: '7.9' },
+                        { name: 'Rohan Mehta',  role: 'Backend Engineer',     status: 'Reviewing',   sColor: '#60a5fa', sBg: 'rgba(96,165,250,0.1)',  av: '#f59e0b', init: 'RM', score: '8.4' },
+                      ] as { name: string; role: string; status: string; sColor: string; sBg: string; av: string; init: string; score: string }[]
+                    ).map((c, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center gap-3 px-3 py-2 rounded-xl"
+                        style={{ background: i === 0 ? 'rgba(59,130,246,0.07)' : 'transparent' }}
+                      >
+                        <div
+                          className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0"
+                          style={{ background: c.av }}
+                        >
+                          {c.init}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white text-xs font-semibold leading-none mb-0.5 truncate">{c.name}</p>
+                          <p className="text-white/35 text-[10px] truncate">{c.role}</p>
+                        </div>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <span className="text-xs font-bold" style={{ color: '#60a5fa' }}>{c.score}</span>
+                          <span
+                            className="text-[9px] font-bold px-2 py-0.5 rounded-full"
+                            style={{ color: c.sColor, background: c.sBg }}
+                          >
+                            {c.status}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* AI bar */}
+                <div
+                  className="mx-4 mb-4 rounded-xl px-4 py-3 flex items-center gap-3"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(37,99,235,0.18), rgba(6,182,212,0.08))',
+                    border: '1px solid rgba(59,130,246,0.18)',
+                  }}
+                >
+                  <div
+                    className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
+                    style={{ background: 'linear-gradient(135deg, #3b82f6, #06b6d4)' }}
+                  >
+                    <Zap size={13} className="text-white" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white text-xs font-semibold leading-none mb-0.5">AI Evaluation Ready</p>
+                    <p className="text-white/35 text-[10px]">Analyse resume fit in 1 click</p>
+                  </div>
+                  <div
+                    className="text-[10px] font-bold px-2.5 py-1 rounded-lg flex-shrink-0"
+                    style={{ background: 'rgba(59,130,246,0.2)', color: '#93c5fd' }}
+                  >
+                    Run →
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
-          <div>
-            <p className="text-white font-bold text-lg leading-none">94%</p>
-            <p className="text-white/60 text-xs mt-0.5">Hire Rate</p>
-          </div>
-        </div>
-
-        {/* Hero content */}
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 text-center py-32">
-          {/* Beta badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/20 text-blue-200 text-sm font-medium mb-10"
-            style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(8px)' }}>
-            <span>🚀</span>
-            <span>Now in Beta — Free for startups</span>
-          </div>
-
-          {/* Headline */}
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-white leading-none tracking-tight mb-6">
-            Hire Fast.
-            <br />
-            <span
-              style={{
-                background: 'linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-            >
-              Build Better Teams.
-            </span>
-          </h1>
-
-          {/* Subtitle */}
-          <p className="text-lg sm:text-xl text-white/60 max-w-2xl mx-auto mb-10 leading-relaxed">
-            The modern hiring platform for growing companies. Post jobs, review applicants, and
-            close offers — all in one place.
-          </p>
-
-          {/* CTA buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
-            <Link
-              to="/register?role=hr"
-              className="flex items-center gap-2 px-8 py-4 rounded-xl text-white font-semibold text-sm sm:text-base transition-all hover:opacity-90 hover:scale-[1.02] hover:shadow-2xl"
-              style={{
-                background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
-                boxShadow: '0 8px 30px rgba(37,99,235,0.4)',
-              }}
-            >
-              Start Hiring Free
-              <ArrowRight size={16} />
-            </Link>
-            <Link
-              to="/jobs"
-              className="flex items-center gap-2 px-8 py-4 rounded-xl text-white font-semibold text-sm sm:text-base border border-white/30 transition-all hover:bg-white/10 hover:scale-[1.02]"
-            >
-              Find Jobs
-              <ArrowRight size={16} />
-            </Link>
-          </div>
-
-          {/* Social proof */}
-          <p className="text-white/40 text-sm font-medium tracking-wide">
-            Trusted by <span className="text-white/60">500+ companies</span> · <span className="text-white/60">8,000+</span> active job seekers
-          </p>
         </div>
 
         {/* Scroll cue */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/30">
-          <span className="text-xs tracking-widest uppercase">Scroll</span>
-          <div className="w-px h-8 bg-white/20 rounded" />
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2" style={{ color: 'rgba(255,255,255,0.22)' }}>
+          <span className="text-[10px] tracking-widest uppercase font-medium">Scroll</span>
+          <div className="w-px h-8" style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.2), transparent)' }} />
         </div>
       </section>
 
