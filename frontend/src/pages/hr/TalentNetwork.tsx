@@ -362,7 +362,7 @@ const TalentNetwork: React.FC = () => {
     catch {/* silent */} finally { setActing((p) => ({ ...p, [id]: false })); }
   };
 
-  const allSent = [...sentInvites, ...accepted];
+  const allSent = sentInvites; // sent() already includes accepted/declined — no need to merge
 
   const tabs = [
     { id: 'pool' as Tab,     label: 'Talent Pool',  icon: <Users size={14}/>,       count: candidates.length },
