@@ -7,7 +7,6 @@ import {
   Sparkles,
   PlusCircle,
   Eye,
-  Mail,
   ArrowRight,
   Circle,
 } from 'lucide-react';
@@ -20,7 +19,6 @@ import {
 } from 'recharts';
 import { HRLayout } from '../../components/Layout';
 import StatusBadge from '../../components/StatusBadge';
-import BulkEmailModal from '../../components/BulkEmailModal';
 import { useAuth } from '../../context/AuthContext';
 import { dashboard } from '../../services/api';
 import type { ApplicationStatus } from '../../types';
@@ -91,7 +89,6 @@ const HRDashboard: React.FC = () => {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [bulkOpen, setBulkOpen] = useState(false);
 
   useEffect(() => {
     dashboard.hr()
@@ -185,13 +182,6 @@ const HRDashboard: React.FC = () => {
             <Eye size={15} />
             Applications
           </Link>
-          <button
-            onClick={() => setBulkOpen(true)}
-            className="flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            <Mail size={15} />
-            Bulk Email
-          </button>
         </div>
       </div>
 
@@ -471,7 +461,6 @@ const HRDashboard: React.FC = () => {
         )}
       </div>
 
-      <BulkEmailModal isOpen={bulkOpen} onClose={() => setBulkOpen(false)} applicationIds={[]} />
     </HRLayout>
   );
 };
