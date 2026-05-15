@@ -105,13 +105,13 @@ const HRApplicationDetail: React.FC = () => {
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={() => navigate('/hr/applications')}
-          className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
+          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200 transition-colors"
         >
           <ArrowLeft size={18} />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Application Detail</h1>
-          <p className="text-gray-500 text-sm mt-0.5">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100">Application Detail</h1>
+          <p className="text-gray-500 dark:text-slate-400 text-sm mt-0.5">
             {app.candidate?.full_name} · {app.job?.title}
           </p>
         </div>
@@ -124,46 +124,46 @@ const HRApplicationDetail: React.FC = () => {
         {/* Left column */}
         <div className="lg:col-span-2 space-y-4">
           {/* Candidate info */}
-          <div className="bg-white rounded-xl border border-gray-100 p-5">
+          <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-5">
             <div className="flex items-center gap-2 mb-4">
-              <User size={16} className="text-gray-400" />
-              <h3 className="text-sm font-semibold text-gray-700">Candidate</h3>
+              <User size={16} className="text-gray-400 dark:text-slate-500" />
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300">Candidate</h3>
             </div>
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-full bg-accent/10 text-accent font-bold flex items-center justify-center">
                 {app.candidate?.full_name?.charAt(0).toUpperCase() ?? '?'}
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-800">
+                <p className="text-sm font-semibold text-gray-800 dark:text-slate-100">
                   {app.candidate?.full_name ?? 'Unknown'}
                 </p>
-                <p className="text-xs text-gray-500">{app.candidate?.email ?? '—'}</p>
+                <p className="text-xs text-gray-500 dark:text-slate-400">{app.candidate?.email ?? '—'}</p>
               </div>
             </div>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-400 dark:text-slate-500">
               Applied on {formatDate(app.applied_at)}
             </p>
           </div>
 
           {/* Job info */}
-          <div className="bg-white rounded-xl border border-gray-100 p-5">
+          <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-5">
             <div className="flex items-center gap-2 mb-4">
-              <Briefcase size={16} className="text-gray-400" />
-              <h3 className="text-sm font-semibold text-gray-700">Position</h3>
+              <Briefcase size={16} className="text-gray-400 dark:text-slate-500" />
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300">Position</h3>
             </div>
-            <p className="text-sm font-semibold text-gray-800 mb-1">{app.job?.title}</p>
-            <p className="text-xs text-gray-500 mb-1">{app.job?.location}</p>
-            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+            <p className="text-sm font-semibold text-gray-800 dark:text-slate-100 mb-1">{app.job?.title}</p>
+            <p className="text-xs text-gray-500 dark:text-slate-400 mb-1">{app.job?.location}</p>
+            <span className="text-xs bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 px-2 py-0.5 rounded-full">
               {formatType(app.job?.employment_type ?? '')}
             </span>
             {app.job?.salary_range && (
-              <p className="text-xs text-gray-500 mt-2">{app.job.salary_range}</p>
+              <p className="text-xs text-gray-500 dark:text-slate-400 mt-2">{app.job.salary_range}</p>
             )}
           </div>
 
           {/* Status changer */}
-          <div className="bg-white rounded-xl border border-gray-100 p-5">
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">Update Status</h3>
+          <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-5">
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300 mb-3">Update Status</h3>
             <div className="space-y-2">
               {statusOptions.map((opt) => (
                 <button
@@ -173,7 +173,7 @@ const HRApplicationDetail: React.FC = () => {
                   className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium border transition-all ${
                     app.status === opt.value
                       ? 'bg-primary text-white border-primary'
-                      : 'border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50'
+                      : 'border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700'
                   } disabled:cursor-not-allowed`}
                 >
                   {statusLoading && app.status === opt.value ? (
@@ -190,10 +190,10 @@ const HRApplicationDetail: React.FC = () => {
         {/* Right column */}
         <div className="lg:col-span-3 space-y-4">
           {/* Resume */}
-          <div className="bg-white rounded-xl border border-gray-100 p-6">
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">Resume</h3>
-            <div className="bg-gray-50 rounded-lg border border-gray-200 p-4 max-h-80 overflow-y-auto">
-              <pre className="text-xs text-gray-700 whitespace-pre-wrap break-words font-mono leading-relaxed">
+          <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-6">
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300 mb-3">Resume</h3>
+            <div className="bg-gray-50 dark:bg-slate-700 rounded-lg border border-gray-200 dark:border-slate-600 p-4 max-h-80 overflow-y-auto">
+              <pre className="text-xs text-gray-700 dark:text-slate-300 whitespace-pre-wrap break-words font-mono leading-relaxed">
                 {app.resume_text}
               </pre>
             </div>
@@ -201,10 +201,10 @@ const HRApplicationDetail: React.FC = () => {
 
           {/* Cover letter */}
           {app.cover_letter && (
-            <div className="bg-white rounded-xl border border-gray-100 p-6">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">Cover Letter</h3>
-              <div className="bg-gray-50 rounded-lg border border-gray-200 p-4 max-h-60 overflow-y-auto">
-                <pre className="text-xs text-gray-700 whitespace-pre-wrap break-words leading-relaxed">
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-6">
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300 mb-3">Cover Letter</h3>
+              <div className="bg-gray-50 dark:bg-slate-700 rounded-lg border border-gray-200 dark:border-slate-600 p-4 max-h-60 overflow-y-auto">
+                <pre className="text-xs text-gray-700 dark:text-slate-300 whitespace-pre-wrap break-words leading-relaxed">
                   {app.cover_letter}
                 </pre>
               </div>

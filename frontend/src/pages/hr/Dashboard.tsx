@@ -81,7 +81,7 @@ const formatDate = (dateStr: string) => {
 
 /* ── skeleton primitives ── */
 const Sk = ({ className }: { className: string }) => (
-  <div className={`animate-pulse rounded bg-gray-100 ${className}`} />
+  <div className={`animate-pulse rounded bg-gray-100 dark:bg-slate-700 ${className}`} />
 );
 
 const HRDashboard: React.FC = () => {
@@ -155,13 +155,13 @@ const HRDashboard: React.FC = () => {
       {/* ── page header ── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-7">
         <div>
-          <p className="text-xs font-medium text-gray-400 uppercase tracking-widest mb-0.5">
+          <p className="text-xs font-medium text-gray-400 dark:text-slate-500 uppercase tracking-widest mb-0.5">
             Overview
           </p>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100">
             {getGreeting()}, {user?.full_name?.split(' ')[0]} 👋
           </h1>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">
             {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </p>
         </div>
@@ -177,7 +177,7 @@ const HRDashboard: React.FC = () => {
           </Link>
           <Link
             to="/hr/applications"
-            className="flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-300 text-sm font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
           >
             <Eye size={15} />
             Applications
@@ -204,16 +204,16 @@ const HRDashboard: React.FC = () => {
           : kpis.map((k) => (
               <div
                 key={k.label}
-                className="bg-white rounded-2xl p-5 border border-gray-100 hover:shadow-md transition-shadow"
+                className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-gray-100 dark:border-slate-700 hover:shadow-md transition-shadow"
               >
                 <div className="flex items-start justify-between mb-4">
-                  <p className="text-xs font-medium text-gray-500">{k.label}</p>
+                  <p className="text-xs font-medium text-gray-500 dark:text-slate-400">{k.label}</p>
                   <div className={`w-8 h-8 ${k.iconBg} rounded-lg flex items-center justify-center`}>
                     <k.icon size={15} className={k.iconColor} />
                   </div>
                 </div>
                 <p className={`text-3xl font-bold ${k.valueCls} mb-1`}>{k.value}</p>
-                <p className="text-xs text-gray-400">{k.sub}</p>
+                <p className="text-xs text-gray-400 dark:text-slate-500">{k.sub}</p>
               </div>
             ))}
       </div>
@@ -222,9 +222,9 @@ const HRDashboard: React.FC = () => {
       <div className="grid lg:grid-cols-5 gap-5 mb-5">
 
         {/* donut chart */}
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 p-6 flex flex-col">
-          <h2 className="text-sm font-semibold text-gray-800 mb-1">Application Pipeline</h2>
-          <p className="text-xs text-gray-400 mb-4">Status breakdown</p>
+        <div className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-6 flex flex-col">
+          <h2 className="text-sm font-semibold text-gray-800 dark:text-slate-100 mb-1">Application Pipeline</h2>
+          <p className="text-xs text-gray-400 dark:text-slate-500 mb-4">Status breakdown</p>
 
           {loading ? (
             <div className="flex-1 flex items-center justify-center">
@@ -258,8 +258,8 @@ const HRDashboard: React.FC = () => {
                 </ResponsiveContainer>
                 {/* center label */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="text-2xl font-bold text-gray-800">{totalApplications}</span>
-                  <span className="text-xs text-gray-400">total</span>
+                  <span className="text-2xl font-bold text-gray-800 dark:text-slate-100">{totalApplications}</span>
+                  <span className="text-xs text-gray-400 dark:text-slate-500">total</span>
                 </div>
               </div>
 
@@ -268,25 +268,25 @@ const HRDashboard: React.FC = () => {
                 {chartData.map((d) => (
                   <div key={d.name} className="flex items-center gap-1.5">
                     <Circle size={8} fill={d.color} stroke="none" />
-                    <span className="text-xs text-gray-500">{d.name}</span>
-                    <span className="text-xs font-semibold text-gray-700 ml-auto">{d.value}</span>
+                    <span className="text-xs text-gray-500 dark:text-slate-400">{d.name}</span>
+                    <span className="text-xs font-semibold text-gray-700 dark:text-slate-300 ml-auto">{d.value}</span>
                   </div>
                 ))}
               </div>
             </>
           ) : (
             <div className="flex-1 flex items-center justify-center">
-              <p className="text-sm text-gray-400">No data yet</p>
+              <p className="text-sm text-gray-400 dark:text-slate-500">No data yet</p>
             </div>
           )}
         </div>
 
         {/* recent applications */}
-        <div className="lg:col-span-3 bg-white rounded-2xl border border-gray-100 overflow-hidden flex flex-col">
-          <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between">
+        <div className="lg:col-span-3 bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 overflow-hidden flex flex-col">
+          <div className="px-6 py-4 border-b border-gray-50 dark:border-slate-700 flex items-center justify-between">
             <div>
-              <h2 className="text-sm font-semibold text-gray-800">Recent Applications</h2>
-              <p className="text-xs text-gray-400 mt-0.5">Latest candidate activity</p>
+              <h2 className="text-sm font-semibold text-gray-800 dark:text-slate-100">Recent Applications</h2>
+              <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">Latest candidate activity</p>
             </div>
             <Link
               to="/hr/applications"
@@ -318,16 +318,16 @@ const HRDashboard: React.FC = () => {
                   <Link
                     key={app.id}
                     to={`/hr/applications/${app.id}`}
-                    className="flex items-center gap-3 px-5 py-3.5 hover:bg-gray-50/80 transition-colors border-b border-gray-50 last:border-0"
+                    className="flex items-center gap-3 px-5 py-3.5 hover:bg-gray-50/80 dark:hover:bg-slate-700/50 transition-colors border-b border-gray-50 dark:border-slate-700 last:border-0"
                   >
                     <div className="w-8 h-8 rounded-full bg-accent/10 text-accent text-xs font-bold flex items-center justify-center flex-shrink-0">
                       {initials}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-gray-800 truncate">
+                      <p className="text-sm font-medium text-gray-800 dark:text-slate-100 truncate">
                         {app.candidate_name}
                       </p>
-                      <p className="text-xs text-gray-400 truncate">
+                      <p className="text-xs text-gray-400 dark:text-slate-500 truncate">
                         {app.job_title} · {formatDate(app.applied_at)}
                       </p>
                     </div>
@@ -338,8 +338,8 @@ const HRDashboard: React.FC = () => {
             </div>
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center py-12 text-center">
-              <Users size={32} className="text-gray-200 mb-3" />
-              <p className="text-sm text-gray-400">No applications yet</p>
+              <Users size={32} className="text-gray-200 dark:text-slate-600 mb-3" />
+              <p className="text-sm text-gray-400 dark:text-slate-500">No applications yet</p>
               <Link to="/hr/jobs/new" className="mt-2 text-xs text-accent font-medium hover:underline">
                 Post a job to get started
               </Link>
@@ -349,11 +349,11 @@ const HRDashboard: React.FC = () => {
       </div>
 
       {/* ── jobs performance ── */}
-      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-50 dark:border-slate-700 flex items-center justify-between">
           <div>
-            <h2 className="text-sm font-semibold text-gray-800">Jobs Performance</h2>
-            <p className="text-xs text-gray-400 mt-0.5">Applicant count per posting</p>
+            <h2 className="text-sm font-semibold text-gray-800 dark:text-slate-100">Jobs Performance</h2>
+            <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">Applicant count per posting</p>
           </div>
           <Link
             to="/hr/jobs"
@@ -371,17 +371,17 @@ const HRDashboard: React.FC = () => {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-50">
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wide">
+                <tr className="border-b border-gray-50 dark:border-slate-700">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 dark:text-slate-500 uppercase tracking-wide">
                     Position
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wide">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 dark:text-slate-500 uppercase tracking-wide">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wide">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 dark:text-slate-500 uppercase tracking-wide">
                     Applicants
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wide">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 dark:text-slate-500 uppercase tracking-wide">
                     Actions
                   </th>
                 </tr>
@@ -390,15 +390,15 @@ const HRDashboard: React.FC = () => {
                 {data.jobs_performance.map((job, idx) => (
                   <tr
                     key={job.id}
-                    className={`border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors ${idx % 2 === 0 ? '' : 'bg-gray-50/20'}`}
+                    className={`border-b border-gray-50 dark:border-slate-700 last:border-0 hover:bg-gray-50/50 dark:hover:bg-slate-700/50 transition-colors ${idx % 2 === 0 ? '' : 'bg-gray-50/20 dark:bg-slate-700/20'}`}
                   >
-                    <td className="px-6 py-4 text-sm font-medium text-gray-800">{job.title}</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-800 dark:text-slate-100">{job.title}</td>
                     <td className="px-6 py-4">
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           job.status === 'open'
                             ? 'bg-green-50 text-green-700'
-                            : 'bg-gray-100 text-gray-500'
+                            : 'bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400'
                         }`}
                       >
                         <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${job.status === 'open' ? 'bg-green-500' : 'bg-gray-400'}`} />
@@ -407,10 +407,10 @@ const HRDashboard: React.FC = () => {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-gray-800">
+                        <span className="text-sm font-semibold text-gray-800 dark:text-slate-100">
                           {job.applicant_count ?? 0}
                         </span>
-                        <div className="flex-1 max-w-[80px] h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="flex-1 max-w-[80px] h-1.5 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
                           <div
                             className="h-full bg-accent rounded-full"
                             style={{
@@ -435,7 +435,7 @@ const HRDashboard: React.FC = () => {
                         </Link>
                         <Link
                           to={`/hr/jobs/${job.id}/edit`}
-                          className="text-xs text-gray-400 hover:text-gray-600 hover:underline"
+                          className="text-xs text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 hover:underline"
                         >
                           Edit
                         </Link>
@@ -448,8 +448,8 @@ const HRDashboard: React.FC = () => {
           </div>
         ) : (
           <div className="px-6 py-12 text-center">
-            <Briefcase size={32} className="text-gray-200 mx-auto mb-3" />
-            <p className="text-sm text-gray-400 mb-3">No jobs posted yet</p>
+            <Briefcase size={32} className="text-gray-200 dark:text-slate-600 mx-auto mb-3" />
+            <p className="text-sm text-gray-400 dark:text-slate-500 mb-3">No jobs posted yet</p>
             <Link
               to="/hr/jobs/new"
               className="inline-flex items-center gap-1.5 text-sm text-accent font-medium hover:underline"

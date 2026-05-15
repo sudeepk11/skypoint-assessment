@@ -82,8 +82,8 @@ const HRJobList: React.FC = () => {
     <HRLayout>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Manage Jobs</h1>
-          <p className="text-gray-500 text-sm mt-1">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100">Manage Jobs</h1>
+          <p className="text-gray-500 dark:text-slate-400 text-sm mt-1">
             {jobList.length} job{jobList.length !== 1 ? 's' : ''} total
           </p>
         </div>
@@ -103,7 +103,7 @@ const HRJobList: React.FC = () => {
         </div>
       )}
 
-      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 overflow-hidden">
         {loading ? (
           <div className="p-6 space-y-4">
             {Array.from({ length: 4 }).map((_, i) => (
@@ -112,11 +112,11 @@ const HRJobList: React.FC = () => {
           </div>
         ) : jobList.length === 0 ? (
           <div className="py-16 text-center">
-            <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-blue-50 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
               <Briefcase size={28} className="text-accent" />
             </div>
-            <h3 className="text-base font-semibold text-gray-700 mb-2">No jobs posted yet</h3>
-            <p className="text-gray-400 text-sm mb-4">
+            <h3 className="text-base font-semibold text-gray-700 dark:text-slate-300 mb-2">No jobs posted yet</h3>
+            <p className="text-gray-400 dark:text-slate-500 text-sm mb-4">
               Create your first job listing to start receiving applications.
             </p>
             <Link
@@ -130,55 +130,55 @@ const HRJobList: React.FC = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-100">
+              <thead className="bg-gray-50 dark:bg-slate-700 border-b border-gray-100 dark:border-slate-600">
                 <tr>
-                  <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">
                     Title
                   </th>
-                  <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">
                     Location
                   </th>
-                  <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">
                     Type
                   </th>
-                  <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">
                     Status
                   </th>
-                  <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">
                     Applicants
                   </th>
-                  <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">
                     Created
                   </th>
-                  <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
                 {jobList.map((job) => (
-                  <tr key={job.id} className="hover:bg-gray-50/50 transition-colors">
+                  <tr key={job.id} className="hover:bg-gray-50/50 dark:hover:bg-slate-700/50 transition-colors">
                     <td className="px-6 py-4">
                       <div>
-                        <p className="text-sm font-semibold text-gray-800">{job.title}</p>
+                        <p className="text-sm font-semibold text-gray-800 dark:text-slate-100">{job.title}</p>
                         {job.salary_range && (
-                          <p className="text-xs text-gray-400 mt-0.5">{job.salary_range}</p>
+                          <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">{job.salary_range}</p>
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{job.location}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-slate-300">{job.location}</td>
                     <td className="px-6 py-4">
-                      <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                      <span className="text-xs bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 px-2 py-0.5 rounded-full">
                         {formatType(job.employment_type)}
                       </span>
                     </td>
                     <td className="px-6 py-4">
                       <StatusBadge status={job.status} />
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-slate-300">
                       {job.applicant_count ?? 0}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
+                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-slate-400">
                       {formatDate(job.created_at)}
                     </td>
                     <td className="px-6 py-4">
@@ -225,18 +225,18 @@ const HRJobList: React.FC = () => {
       {/* Delete confirmation dialog */}
       {deleteConfirm && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 w-full max-w-sm">
             <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
               <Trash2 size={20} className="text-red-600" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 text-center mb-2">Delete Job</h3>
-            <p className="text-gray-500 text-sm text-center mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100 text-center mb-2">Delete Job</h3>
+            <p className="text-gray-500 dark:text-slate-400 text-sm text-center mb-6">
               Are you sure you want to delete this job listing? This action cannot be undone.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setDeleteConfirm(null)}
-                className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex-1 px-4 py-2.5 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 text-sm font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
               >
                 Cancel
               </button>

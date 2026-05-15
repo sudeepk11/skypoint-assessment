@@ -1,0 +1,5 @@
+1. Even if a candidate has not applied , kind of show like few connects they can use to reach out to other matches 
+we found based on the skill set and they can invite and see invited and candidates can also see.
+2. Connect your socials , glassdoor all of this also is important
+3. Remove Skypoint.ai branding give another branding
+4. Why do we need nginx?

@@ -11,8 +11,11 @@ import {
   X,
   ChevronRight,
   UserCircle,
+  Moon,
+  Sun,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 interface HRLayoutProps {
   children: React.ReactNode;
@@ -23,6 +26,7 @@ export const HRLayout: React.FC<HRLayoutProps> = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { isDark, toggle } = useTheme();
 
   const handleLogout = () => {
     logout();
@@ -40,7 +44,7 @@ export const HRLayout: React.FC<HRLayoutProps> = ({ children }) => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-surface">
+    <div className="flex h-screen overflow-hidden bg-surface dark:bg-slate-900">
       {/* Sidebar overlay (mobile) */}
       {sidebarOpen && (
         <div
@@ -118,15 +122,22 @@ export const HRLayout: React.FC<HRLayoutProps> = ({ children }) => {
       {/* Main content — takes remaining width, scrolls independently */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top bar */}
-        <header className="bg-white border-b border-gray-200 px-4 sm:px-6 h-14 flex items-center gap-3 flex-shrink-0 z-30">
+        <header className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 px-4 sm:px-6 h-14 flex items-center gap-3 flex-shrink-0 z-30">
           <button
-            className="lg:hidden text-gray-600 hover:text-gray-900"
+            className="lg:hidden text-gray-600 hover:text-gray-900 dark:text-slate-400 dark:hover:text-slate-100"
             onClick={() => setSidebarOpen(true)}
           >
             <Menu size={20} />
           </button>
           <div className="flex-1" />
-          <div className="flex items-center gap-2 text-sm text-gray-600">
+          <button
+            onClick={toggle}
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-700 transition-all"
+            aria-label="Toggle dark mode"
+          >
+            {isDark ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
+          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-300">
             <div className="w-7 h-7 rounded-full bg-accent text-white flex items-center justify-center text-xs font-bold">
               {user?.full_name?.charAt(0).toUpperCase()}
             </div>
@@ -135,7 +146,7 @@ export const HRLayout: React.FC<HRLayoutProps> = ({ children }) => {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">{children}</main>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto dark:bg-slate-900">{children}</main>
       </div>
     </div>
   );
@@ -150,6 +161,7 @@ export const CandidateLayout: React.FC<CandidateLayoutProps> = ({ children }) =>
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { isDark, toggle } = useTheme();
 
   const handleLogout = () => {
     logout();
@@ -166,7 +178,7 @@ export const CandidateLayout: React.FC<CandidateLayoutProps> = ({ children }) =>
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-surface">
+    <div className="flex h-screen overflow-hidden bg-surface dark:bg-slate-900">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -240,12 +252,19 @@ export const CandidateLayout: React.FC<CandidateLayoutProps> = ({ children }) =>
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top bar */}
-        <header className="bg-white border-b border-gray-200 px-4 sm:px-6 h-14 flex items-center gap-3 flex-shrink-0 z-30">
-          <button className="lg:hidden text-gray-600 hover:text-gray-900" onClick={() => setSidebarOpen(true)}>
+        <header className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 px-4 sm:px-6 h-14 flex items-center gap-3 flex-shrink-0 z-30">
+          <button className="lg:hidden text-gray-600 hover:text-gray-900 dark:text-slate-400 dark:hover:text-slate-100" onClick={() => setSidebarOpen(true)}>
             <Menu size={20} />
           </button>
           <div className="flex-1" />
-          <div className="flex items-center gap-2 text-sm text-gray-600">
+          <button
+            onClick={toggle}
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-700 transition-all"
+            aria-label="Toggle dark mode"
+          >
+            {isDark ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
+          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-300">
             <div className="w-7 h-7 rounded-full bg-accent text-white flex items-center justify-center text-xs font-bold">
               {user?.full_name?.charAt(0).toUpperCase()}
             </div>
@@ -254,7 +273,7 @@ export const CandidateLayout: React.FC<CandidateLayoutProps> = ({ children }) =>
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">{children}</main>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto dark:bg-slate-900">{children}</main>
       </div>
     </div>
   );

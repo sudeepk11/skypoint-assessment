@@ -41,7 +41,7 @@ const getGreeting = () => {
 
 /* ── skeleton ── */
 const Sk = ({ className }: { className: string }) => (
-  <div className={`animate-pulse rounded bg-gray-100 ${className}`} />
+  <div className={`animate-pulse rounded bg-gray-100 dark:bg-slate-700 ${className}`} />
 );
 
 const CandidateDashboard: React.FC = () => {
@@ -137,7 +137,7 @@ const CandidateDashboard: React.FC = () => {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {loading
             ? Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="bg-white rounded-2xl p-4 border border-gray-100">
+                <div key={i} className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-gray-100 dark:border-slate-700">
                   <Sk className="h-3 w-16 mb-4" />
                   <Sk className="h-8 w-10 mb-1" />
                   <Sk className="h-2 w-12" />
@@ -146,10 +146,10 @@ const CandidateDashboard: React.FC = () => {
             : kpis.map((k) => (
                 <div
                   key={k.label}
-                  className="bg-white rounded-2xl p-4 border border-gray-100 hover:shadow-md transition-shadow"
+                  className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-gray-100 dark:border-slate-700 hover:shadow-md transition-shadow"
                 >
                   <div className="flex items-start justify-between mb-3">
-                    <p className="text-xs font-medium text-gray-500">{k.label}</p>
+                    <p className="text-xs font-medium text-gray-500 dark:text-slate-400">{k.label}</p>
                     <div className={`w-7 h-7 ${k.iconBg} rounded-lg flex items-center justify-center`}>
                       <k.icon size={13} className={k.iconColor} />
                     </div>
@@ -163,11 +163,11 @@ const CandidateDashboard: React.FC = () => {
         <div className="grid sm:grid-cols-5 gap-5">
 
           {/* recent applications — wider */}
-          <div className="sm:col-span-3 bg-white rounded-2xl border border-gray-100 overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between">
+          <div className="sm:col-span-3 bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 overflow-hidden">
+            <div className="px-5 py-4 border-b border-gray-50 dark:border-slate-700 flex items-center justify-between">
               <div>
-                <h2 className="text-sm font-semibold text-gray-800">Recent Applications</h2>
-                <p className="text-xs text-gray-400 mt-0.5">Your latest submissions</p>
+                <h2 className="text-sm font-semibold text-gray-800 dark:text-slate-100">Recent Applications</h2>
+                <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">Your latest submissions</p>
               </div>
               <Link
                 to="/candidate/applications"
@@ -195,16 +195,16 @@ const CandidateDashboard: React.FC = () => {
                 {data.recent_applications.slice(0, 5).map((app) => (
                   <div
                     key={app.id}
-                    className="flex items-center gap-3 px-5 py-3.5 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors"
+                    className="flex items-center gap-3 px-5 py-3.5 border-b border-gray-50 dark:border-slate-700 last:border-0 hover:bg-gray-50/50 dark:hover:bg-slate-700/50 transition-colors"
                   >
                     <div className="w-9 h-9 rounded-xl bg-accent/8 border border-accent/10 flex items-center justify-center flex-shrink-0">
                       <Briefcase size={15} className="text-accent" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-gray-800 truncate">
+                      <p className="text-sm font-medium text-gray-800 dark:text-slate-100 truncate">
                         {app.job?.title ?? 'Unknown Position'}
                       </p>
-                      <p className="text-xs text-gray-400 truncate">
+                      <p className="text-xs text-gray-400 dark:text-slate-500 truncate">
                         {app.job?.location ?? ''} · {formatDate(app.applied_at)}
                       </p>
                     </div>
@@ -214,8 +214,8 @@ const CandidateDashboard: React.FC = () => {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-center">
-                <Briefcase size={32} className="text-gray-200 mb-3" />
-                <p className="text-sm text-gray-400 mb-2">No applications yet</p>
+                <Briefcase size={32} className="text-gray-200 dark:text-slate-600 mb-3" />
+                <p className="text-sm text-gray-400 dark:text-slate-500 mb-2">No applications yet</p>
                 <Link
                   to="/candidate/jobs"
                   className="text-xs text-accent font-medium hover:underline"
@@ -230,25 +230,25 @@ const CandidateDashboard: React.FC = () => {
           <div className="sm:col-span-2 space-y-4">
 
             {/* success rate card */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-5">
-              <h3 className="text-sm font-semibold text-gray-800 mb-1">Shortlist Rate</h3>
-              <p className="text-xs text-gray-400 mb-4">Based on your applications</p>
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-5">
+              <h3 className="text-sm font-semibold text-gray-800 dark:text-slate-100 mb-1">Shortlist Rate</h3>
+              <p className="text-xs text-gray-400 dark:text-slate-500 mb-4">Based on your applications</p>
 
               {loading ? (
                 <Sk className="h-20" />
               ) : (
                 <>
                   <div className="flex items-end gap-2 mb-3">
-                    <span className="text-3xl font-bold text-gray-800">{successRate}%</span>
-                    <span className="text-xs text-gray-400 pb-1">shortlisted</span>
+                    <span className="text-3xl font-bold text-gray-800 dark:text-slate-100">{successRate}%</span>
+                    <span className="text-xs text-gray-400 dark:text-slate-500 pb-1">shortlisted</span>
                   </div>
-                  <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-green-500 rounded-full transition-all duration-700"
                       style={{ width: `${successRate}%` }}
                     />
                   </div>
-                  <p className="text-xs text-gray-400 mt-2">
+                  <p className="text-xs text-gray-400 dark:text-slate-500 mt-2">
                     {shortlisted} of {total} application{total !== 1 ? 's' : ''} shortlisted
                   </p>
                 </>
@@ -256,8 +256,8 @@ const CandidateDashboard: React.FC = () => {
             </div>
 
             {/* status breakdown */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-5">
-              <h3 className="text-sm font-semibold text-gray-800 mb-4">Status Breakdown</h3>
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-5">
+              <h3 className="text-sm font-semibold text-gray-800 dark:text-slate-100 mb-4">Status Breakdown</h3>
               {loading ? (
                 <div className="space-y-3">
                   {Array.from({ length: 3 }).map((_, i) => <Sk key={i} className="h-6" />)}
@@ -271,10 +271,10 @@ const CandidateDashboard: React.FC = () => {
                   ].map((row) => (
                     <div key={row.label}>
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs text-gray-500">{row.label}</span>
-                        <span className="text-xs font-semibold text-gray-700">{row.value}</span>
+                        <span className="text-xs text-gray-500 dark:text-slate-400">{row.label}</span>
+                        <span className="text-xs font-semibold text-gray-700 dark:text-slate-300">{row.value}</span>
                       </div>
-                      <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="w-full h-1.5 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
                         <div
                           className={`h-full ${row.color} rounded-full transition-all duration-700`}
                           style={{ width: total > 0 ? `${Math.round((row.value / total) * 100)}%` : '0%' }}

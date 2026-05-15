@@ -127,25 +127,25 @@ const JobDetail: React.FC = () => {
         {/* Back button */}
         <button
           onClick={() => navigate('/candidate/jobs')}
-          className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 mb-5 transition-colors"
+          className="flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200 mb-5 transition-colors"
         >
           <ArrowLeft size={16} />
           Back to Jobs
         </button>
 
         {/* Job header */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6 mb-5">
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-6 mb-5">
           <div className="flex items-start justify-between gap-4 mb-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-1">{job.title}</h1>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100 mb-1">{job.title}</h1>
               {job.company_name && (
-                <div className="flex items-center gap-1.5 text-sm font-medium text-gray-600 mb-2">
+                <div className="flex items-center gap-1.5 text-sm font-medium text-gray-600 dark:text-slate-300 mb-2">
                   <Building2 size={15} />
                   {job.company_name}
                 </div>
               )}
               <div className="flex flex-wrap items-center gap-3">
-                <div className="flex items-center gap-1 text-sm text-gray-500">
+                <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-slate-400">
                   <MapPin size={14} />
                   {job.location}
                 </div>
@@ -153,12 +153,12 @@ const JobDetail: React.FC = () => {
                   {formatType(job.employment_type)}
                 </span>
                 {job.salary_range && (
-                  <div className="flex items-center gap-1 text-sm text-gray-500">
+                  <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-slate-400">
                     <DollarSign size={14} />
                     {job.salary_range}
                   </div>
                 )}
-                <div className="flex items-center gap-1 text-xs text-gray-400">
+                <div className="flex items-center gap-1 text-xs text-gray-400 dark:text-slate-500">
                   <Clock size={12} />
                   Posted {formatDate(job.created_at)}
                 </div>
@@ -188,8 +188,8 @@ const JobDetail: React.FC = () => {
               </p>
             </div>
           ) : job.status === 'closed' ? (
-            <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl">
-              <p className="text-sm text-gray-500">This position is no longer accepting applications.</p>
+            <div className="p-4 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl">
+              <p className="text-sm text-gray-500 dark:text-slate-400">This position is no longer accepting applications.</p>
             </div>
           ) : (
             <>
@@ -208,8 +208,8 @@ const JobDetail: React.FC = () => {
 
         {/* Apply form (inline) */}
         {showApplyForm && !existingApp && !applySuccess && (
-          <div className="bg-white rounded-xl border border-accent/30 p-6 mb-5">
-            <h2 className="text-base font-semibold text-gray-800 mb-4">Submit Your Application</h2>
+          <div className="bg-white dark:bg-slate-800 rounded-xl border border-accent/30 p-6 mb-5">
+            <h2 className="text-base font-semibold text-gray-800 dark:text-slate-100 mb-4">Submit Your Application</h2>
 
             {applyError && (
               <div className="flex items-start gap-2 p-4 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 mb-4">
@@ -220,7 +220,7 @@ const JobDetail: React.FC = () => {
 
             <form onSubmit={handleApply} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
                   Resume <span className="text-red-500">*</span>
                 </label>
                 <textarea
@@ -231,24 +231,24 @@ const JobDetail: React.FC = () => {
                   }}
                   rows={8}
                   placeholder="Paste your resume text here..."
-                  className={`w-full px-3.5 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent resize-none ${
-                    resumeError ? 'border-red-400 bg-red-50' : 'border-gray-300'
+                  className={`w-full px-3.5 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent resize-none dark:bg-slate-700 dark:text-slate-100 dark:placeholder-slate-400 ${
+                    resumeError ? 'border-red-400 bg-red-50' : 'border-gray-300 dark:border-slate-600'
                   }`}
                 />
                 {resumeError && <p className="mt-1 text-xs text-red-600">{resumeError}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
                   Cover Letter{' '}
-                  <span className="text-gray-400 font-normal">(optional)</span>
+                  <span className="text-gray-400 dark:text-slate-500 font-normal">(optional)</span>
                 </label>
                 <textarea
                   value={coverLetter}
                   onChange={(e) => setCoverLetter(e.target.value)}
                   rows={5}
                   placeholder="Tell us why you're interested in this role..."
-                  className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent resize-none"
+                  className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent resize-none dark:bg-slate-700 dark:text-slate-100 dark:placeholder-slate-400"
                 />
               </div>
 
@@ -270,7 +270,7 @@ const JobDetail: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowApplyForm(false)}
-                  className="px-4 py-2.5 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-4 py-2.5 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 text-sm font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
                 >
                   Cancel
                 </button>
@@ -281,8 +281,8 @@ const JobDetail: React.FC = () => {
 
         {/* Required Skills */}
         {job.skills && job.skills.length > 0 && (
-          <div className="bg-white rounded-xl border border-gray-100 p-6 mb-5">
-            <h3 className="text-base font-semibold text-gray-800 mb-3">Required Skills</h3>
+          <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-6 mb-5">
+            <h3 className="text-base font-semibold text-gray-800 dark:text-slate-100 mb-3">Required Skills</h3>
             <div className="flex flex-wrap gap-2">
               {job.skills.map(skill => (
                 <span key={skill} className="px-3 py-1 bg-accent/10 text-accent border border-accent/20 rounded-full text-sm font-medium">
@@ -294,8 +294,8 @@ const JobDetail: React.FC = () => {
         )}
 
         {/* Job details tabs */}
-        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-          <div className="flex border-b border-gray-100">
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 overflow-hidden">
+          <div className="flex border-b border-gray-100 dark:border-slate-700">
             {(['description', 'requirements'] as const).map((tab) => (
               <button
                 key={tab}
@@ -303,7 +303,7 @@ const JobDetail: React.FC = () => {
                 className={`flex-1 py-3 text-sm font-medium capitalize transition-colors ${
                   activeTab === tab
                     ? 'border-b-2 border-accent text-accent'
-                    : 'text-gray-500 hover:text-gray-700'
+                    : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'
                 }`}
               >
                 {tab}
@@ -312,7 +312,7 @@ const JobDetail: React.FC = () => {
           </div>
           <div className="p-6">
             <div className="prose prose-sm max-w-none">
-              <pre className="whitespace-pre-wrap text-sm text-gray-700 font-sans leading-relaxed">
+              <pre className="whitespace-pre-wrap text-sm text-gray-700 dark:text-slate-300 font-sans leading-relaxed">
                 {activeTab === 'description' ? job.description : job.requirements}
               </pre>
             </div>

@@ -111,23 +111,23 @@ const BulkEmailModal: React.FC<BulkEmailModalProps> = ({ isOpen, onClose, applic
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-slate-700">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
               <Mail size={18} className="text-accent" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">Send Bulk Email</h2>
-              <p className="text-sm text-gray-500">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-slate-100">Send Bulk Email</h2>
+              <p className="text-sm text-gray-500 dark:text-slate-400">
                 Sending to {applicationIds.length} candidate{applicationIds.length !== 1 ? 's' : ''}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 transition-colors"
           >
             <X size={20} />
           </button>
@@ -153,7 +153,7 @@ const BulkEmailModal: React.FC<BulkEmailModalProps> = ({ isOpen, onClose, applic
 
           {/* Template selector */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
               Email Template
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -163,8 +163,8 @@ const BulkEmailModal: React.FC<BulkEmailModalProps> = ({ isOpen, onClose, applic
                   onClick={() => handleTemplateChange(t)}
                   className={`px-3 py-2 text-sm rounded-lg border text-left transition-all ${
                     selectedTemplate === t
-                      ? 'border-accent bg-blue-50 text-accent font-medium'
-                      : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                      ? 'border-accent bg-blue-50 dark:bg-blue-900/20 text-accent font-medium'
+                      : 'border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:border-gray-300 dark:hover:border-slate-500'
                   }`}
                 >
                   {templates[t].label}
@@ -175,38 +175,38 @@ const BulkEmailModal: React.FC<BulkEmailModalProps> = ({ isOpen, onClose, applic
 
           {/* Subject */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
               Subject <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-slate-100 dark:placeholder-slate-400"
               placeholder="Email subject..."
             />
           </div>
 
           {/* Body */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
               Message <span className="text-red-500">*</span>
             </label>
             <textarea
               value={body}
               onChange={(e) => setBody(e.target.value)}
               rows={8}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none dark:bg-slate-700 dark:text-slate-100 dark:placeholder-slate-400"
               placeholder="Email body..."
             />
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
+        <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-slate-700">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
           >
             Cancel
           </button>

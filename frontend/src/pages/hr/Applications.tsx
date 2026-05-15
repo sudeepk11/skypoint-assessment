@@ -89,8 +89,8 @@ const HRApplications: React.FC = () => {
     <HRLayout>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Applications</h1>
-          <p className="text-gray-500 text-sm mt-1">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100">Applications</h1>
+          <p className="text-gray-500 dark:text-slate-400 text-sm mt-1">
             {appList.length} application{appList.length !== 1 ? 's' : ''}
             {selectedIds.size > 0 && ` · ${selectedIds.size} selected`}
           </p>
@@ -118,13 +118,13 @@ const HRApplications: React.FC = () => {
       )}
 
       {/* Filter toolbar */}
-      <div className="bg-white rounded-xl border border-gray-100 p-4 mb-5">
+      <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-4 mb-5">
         <div className="flex flex-wrap items-center gap-3">
           {/* Job filter */}
           <select
             value={jobFilter}
             onChange={(e) => setJobFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white min-w-[180px]"
+            className="px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white dark:bg-slate-700 dark:text-slate-100 min-w-[180px]"
           >
             <option value="">All Jobs</option>
             {jobs.map((j) => (
@@ -143,7 +143,7 @@ const HRApplications: React.FC = () => {
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   statusFilter === tab.value
                     ? 'bg-primary text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600'
                 }`}
               >
                 {tab.label}
@@ -154,7 +154,7 @@ const HRApplications: React.FC = () => {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 overflow-hidden">
         {loading ? (
           <div className="p-6 space-y-4">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -163,51 +163,51 @@ const HRApplications: React.FC = () => {
           </div>
         ) : appList.length === 0 ? (
           <div className="py-16 text-center">
-            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Inbox size={28} className="text-gray-300" />
+            <div className="w-16 h-16 bg-gray-50 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Inbox size={28} className="text-gray-300 dark:text-slate-500" />
             </div>
-            <h3 className="text-base font-semibold text-gray-600 mb-2">No applications found</h3>
-            <p className="text-gray-400 text-sm">
+            <h3 className="text-base font-semibold text-gray-600 dark:text-slate-300 mb-2">No applications found</h3>
+            <p className="text-gray-400 dark:text-slate-500 text-sm">
               Try changing the filters or wait for candidates to apply.
             </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-100">
+              <thead className="bg-gray-50 dark:bg-slate-700 border-b border-gray-100 dark:border-slate-600">
                 <tr>
                   <th className="px-4 py-3.5 text-left">
                     <input
                       type="checkbox"
                       checked={allSelected}
                       onChange={toggleSelectAll}
-                      className="rounded border-gray-300 text-accent focus:ring-accent"
+                      className="rounded border-gray-300 dark:border-slate-600 text-accent focus:ring-accent"
                     />
                   </th>
-                  <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">
                     Candidate
                   </th>
-                  <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">
                     Email
                   </th>
-                  <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">
                     Job Title
                   </th>
-                  <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">
                     Applied
                   </th>
-                  <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">
                     Status
                   </th>
                   <th className="px-4 py-3.5" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
                 {appList.map((app) => (
                   <tr
                     key={app.id}
-                    className={`hover:bg-gray-50/50 transition-colors ${
-                      selectedIds.has(app.id) ? 'bg-blue-50/40' : ''
+                    className={`hover:bg-gray-50/50 dark:hover:bg-slate-700/50 transition-colors ${
+                      selectedIds.has(app.id) ? 'bg-blue-50/40 dark:bg-slate-700/40' : ''
                     }`}
                   >
                     <td className="px-4 py-4">
@@ -215,7 +215,7 @@ const HRApplications: React.FC = () => {
                         type="checkbox"
                         checked={selectedIds.has(app.id)}
                         onChange={() => toggleSelect(app.id)}
-                        className="rounded border-gray-300 text-accent focus:ring-accent"
+                        className="rounded border-gray-300 dark:border-slate-600 text-accent focus:ring-accent"
                       />
                     </td>
                     <td className="px-4 py-4">
@@ -223,18 +223,18 @@ const HRApplications: React.FC = () => {
                         <div className="w-7 h-7 rounded-full bg-accent/10 text-accent font-semibold flex items-center justify-center text-xs">
                           {app.candidate?.full_name?.charAt(0).toUpperCase() ?? '?'}
                         </div>
-                        <span className="text-sm font-medium text-gray-800">
+                        <span className="text-sm font-medium text-gray-800 dark:text-slate-100">
                           {app.candidate?.full_name ?? 'Unknown'}
                         </span>
                       </div>
                     </td>
-                    <td className="px-4 py-4 text-sm text-gray-500">
+                    <td className="px-4 py-4 text-sm text-gray-500 dark:text-slate-400">
                       {app.candidate?.email ?? '—'}
                     </td>
-                    <td className="px-4 py-4 text-sm text-gray-700">
+                    <td className="px-4 py-4 text-sm text-gray-700 dark:text-slate-300">
                       {app.job?.title ?? '—'}
                     </td>
-                    <td className="px-4 py-4 text-sm text-gray-500">
+                    <td className="px-4 py-4 text-sm text-gray-500 dark:text-slate-400">
                       {formatDate(app.applied_at)}
                     </td>
                     <td className="px-4 py-4">
