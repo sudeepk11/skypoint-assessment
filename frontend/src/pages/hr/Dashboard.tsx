@@ -51,7 +51,7 @@ interface DashboardData {
 
 const STATUS_COLORS: Record<string, string> = {
   pending:     '#f59e0b',
-  reviewing:   '#2563eb',
+  reviewing:   '#6366f1',
   shortlisted: '#16a34a',
   rejected:    '#ef4444',
 };

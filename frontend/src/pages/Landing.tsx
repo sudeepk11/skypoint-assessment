@@ -44,7 +44,7 @@ const StatItem: React.FC<{ value: string; label: string; isText?: boolean }> = (
 
   return (
     <div ref={ref} className="text-center px-6 py-6">
-      <div className="text-4xl font-bold mb-1" style={{ background: 'linear-gradient(135deg, #2563eb, #7c3aed)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+      <div className="text-4xl font-bold mb-1" style={{ background: 'linear-gradient(135deg, #6366f1, #7c3aed)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
         {isText ? value : `${count}${suffix}`}
       </div>
       <div className="text-sm text-gray-500 font-medium">{label}</div>
@@ -74,8 +74,8 @@ const Landing: React.FC = () => {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center">
-              <span className="text-xl font-bold" style={{ color: scrolled ? '#1a2744' : 'white' }}>Sky</span>
-              <span className="text-xl font-bold" style={{ color: scrolled ? '#2563eb' : '#93c5fd' }}>Hire</span>
+              <span className="text-xl font-bold" style={{ color: scrolled ? '#0f172a' : 'white' }}>Sky</span>
+              <span className="text-xl font-bold" style={{ color: scrolled ? '#6366f1' : '#93c5fd' }}>Hire</span>
             </div>
 
             {/* Nav links + CTAs */}
@@ -83,7 +83,7 @@ const Landing: React.FC = () => {
               <Link
                 to="/jobs"
                 className={`hidden sm:block text-sm font-medium px-3 py-2 rounded-lg transition-colors ${
-                  scrolled ? 'text-gray-600 hover:text-blue-600' : 'text-white/80 hover:text-white'
+                  scrolled ? 'text-gray-600 hover:text-indigo-600' : 'text-white/80 hover:text-white'
                 }`}
               >
                 For Candidates
@@ -91,7 +91,7 @@ const Landing: React.FC = () => {
               <Link
                 to="/register?role=hr"
                 className={`hidden sm:block text-sm font-medium px-3 py-2 rounded-lg transition-colors ${
-                  scrolled ? 'text-gray-600 hover:text-blue-600' : 'text-white/80 hover:text-white'
+                  scrolled ? 'text-gray-600 hover:text-indigo-600' : 'text-white/80 hover:text-white'
                 }`}
               >
                 For HR
@@ -100,7 +100,7 @@ const Landing: React.FC = () => {
                 to="/login"
                 className={`text-sm font-medium px-4 py-2 rounded-lg border transition-all ${
                   scrolled
-                    ? 'border-gray-200 text-gray-700 hover:border-blue-500 hover:text-blue-600'
+                    ? 'border-gray-200 text-gray-700 hover:border-indigo-500 hover:text-indigo-600'
                     : 'border-white/30 text-white hover:border-white hover:bg-white/10'
                 }`}
               >
@@ -109,7 +109,7 @@ const Landing: React.FC = () => {
               <Link
                 to="/register"
                 className="text-sm font-semibold px-4 py-2 rounded-lg text-white transition-all hover:opacity-90 hover:shadow-lg"
-                style={{ background: 'linear-gradient(135deg, #2563eb, #7c3aed)', boxShadow: '0 4px 15px rgba(37,99,235,0.3)' }}
+                style={{ background: 'linear-gradient(135deg, #6366f1, #7c3aed)', boxShadow: '0 4px 15px rgba(99,102,241,0.3)' }}
               >
                 Get Started
               </Link>
@@ -121,7 +121,7 @@ const Landing: React.FC = () => {
       {/* ── Hero ───────────────────────────────────────────────────────────── */}
       <section
         className="relative min-h-screen flex items-center justify-center overflow-hidden"
-        style={{ background: '#1a2744' }}
+        style={{ background: '#0f172a' }}
       >
         {/* Animated gradient blobs */}
         <div
@@ -135,7 +135,7 @@ const Landing: React.FC = () => {
         <div
           className="absolute bottom-0 right-0 w-[600px] h-[600px] rounded-full opacity-25 pointer-events-none"
           style={{
-            background: 'radial-gradient(circle, #2563eb 0%, transparent 70%)',
+            background: 'radial-gradient(circle, #6366f1 0%, transparent 70%)',
             transform: 'translate(30%, 30%)',
             filter: 'blur(80px)',
           }}
@@ -154,7 +154,7 @@ const Landing: React.FC = () => {
           className="hidden lg:flex absolute top-32 right-16 items-center gap-3 px-5 py-4 rounded-2xl border border-white/20"
           style={{ background: 'rgba(255,255,255,0.07)', backdropFilter: 'blur(12px)', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}
         >
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #2563eb, #7c3aed)' }}>
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #6366f1, #7c3aed)' }}>
             <Briefcase size={18} className="text-white" />
           </div>
           <div>
@@ -180,7 +180,7 @@ const Landing: React.FC = () => {
           className="hidden lg:flex absolute bottom-40 right-20 items-center gap-3 px-5 py-4 rounded-2xl border border-white/20"
           style={{ background: 'rgba(255,255,255,0.07)', backdropFilter: 'blur(12px)', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}
         >
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #059669, #2563eb)' }}>
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #059669, #6366f1)' }}>
             <CheckCircle size={18} className="text-white" />
           </div>
           <div>
@@ -226,7 +226,7 @@ const Landing: React.FC = () => {
               to="/register?role=hr"
               className="flex items-center gap-2 px-8 py-4 rounded-xl text-white font-semibold text-sm sm:text-base transition-all hover:opacity-90 hover:scale-[1.02] hover:shadow-2xl"
               style={{
-                background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
+                background: 'linear-gradient(135deg, #6366f1, #7c3aed)',
                 boxShadow: '0 8px 30px rgba(37,99,235,0.4)',
               }}
             >
@@ -272,13 +272,13 @@ const Landing: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section header */}
           <div className="text-center mb-16">
-            <p className="text-sm font-semibold uppercase tracking-widest mb-3" style={{ color: '#2563eb' }}>
+            <p className="text-sm font-semibold uppercase tracking-widest mb-3" style={{ color: '#6366f1' }}>
               Platform
             </p>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight mb-4" style={{ color: '#1a2744' }}>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight mb-4" style={{ color: '#0f172a' }}>
               Everything your team needs
               <br />
-              <span style={{ background: 'linear-gradient(135deg, #1a2744, #2563eb)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              <span style={{ background: 'linear-gradient(135deg, #0f172a, #6366f1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                 to hire smarter
               </span>
             </h2>
@@ -291,11 +291,11 @@ const Landing: React.FC = () => {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                icon: <Zap size={26} className="text-blue-600" />,
+                icon: <Zap size={26} className="text-indigo-600" />,
                 iconBg: 'bg-blue-50',
                 title: 'Post in Minutes',
                 desc: 'Write job descriptions, set requirements, and go live in under 5 minutes. Reach thousands of qualified candidates instantly.',
-                accent: '#2563eb',
+                accent: '#6366f1',
                 emoji: '📋',
               },
               {
@@ -323,7 +323,7 @@ const Landing: React.FC = () => {
                 <div className={`w-14 h-14 ${f.iconBg} rounded-2xl flex items-center justify-center mb-6`}>
                   {f.icon}
                 </div>
-                <h3 className="text-lg font-bold mb-3" style={{ color: '#1a2744' }}>{f.title}</h3>
+                <h3 className="text-lg font-bold mb-3" style={{ color: '#0f172a' }}>{f.title}</h3>
                 <p className="text-gray-500 text-sm leading-relaxed">{f.desc}</p>
                 <div className="mt-6 flex items-center gap-1 text-sm font-semibold" style={{ color: f.accent }}>
                   Learn more <ArrowRight size={14} />
@@ -339,12 +339,12 @@ const Landing: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section header */}
           <div className="text-center mb-16">
-            <p className="text-sm font-semibold uppercase tracking-widest mb-3" style={{ color: '#2563eb' }}>
+            <p className="text-sm font-semibold uppercase tracking-widest mb-3" style={{ color: '#6366f1' }}>
               How it works
             </p>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight" style={{ color: '#1a2744' }}>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight" style={{ color: '#0f172a' }}>
               Simple steps.{' '}
-              <span style={{ background: 'linear-gradient(135deg, #2563eb, #7c3aed)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              <span style={{ background: 'linear-gradient(135deg, #6366f1, #7c3aed)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                 Real results.
               </span>
             </h2>
@@ -354,10 +354,10 @@ const Landing: React.FC = () => {
             {/* For HR Teams */}
             <div className="rounded-2xl p-8 border border-gray-100" style={{ background: '#f8fafc' }}>
               <div className="flex items-center gap-3 mb-8">
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a2744, #2563eb)' }}>
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0f172a, #6366f1)' }}>
                   <Briefcase size={20} className="text-white" />
                 </div>
-                <h3 className="text-xl font-bold" style={{ color: '#1a2744' }}>For HR Teams</h3>
+                <h3 className="text-xl font-bold" style={{ color: '#0f172a' }}>For HR Teams</h3>
               </div>
               <div className="space-y-5">
                 {[
@@ -369,12 +369,12 @@ const Landing: React.FC = () => {
                   <div key={item.step} className="flex items-start gap-4">
                     <div
                       className="w-8 h-8 rounded-full text-white text-sm font-bold flex items-center justify-center flex-shrink-0 mt-0.5"
-                      style={{ background: 'linear-gradient(135deg, #2563eb, #7c3aed)' }}
+                      style={{ background: 'linear-gradient(135deg, #6366f1, #7c3aed)' }}
                     >
                       {item.step}
                     </div>
                     <div>
-                      <p className="font-semibold text-sm mb-0.5" style={{ color: '#1a2744' }}>{item.label}</p>
+                      <p className="font-semibold text-sm mb-0.5" style={{ color: '#0f172a' }}>{item.label}</p>
                       <p className="text-gray-500 text-xs leading-relaxed">{item.desc}</p>
                     </div>
                   </div>
@@ -383,7 +383,7 @@ const Landing: React.FC = () => {
               <Link
                 to="/register?role=hr"
                 className="mt-8 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold transition-all hover:opacity-90 hover:shadow-lg"
-                style={{ background: 'linear-gradient(135deg, #2563eb, #7c3aed)', boxShadow: '0 4px 15px rgba(37,99,235,0.25)' }}
+                style={{ background: 'linear-gradient(135deg, #6366f1, #7c3aed)', boxShadow: '0 4px 15px rgba(99,102,241,0.25)' }}
               >
                 Start hiring free <ArrowRight size={14} />
               </Link>
@@ -395,7 +395,7 @@ const Landing: React.FC = () => {
                 <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #7c3aed, #059669)' }}>
                   <Users size={20} className="text-white" />
                 </div>
-                <h3 className="text-xl font-bold" style={{ color: '#1a2744' }}>For Job Seekers</h3>
+                <h3 className="text-xl font-bold" style={{ color: '#0f172a' }}>For Job Seekers</h3>
               </div>
               <div className="space-y-5">
                 {[
@@ -412,7 +412,7 @@ const Landing: React.FC = () => {
                       {item.step}
                     </div>
                     <div>
-                      <p className="font-semibold text-sm mb-0.5" style={{ color: '#1a2744' }}>{item.label}</p>
+                      <p className="font-semibold text-sm mb-0.5" style={{ color: '#0f172a' }}>{item.label}</p>
                       <p className="text-gray-500 text-xs leading-relaxed">{item.desc}</p>
                     </div>
                   </div>
@@ -433,7 +433,7 @@ const Landing: React.FC = () => {
       {/* ── CTA Banner ─────────────────────────────────────────────────────── */}
       <section
         className="py-24 relative overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, #1a2744 0%, #2563eb 60%, #7c3aed 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #0f172a 0%, #6366f1 60%, #7c3aed 100%)' }}
       >
         {/* Blob accents */}
         <div
@@ -460,7 +460,7 @@ const Landing: React.FC = () => {
             <Link
               to="/register?role=hr"
               className="flex items-center gap-2 px-8 py-4 rounded-xl bg-white font-semibold text-sm transition-all hover:shadow-2xl hover:scale-[1.02]"
-              style={{ color: '#2563eb' }}
+              style={{ color: '#6366f1' }}
             >
               Start Hiring Free
               <ArrowRight size={16} />
@@ -481,8 +481,8 @@ const Landing: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center">
-              <span className="text-xl font-bold" style={{ color: '#1a2744' }}>Sky</span>
-              <span className="text-xl font-bold" style={{ color: '#2563eb' }}>Hire</span>
+              <span className="text-xl font-bold" style={{ color: '#0f172a' }}>Sky</span>
+              <span className="text-xl font-bold" style={{ color: '#6366f1' }}>Hire</span>
             </div>
             <p className="text-sm text-gray-400 font-medium">
               Built for India's growing companies

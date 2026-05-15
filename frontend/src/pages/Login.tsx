@@ -62,7 +62,7 @@ const Login: React.FC = () => {
       {/* ── Left panel ── */}
       <div
         className="hidden lg:flex lg:w-[45%] flex-col justify-between p-10 relative overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, #0f1f3d 0%, #1a2f5e 50%, #1e3a7a 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)' }}
       >
         {/* Decorative blobs */}
         <div className="absolute top-[-80px] right-[-80px] w-72 h-72 rounded-full opacity-20"
@@ -148,7 +148,7 @@ const Login: React.FC = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                 placeholder="you@company.com"
                 autoComplete="email"
               />
@@ -161,7 +161,7 @@ const Login: React.FC = () => {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all pr-11"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all pr-11"
                   placeholder="••••••••"
                   autoComplete="current-password"
                 />
@@ -179,7 +179,7 @@ const Login: React.FC = () => {
               type="submit"
               disabled={loading}
               className="w-full py-2.5 px-4 rounded-xl text-sm font-semibold text-white flex items-center justify-center gap-2 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-              style={{ background: loading ? '#93c5fd' : 'linear-gradient(135deg, #1e40af, #2563eb)' }}
+              style={{ background: loading ? '#a5b4fc' : 'linear-gradient(135deg, #4338ca, #6366f1)' }}
             >
               {loading ? (
                 <>
@@ -197,7 +197,7 @@ const Login: React.FC = () => {
 
           <p className="mt-6 text-center text-sm text-gray-500">
             New to SkyHire?{' '}
-            <Link to="/register" className="text-blue-600 font-medium hover:underline">
+            <Link to="/register" className="text-indigo-600 font-medium hover:underline">
               Create an account
             </Link>
           </p>

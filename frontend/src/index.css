@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --color-primary: #1a2744;
-  --color-accent: #2563eb;
+  --color-primary: #0f172a;
+  --color-accent: #6366f1;
   --color-surface: #f8fafc;
   --color-text: #0f172a;
   --color-success: #16a34a;
@@ -105,5 +105,5 @@ body {
 input:focus, textarea:focus, select:focus {
   outline: none;
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
