@@ -53,7 +53,7 @@ External Services (optional):
 ### Prerequisites
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running
 
-### Steps
+### Production (assessors / deployment)
 
 ```bash
 # 1. Clone the repository
@@ -70,7 +70,17 @@ docker compose up --build
 open http://localhost:3000
 ```
 
+Serves a compiled, optimised build via **nginx**. No hot reload.
+
 > **Note:** The first `docker compose up --build` will take 2–3 minutes to pull images and install dependencies. Subsequent runs are much faster.
+
+### Development (hot reload)
+
+```bash
+docker compose -f docker-compose.dev.yml up --build
+```
+
+Runs the Vite dev server with live reload on **http://localhost:3000**.
 
 The application is accessible at **http://localhost:3000**
 

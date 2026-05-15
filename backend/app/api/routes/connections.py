@@ -17,10 +17,6 @@ from app.models.user import User
 router = APIRouter(prefix="/connections", tags=["connections"])
 
 
-# ---------------------------------------------------------------------------
-# Schemas
-# ---------------------------------------------------------------------------
-
 class UserPublic(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -88,10 +84,6 @@ class UserWithStatus(BaseModel):
     connection_id: Optional[str] = None
 
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
 def _parse_skills(s: Optional[str]) -> set:
     if not s:
         return set()
@@ -125,10 +117,6 @@ def _enrich_connection(conn: Connection, db: Session) -> ConnectionOut:
     return out
 
 
-# ---------------------------------------------------------------------------
-# HR: talent pool (candidates only)
-# ---------------------------------------------------------------------------
-
 @router.get("/candidates", response_model=List[CandidateOut])
 def list_candidates(
     db: Session = Depends(get_db),
@@ -139,10 +127,6 @@ def list_candidates(
         raise HTTPException(status_code=403, detail="HR only.")
     return db.query(User).filter(User.role == "candidate").all()
 
-
-# ---------------------------------------------------------------------------
-# Send invite (HR → candidate)
-# ---------------------------------------------------------------------------
 
 @router.post("/{candidate_id}", response_model=ConnectionOut, status_code=201)
 def send_invite(
@@ -190,10 +174,6 @@ def send_invite(
     db.refresh(conn)
     return _enrich_connection(conn, db)
 
-
-# ---------------------------------------------------------------------------
-# List endpoints
-# ---------------------------------------------------------------------------
 
 @router.get("", response_model=List[ConnectionOut])
 def list_accepted(
@@ -245,10 +225,6 @@ def list_sent(
     )
     return [_enrich_connection(r, db) for r in rows]
 
-
-# ---------------------------------------------------------------------------
-# Accept / Decline / Remove
-# ---------------------------------------------------------------------------
 
 @router.patch("/{connection_id}/accept", response_model=ConnectionOut)
 def accept_invite(

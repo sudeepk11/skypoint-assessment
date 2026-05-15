@@ -1,15 +1,18 @@
 version: "3.9"
 
+# Development override — Vite dev server with hot reload
+# Usage: docker compose -f docker-compose.dev.yml up --build
+
 services:
   db:
     image: postgres:15-alpine
-    container_name: skypoint_db
+    container_name: skypoint_db_dev
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: skypoint_db
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_dev:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -22,7 +25,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: skypoint_backend
+    container_name: skypoint_backend_dev
     env_file:
       - .env
     environment:
@@ -32,30 +35,29 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
     networks:
       - skypoint_network
     restart: on-failure
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: skypoint_frontend
+    image: node:20-alpine
+    container_name: skypoint_frontend_dev
+    working_dir: /app
+    command: sh -c "npm ci && npm run dev -- --host"
+    environment:
+      VITE_BACKEND_URL: http://backend:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     ports:
-      - "${APP_PORT:-3000}:80"
+      - "${APP_PORT:-3000}:5173"
     depends_on:
       - backend
     networks:
       - skypoint_network
-    restart: on-failure
 
 volumes:
-  postgres_data:
+  postgres_data_dev:
 
 networks:
   skypoint_network:

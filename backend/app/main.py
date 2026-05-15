@@ -20,9 +20,7 @@ from app.core.limiter import limiter
 from app.core.security import hash_password
 from app.database import Base, SessionLocal, engine
 
-# ---------------------------------------------------------------------------
 # Logging
-# ---------------------------------------------------------------------------
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
@@ -94,16 +92,12 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# ---------------------------------------------------------------------------
 # Rate limiting
-# ---------------------------------------------------------------------------
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
-# ---------------------------------------------------------------------------
 # Security headers middleware
-# ---------------------------------------------------------------------------
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     """Attach standard security headers to every response."""
 
@@ -117,9 +111,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         return response
 
 
-# ---------------------------------------------------------------------------
 # Request logging middleware
-# ---------------------------------------------------------------------------
 class RequestLoggingMiddleware(BaseHTTPMiddleware):
     """Log method, path, status code, and duration for every request."""
 
@@ -140,10 +132,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         return response
 
 
-# ---------------------------------------------------------------------------
-# CORS — origin allowlist from ALLOWED_ORIGINS env var
-# When set to "*" credentials are disabled
-# ---------------------------------------------------------------------------
+# CORS — origin allowlist from ALLOWED_ORIGINS env var; wildcard disables credentials
 _allowed_origins = [o.strip() for o in settings.ALLOWED_ORIGINS.split(",") if o.strip()]
 _wildcard = _allowed_origins == ["*"]
 app.add_middleware(
@@ -157,9 +146,7 @@ app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(RequestLoggingMiddleware)
 
 
-# ---------------------------------------------------------------------------
 # Global exception handler
-# ---------------------------------------------------------------------------
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     """Catch-all handler — logs the full traceback and returns a safe 500 response."""
@@ -176,9 +163,7 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
     )
 
 
-# ---------------------------------------------------------------------------
 # Routers
-# ---------------------------------------------------------------------------
 app.include_router(auth.router, prefix="/api")
 app.include_router(jobs.router, prefix="/api")
 app.include_router(applications.router, prefix="/api")
@@ -189,9 +174,7 @@ app.include_router(connections.router, prefix="/api")
 app.include_router(users.router, prefix="/api")
 
 
-# ---------------------------------------------------------------------------
 # Health check
-# ---------------------------------------------------------------------------
 @app.get("/health", tags=["health"])
 def health_check():
     """Liveness + readiness probe — checks DB connectivity."""
@@ -220,13 +203,11 @@ def root():
     return {"message": "SkyHire API", "version": "1.0.0", "docs": "/docs"}
 
 
-# ---------------------------------------------------------------------------
-# Startup
-# ---------------------------------------------------------------------------
+# Seed
 
 
 def seed_data() -> None:
-    """Seed the database with realistic Indian tech company users and job postings."""
+    """Seed default users and sample jobs on first startup."""
     from app.models.job import Job
     from app.models.user import User
 
