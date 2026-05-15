@@ -1,8 +1,165 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { profile as profileApi } from '../services/api';
 import { HRLayout, CandidateLayout } from '../components/Layout';
-import { UserCircle, Building2, Lock, CheckCircle, AlertCircle, Loader2, Link2, Linkedin, Github, Globe, Twitter, ExternalLink } from 'lucide-react';
+import { UserCircle, Building2, Lock, CheckCircle, AlertCircle, Loader2, Link2, Linkedin, Github, Globe, Twitter, ExternalLink, ChevronDown, X, Search } from 'lucide-react';
+
+// ── Skill Picker ────────────────────────────────────────────────────────────────
+
+const COMMON_SKILLS = [
+  'JavaScript', 'TypeScript', 'Python', 'Java', 'C++', 'C#', 'Go', 'Rust', 'Ruby', 'PHP', 'Swift', 'Kotlin',
+  'React', 'Vue.js', 'Angular', 'Next.js', 'Svelte', 'Node.js', 'Express', 'FastAPI', 'Django', 'Flask', 'Spring Boot', 'Laravel',
+  'PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'SQLite', 'Elasticsearch',
+  'Docker', 'Kubernetes', 'AWS', 'GCP', 'Azure', 'Terraform', 'CI/CD', 'GitHub Actions',
+  'GraphQL', 'REST APIs', 'Microservices', 'gRPC',
+  'Machine Learning', 'Deep Learning', 'PyTorch', 'TensorFlow', 'Scikit-learn', 'Pandas', 'NumPy',
+  'React Native', 'Flutter', 'iOS', 'Android',
+  'Figma', 'UI/UX Design', 'Tailwind CSS', 'SASS',
+  'Git', 'Linux', 'Bash', 'Agile', 'Scrum',
+];
+
+const SKILL_COLORS = [
+  'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
+  'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300',
+  'bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300',
+  'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300',
+  'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300',
+  'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300',
+  'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300',
+  'bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300',
+];
+function skillColor(name: string) {
+  let n = 0;
+  for (let i = 0; i < name.length; i++) n += name.charCodeAt(i);
+  return SKILL_COLORS[n % SKILL_COLORS.length];
+}
+
+const SkillPicker: React.FC<{
+  selected: string[];
+  onChange: (skills: string[]) => void;
+}> = ({ selected, onChange }) => {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Close on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const toggle = (skill: string) => {
+    if (selected.includes(skill)) {
+      onChange(selected.filter((s) => s !== skill));
+    } else {
+      onChange([...selected, skill]);
+    }
+  };
+
+  const addCustom = () => {
+    const trimmed = query.trim();
+    if (trimmed && !selected.includes(trimmed)) {
+      onChange([...selected, trimmed]);
+    }
+    setQuery('');
+  };
+
+  const filtered = COMMON_SKILLS.filter(
+    (s) => s.toLowerCase().includes(query.toLowerCase()) && !selected.includes(s)
+  );
+
+  return (
+    <div ref={ref} className="relative">
+      {/* Selected tags */}
+      {selected.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mb-2">
+          {selected.map((s) => (
+            <span
+              key={s}
+              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${skillColor(s)}`}
+            >
+              {s}
+              <button
+                type="button"
+                onClick={() => onChange(selected.filter((x) => x !== s))}
+                className="ml-0.5 hover:opacity-70 transition-opacity"
+              >
+                <X size={10} />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Trigger */}
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between px-3.5 py-2.5 border border-gray-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-gray-500 dark:text-slate-400 hover:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-colors"
+      >
+        <span>{selected.length === 0 ? 'Select skills…' : `${selected.length} skill${selected.length > 1 ? 's' : ''} selected`}</span>
+        <ChevronDown size={14} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+
+      {/* Dropdown */}
+      {open && (
+        <div className="absolute z-50 left-0 right-0 mt-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl shadow-xl overflow-hidden">
+          {/* Search */}
+          <div className="flex items-center gap-2 px-3 py-2.5 border-b border-gray-100 dark:border-slate-700">
+            <Search size={13} className="text-gray-400 dark:text-slate-500 flex-shrink-0" />
+            <input
+              autoFocus
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addCustom(); } }}
+              placeholder="Search or type a custom skill…"
+              className="flex-1 text-sm bg-transparent outline-none text-gray-700 dark:text-slate-200 placeholder-gray-400 dark:placeholder-slate-500"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={addCustom}
+                className="text-xs text-accent font-semibold hover:underline flex-shrink-0"
+              >
+                Add "{query}"
+              </button>
+            )}
+          </div>
+
+          {/* Options list */}
+          <div className="max-h-52 overflow-y-auto py-1.5 px-1.5">
+            {filtered.length === 0 && !query && (
+              <p className="text-xs text-gray-400 dark:text-slate-500 text-center py-4">
+                All common skills selected — type to add custom ones.
+              </p>
+            )}
+            {filtered.length === 0 && query && (
+              <p className="text-xs text-gray-400 dark:text-slate-500 text-center py-3">
+                No match — press Enter or click "Add" to add custom.
+              </p>
+            )}
+            <div className="flex flex-wrap gap-1.5 p-1">
+              {filtered.map((skill) => (
+                <button
+                  key={skill}
+                  type="button"
+                  onClick={() => toggle(skill)}
+                  className="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-200 hover:bg-accent hover:text-white dark:hover:bg-accent dark:hover:text-white transition-colors"
+                >
+                  + {skill}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const ROLE_LABELS: Record<string, string> = {
   hr: 'HR / Recruiter',
@@ -49,8 +206,8 @@ const Profile: React.FC = () => {
 
   /* social */
   const [headline, setHeadline] = useState(user?.headline ?? '');
-  const [skills, setSkills] = useState(() => {
-    try { return (JSON.parse(user?.skills ?? '[]') as string[]).join(', '); } catch { return ''; }
+  const [skills, setSkills] = useState<string[]>(() => {
+    try { return JSON.parse(user?.skills ?? '[]') as string[]; } catch { return []; }
   });
   const [linkedinUrl, setLinkedinUrl] = useState(user?.linkedin_url ?? '');
   const [githubUrl, setGithubUrl] = useState(user?.github_url ?? '');
@@ -76,7 +233,7 @@ const Profile: React.FC = () => {
       setCompanyWebsite(data.company_website ?? '');
       setCompanyDescription(data.company_description ?? '');
       setHeadline(data.headline ?? '');
-      try { setSkills((JSON.parse(data.skills ?? '[]') as string[]).join(', ')); } catch { setSkills(''); }
+      try { setSkills(JSON.parse(data.skills ?? '[]') as string[]); } catch { setSkills([]); }
       setLinkedinUrl(data.linkedin_url ?? '');
       setGithubUrl(data.github_url ?? '');
       setGlassdoorUrl(data.glassdoor_url ?? '');
@@ -113,11 +270,9 @@ const Profile: React.FC = () => {
     e.preventDefault();
     setSocialLoading(true); setSocialSuccess(null); setSocialError(null);
     try {
-      // Convert comma-separated skills string → JSON array string
-      const skillsArr = skills.split(',').map((s) => s.trim()).filter(Boolean);
       const updated = await profileApi.update({
         headline,
-        skills: JSON.stringify(skillsArr),
+        skills: JSON.stringify(skills),
         linkedin_url: linkedinUrl,
         github_url: githubUrl,
         glassdoor_url: glassdoorUrl,
@@ -292,17 +447,9 @@ const Profile: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 dark:text-slate-300 mb-1.5 uppercase tracking-wide">
-                  Skills <span className="normal-case text-gray-400 font-normal">(comma separated)</span>
-                </label>
-                <input
-                  type="text"
-                  value={skills}
-                  onChange={(e) => setSkills(e.target.value)}
-                  placeholder="e.g. React, TypeScript, Node.js, PostgreSQL"
-                  className={inputCls}
-                />
-                <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">Used to match you with relevant connections and jobs.</p>
+                <label className="block text-xs font-medium text-gray-600 dark:text-slate-300 mb-1.5 uppercase tracking-wide">Skills</label>
+                <SkillPicker selected={skills} onChange={setSkills} />
+                <p className="text-xs text-gray-400 dark:text-slate-500 mt-1.5">Pick from the list or type to add custom skills. Shown to recruiters.</p>
               </div>
               <div className="pt-2 border-t border-gray-50 dark:border-slate-700 space-y-3">
                 <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">Social Links</p>
