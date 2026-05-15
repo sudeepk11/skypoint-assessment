@@ -111,7 +111,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
 
 # ---------------------------------------------------------------------------
 # CORS — origin allowlist from ALLOWED_ORIGINS env var
-# When set to "*" credentials are disabled (browser spec requirement).
+# When set to "*" credentials are disabled
 # ---------------------------------------------------------------------------
 _allowed_origins = [o.strip() for o in settings.ALLOWED_ORIGINS.split(",") if o.strip()]
 _wildcard = _allowed_origins == ["*"]
