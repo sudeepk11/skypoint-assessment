@@ -16,7 +16,7 @@ const templates: Record<Template, { label: string; subject: string; body: string
     subject: 'Interview Invitation — [Position]',
     body: `Dear Candidate,
 
-We are pleased to invite you for an interview for the position you applied for at Skypoint.ai.
+We are pleased to invite you for an interview for the position you applied for at SkyHire.
 
 We were impressed by your application and would love the opportunity to discuss your background and how it aligns with our needs.
 
@@ -25,28 +25,28 @@ Please reply to this email with your availability for the next week, and we will
 We look forward to speaking with you.
 
 Best regards,
-The Skypoint Hiring Team`,
+The SkyHire Hiring Team`,
   },
   application_update: {
     label: 'Application Status Update',
     subject: 'Your Application Status Update',
     body: `Dear Candidate,
 
-We wanted to update you on your application with Skypoint.ai.
+We wanted to update you on your application with SkyHire.
 
 Your application is currently under review by our hiring team. We are carefully evaluating all candidates and will be in touch with next steps shortly.
 
 Thank you for your patience throughout this process.
 
 Best regards,
-The Skypoint Hiring Team`,
+The SkyHire Hiring Team`,
   },
   rejection: {
     label: 'Rejection Notice',
     subject: 'Application Status Update',
     body: `Dear Candidate,
 
-Thank you for your interest in joining Skypoint.ai and for taking the time to apply for our open position.
+Thank you for your interest in joining SkyHire and for taking the time to apply for our open position.
 
 After careful consideration, we have decided to move forward with other candidates whose experience more closely aligns with our current needs. This was a difficult decision as we received many strong applications.
 
@@ -55,7 +55,7 @@ We encourage you to apply for future openings that match your skills and experie
 We wish you the best in your job search.
 
 Best regards,
-The Skypoint Hiring Team`,
+The SkyHire Hiring Team`,
   },
   custom: {
     label: 'Custom Message',
