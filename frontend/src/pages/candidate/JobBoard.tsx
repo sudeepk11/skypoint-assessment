@@ -294,7 +294,7 @@ const JobBoard: React.FC = () => {
             return (
               <div
                 key={job.id}
-                className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+                className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col"
               >
                 {/* Job type badge */}
                 <div className="flex items-start justify-between mb-3">
@@ -365,7 +365,7 @@ const JobBoard: React.FC = () => {
                 {/* CTA */}
                 <Link
                   to={`/candidate/jobs/${job.id}`}
-                  className={`block w-full text-center text-sm font-semibold py-2 rounded-lg transition-colors ${
+                  className={`mt-auto block w-full text-center text-sm font-semibold py-2 rounded-lg transition-colors ${
                     alreadyApplied
                       ? 'bg-green-50 text-green-700 border border-green-200'
                       : 'bg-accent text-white hover:bg-blue-700'
