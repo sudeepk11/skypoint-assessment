@@ -9,7 +9,7 @@ from pydantic import BaseModel, ConfigDict
 from sqlalchemy import or_, and_
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_current_user, get_db
+from app.api.deps import get_current_user, get_db, require_hr
 from app.models.connection import Connection
 from app.models.job import Job
 from app.models.user import User
@@ -120,11 +120,9 @@ def _enrich_connection(conn: Connection, db: Session) -> ConnectionOut:
 @router.get("/candidates", response_model=List[CandidateOut])
 def list_candidates(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_hr),
 ):
     """Return all candidates — visible to HR only."""
-    if current_user.role != "hr":
-        raise HTTPException(status_code=403, detail="HR only.")
     return db.query(User).filter(User.role == "candidate").all()
 
 
