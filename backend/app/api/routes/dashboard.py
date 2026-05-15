@@ -1,7 +1,6 @@
 """Dashboard routes providing summary analytics for HR and candidates."""
 
-from datetime import datetime, timedelta
-from typing import Any, Dict
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import func
@@ -11,11 +10,20 @@ from app.api.deps import get_db, require_candidate, require_hr
 from app.models.application import Application
 from app.models.job import Job
 from app.models.user import User
+from app.schemas.dashboard import (
+    ApplicationsByStatus,
+    CandidateDashboardOut,
+    CandidateJobBrief,
+    CandidateRecentApplication,
+    HRDashboardOut,
+    HRRecentApplication,
+    JobPerformance,
+)
 
 router = APIRouter(prefix="/dashboard", tags=["dashboard"])
 
 
-@router.get("/hr", response_model=Dict[str, Any])
+@router.get("/hr", response_model=HRDashboardOut)
 def hr_dashboard(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_hr),
@@ -41,7 +49,7 @@ def hr_dashboard(
         .scalar()
     )
 
-    one_week_ago = datetime.utcnow() - timedelta(days=7)
+    one_week_ago = datetime.now(timezone.utc) - timedelta(days=7)
     shortlisted_this_week = (
         db.query(func.count(Application.id))
         .join(Job, Application.job_id == Job.id)
@@ -82,14 +90,14 @@ def hr_dashboard(
         .all()
     )
     recent_apps_data = [
-        {
-            "id": str(app.id),
-            "candidate_name": app.candidate.full_name if app.candidate else "Unknown",
-            "candidate_email": app.candidate.email if app.candidate else "Unknown",
-            "job_title": app.job.title if app.job else "Unknown",
-            "status": app.status,
-            "applied_at": app.applied_at.isoformat(),
-        }
+        HRRecentApplication(
+            id=str(app.id),
+            candidate_name=app.candidate.full_name if app.candidate else "Unknown",
+            candidate_email=app.candidate.email if app.candidate else "Unknown",
+            job_title=app.job.title if app.job else "Unknown",
+            status=app.status,
+            applied_at=app.applied_at.isoformat(),
+        )
         for app in recent_applications
     ]
 
@@ -104,27 +112,22 @@ def hr_dashboard(
         .all()
     )
     jobs_performance = [
-        {
-            "id": str(job.id),
-            "title": job.title,
-            "status": job.status,
-            "applicant_count": count,
-        }
+        JobPerformance(id=str(job.id), title=job.title, status=job.status, applicant_count=count)
         for job, count in jobs_perf_raw
     ]
 
-    return {
-        "total_jobs": total_jobs,
-        "open_jobs": open_jobs,
-        "total_applications": total_applications,
-        "shortlisted_this_week": shortlisted_this_week,
-        "applications_by_status": applications_by_status,
-        "recent_applications": recent_apps_data,
-        "jobs_performance": jobs_performance,
-    }
+    return HRDashboardOut(
+        total_jobs=total_jobs,
+        open_jobs=open_jobs,
+        total_applications=total_applications,
+        shortlisted_this_week=shortlisted_this_week,
+        applications_by_status=ApplicationsByStatus(**applications_by_status),
+        recent_applications=recent_apps_data,
+        jobs_performance=jobs_performance,
+    )
 
 
-@router.get("/candidate", response_model=Dict[str, Any])
+@router.get("/candidate", response_model=CandidateDashboardOut)
 def candidate_dashboard(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_candidate),
@@ -172,30 +175,30 @@ def candidate_dashboard(
         .all()
     )
     recent_apps_data = [
-        {
-            "id": str(app.id),
-            "job_id": str(app.job_id),
-            "candidate_id": str(app.candidate_id),
-            "resume_text": app.resume_text,
-            "cover_letter": app.cover_letter,
-            "status": app.status,
-            "applied_at": app.applied_at.isoformat(),
-            "updated_at": app.updated_at.isoformat(),
-            "job": {
-                "id": str(app.job.id),
-                "title": app.job.title,
-                "location": app.job.location,
-                "employment_type": app.job.employment_type,
-                "salary_range": app.job.salary_range,
-            } if app.job else None,
-        }
+        CandidateRecentApplication(
+            id=str(app.id),
+            job_id=str(app.job_id),
+            candidate_id=str(app.candidate_id),
+            resume_text=app.resume_text,
+            cover_letter=app.cover_letter,
+            status=app.status,
+            applied_at=app.applied_at.isoformat(),
+            updated_at=app.updated_at.isoformat(),
+            job=CandidateJobBrief(
+                id=str(app.job.id),
+                title=app.job.title,
+                location=app.job.location,
+                employment_type=app.job.employment_type,
+                salary_range=app.job.salary_range,
+            ) if app.job else None,
+        )
         for app in recent_applications
     ]
 
-    return {
-        "total_applied": total_applied,
-        "pending": pending,
-        "shortlisted": shortlisted,
-        "rejected": rejected,
-        "recent_applications": recent_apps_data,
-    }
+    return CandidateDashboardOut(
+        total_applied=total_applied,
+        pending=pending,
+        shortlisted=shortlisted,
+        rejected=rejected,
+        recent_applications=recent_apps_data,
+    )
