@@ -160,7 +160,12 @@ const HRJobList: React.FC = () => {
                   <tr key={job.id} className="hover:bg-gray-50/50 dark:hover:bg-slate-700/50 transition-colors">
                     <td className="px-6 py-4">
                       <div>
-                        <p className="text-sm font-semibold text-gray-800 dark:text-slate-100">{job.title}</p>
+                        <Link
+                          to={`/hr/applications?job_id=${job.id}`}
+                          className="text-sm font-semibold text-gray-800 dark:text-slate-100 hover:text-accent transition-colors"
+                        >
+                          {job.title}
+                        </Link>
                         {job.salary_range && (
                           <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">{job.salary_range}</p>
                         )}
@@ -175,8 +180,13 @@ const HRJobList: React.FC = () => {
                     <td className="px-6 py-4">
                       <StatusBadge status={job.status} />
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-slate-300">
-                      {job.applicant_count ?? 0}
+                    <td className="px-6 py-4">
+                      <Link
+                        to={`/hr/applications?job_id=${job.id}`}
+                        className="text-sm font-semibold text-accent hover:underline"
+                      >
+                        {job.applicant_count ?? 0}
+                      </Link>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500 dark:text-slate-400">
                       {formatDate(job.created_at)}
