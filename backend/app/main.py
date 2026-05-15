@@ -214,6 +214,134 @@ def seed_data() -> None:
             ))
             db.flush()
 
+        # ── Extra candidate users ────────────────────────────────────────────
+        extra_candidates = [
+            {
+                "email": "riya.kapoor@test.com",
+                "full_name": "Riya Kapoor",
+                "headline": "Frontend Engineer | React & TypeScript",
+                "skills": ["React", "TypeScript", "JavaScript", "Tailwind CSS", "Next.js"],
+                "linkedin_url": "https://linkedin.com/in/riyakapoor",
+                "github_url": "https://github.com/riyakapoor",
+            },
+            {
+                "email": "vikram.nair@test.com",
+                "full_name": "Vikram Nair",
+                "headline": "DevOps Engineer | Kubernetes & AWS",
+                "skills": ["Kubernetes", "AWS", "Terraform", "Docker", "Python", "Prometheus"],
+                "linkedin_url": "https://linkedin.com/in/vikramnair",
+                "github_url": "https://github.com/vikramnair",
+            },
+            {
+                "email": "ananya.singh@test.com",
+                "full_name": "Ananya Singh",
+                "headline": "Data Scientist | ML & NLP",
+                "skills": ["Python", "Machine Learning", "NLP", "TensorFlow", "SQL", "Pandas"],
+                "linkedin_url": "https://linkedin.com/in/ananyasingh",
+                "portfolio_url": "https://ananyasingh.dev",
+            },
+            {
+                "email": "rohan.desai@test.com",
+                "full_name": "Rohan Desai",
+                "headline": "Android Engineer | Kotlin & Jetpack",
+                "skills": ["Android", "Kotlin", "Java", "MVVM", "Jetpack", "REST APIs"],
+                "linkedin_url": "https://linkedin.com/in/rohandesai",
+                "github_url": "https://github.com/rohandesai",
+            },
+            {
+                "email": "priya.iyer@test.com",
+                "full_name": "Priya Iyer",
+                "headline": "Product Manager | Fintech & Growth",
+                "skills": ["Product Strategy", "SQL", "A/B Testing", "Figma", "Mixpanel", "Agile"],
+                "linkedin_url": "https://linkedin.com/in/priyaiyer",
+                "portfolio_url": "https://priyaiyer.notion.site",
+            },
+            {
+                "email": "karan.malhotra@test.com",
+                "full_name": "Karan Malhotra",
+                "headline": "Backend Engineer | Go & Distributed Systems",
+                "skills": ["Go", "Python", "Kafka", "PostgreSQL", "gRPC", "Docker", "Redis"],
+                "linkedin_url": "https://linkedin.com/in/karanmalhotra",
+                "github_url": "https://github.com/karanmalhotra",
+            },
+            {
+                "email": "sneha.joshi@test.com",
+                "full_name": "Sneha Joshi",
+                "headline": "Technical Writer | Developer Docs & APIs",
+                "skills": ["Technical Writing", "Markdown", "REST APIs", "Python", "Postman", "Git"],
+                "linkedin_url": "https://linkedin.com/in/snehajoshi",
+                "portfolio_url": "https://snehajoshi.dev/portfolio",
+            },
+            {
+                "email": "aditya.rao@test.com",
+                "full_name": "Aditya Rao",
+                "headline": "Full-Stack Engineer | Node.js & React",
+                "skills": ["Node.js", "React", "TypeScript", "MongoDB", "GraphQL", "AWS"],
+                "linkedin_url": "https://linkedin.com/in/adityarao",
+                "github_url": "https://github.com/adityarao",
+            },
+            {
+                "email": "meera.pillai@test.com",
+                "full_name": "Meera Pillai",
+                "headline": "Business Analyst | Payments & Strategy",
+                "skills": ["Excel", "SQL", "Tableau", "Business Analysis", "Financial Modelling", "PowerPoint"],
+                "linkedin_url": "https://linkedin.com/in/meerapillai",
+            },
+            {
+                "email": "siddharth.bose@test.com",
+                "full_name": "Siddharth Bose",
+                "headline": "ML Engineer | MLOps & Model Deployment",
+                "skills": ["Python", "MLflow", "PySpark", "TensorFlow", "Docker", "Kubernetes", "SQL"],
+                "linkedin_url": "https://linkedin.com/in/siddharthbose",
+                "github_url": "https://github.com/siddharthbose",
+            },
+            {
+                "email": "tanya.sharma@test.com",
+                "full_name": "Tanya Sharma",
+                "headline": "iOS Engineer | Swift & SwiftUI",
+                "skills": ["Swift", "SwiftUI", "iOS", "Xcode", "REST APIs", "CoreData", "Git"],
+                "linkedin_url": "https://linkedin.com/in/tanyasharma",
+                "github_url": "https://github.com/tanyasharma",
+            },
+            {
+                "email": "nikhil.verma@test.com",
+                "full_name": "Nikhil Verma",
+                "headline": "Site Reliability Engineer | AWS & Observability",
+                "skills": ["AWS", "Python", "Bash", "Prometheus", "Grafana", "ELK", "Terraform"],
+                "linkedin_url": "https://linkedin.com/in/nikhilverma",
+                "github_url": "https://github.com/nikhilverma",
+            },
+            {
+                "email": "divya.menon@test.com",
+                "full_name": "Divya Menon",
+                "headline": "UX Designer | Figma & Design Systems",
+                "skills": ["Figma", "UI/UX Design", "Tailwind CSS", "Prototyping", "User Research", "SASS"],
+                "linkedin_url": "https://linkedin.com/in/divyamenon",
+                "portfolio_url": "https://divyamenon.design",
+            },
+        ]
+
+        for c in extra_candidates:
+            existing = db.query(User).filter(User.email == c["email"]).first()
+            if not existing:
+                new_user = User(
+                    email=c["email"],
+                    password_hash=hash_password("Candidate@1234"),
+                    full_name=c["full_name"],
+                    role="candidate",
+                )
+                db.add(new_user)
+                db.flush()
+                db.add(CandidateProfile(
+                    user_id=new_user.id,
+                    headline=c["headline"],
+                    skills=c["skills"],
+                    linkedin_url=c.get("linkedin_url"),
+                    github_url=c.get("github_url"),
+                    portfolio_url=c.get("portfolio_url"),
+                ))
+                db.flush()
+
         # ── Sample jobs ──────────────────────────────────────────────────────
         sample_jobs = [
             {
