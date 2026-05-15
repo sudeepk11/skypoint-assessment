@@ -22,8 +22,6 @@ def _validate_password_strength(v: str) -> str:
 
 
 class UserRegister(BaseModel):
-    """Schema for registering a new user."""
-
     email: EmailStr
     password: str
     full_name: str
@@ -46,14 +44,12 @@ class UserRegister(BaseModel):
 
 
 class UserLogin(BaseModel):
-    """Schema for user login via JSON body."""
-
     email: EmailStr
     password: str
 
 
 class UserOut(BaseModel):
-    """Public representation of a user."""
+    """Flat user response — merges users + companies/candidate_profiles into one object."""
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -62,29 +58,29 @@ class UserOut(BaseModel):
     full_name: str
     role: str
     created_at: datetime
+    # HR — from companies
     company_name: Optional[str] = None
     company_website: Optional[str] = None
     company_description: Optional[str] = None
+    company_linkedin_url: Optional[str] = None
+    company_twitter_url: Optional[str] = None
+    company_glassdoor_url: Optional[str] = None
+    # Candidate — from candidate_profiles
     headline: Optional[str] = None
     skills: Optional[List[str]] = None
     linkedin_url: Optional[str] = None
-    github_url: Optional[str] = None
-    glassdoor_url: Optional[str] = None
     twitter_url: Optional[str] = None
+    github_url: Optional[str] = None
     portfolio_url: Optional[str] = None
 
 
 class TokenResponse(BaseModel):
-    """JWT token response."""
-
     access_token: str
     token_type: str = "bearer"
     user: UserOut
 
 
 class RegisterResponse(BaseModel):
-    """Response returned after a successful registration."""
-
     access_token: str
     token_type: str = "bearer"
     user: UserOut
@@ -92,18 +88,19 @@ class RegisterResponse(BaseModel):
 
 class UpdateProfile(BaseModel):
     full_name: Optional[str] = None
-    # HR
+    # HR — written to companies table
     company_name: Optional[str] = None
     company_website: Optional[str] = None
     company_description: Optional[str] = None
-    # Shared
+    company_linkedin_url: Optional[str] = None
+    company_twitter_url: Optional[str] = None
+    company_glassdoor_url: Optional[str] = None
+    # Candidate — written to candidate_profiles table
     headline: Optional[str] = None
     skills: Optional[List[str]] = None
-    # Social
     linkedin_url: Optional[str] = None
-    github_url: Optional[str] = None
-    glassdoor_url: Optional[str] = None
     twitter_url: Optional[str] = None
+    github_url: Optional[str] = None
     portfolio_url: Optional[str] = None
 
 

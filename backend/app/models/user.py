@@ -1,9 +1,9 @@
-"""User database model."""
+"""User database model — identity and auth only."""
 
 import uuid
 from datetime import datetime
 
-from sqlalchemy import JSON, Column, DateTime, Enum, String, Text
+from sqlalchemy import Column, DateTime, Enum, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import TypeDecorator, CHAR
 import sqlalchemy.dialects.postgresql as pg
@@ -43,8 +43,6 @@ from app.database import Base
 
 
 class User(Base):
-    """User model for HR staff and candidates."""
-
     __tablename__ = "users"
 
     id = Column(GUID, primary_key=True, default=uuid.uuid4, index=True)
@@ -53,20 +51,9 @@ class User(Base):
     full_name = Column(String(255), nullable=False)
     role = Column(Enum("hr", "candidate", name="user_role"), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    # HR fields
-    company_name = Column(String(255), nullable=True)
-    company_website = Column(String(255), nullable=True)
-    company_description = Column(Text, nullable=True)
-    # Candidate / shared fields
-    headline = Column(String(255), nullable=True)          # e.g. "Senior React Developer"
-    skills = Column(JSON, nullable=True)                    # list of skill tags
-    # Social links
-    linkedin_url = Column(String(500), nullable=True)
-    github_url = Column(String(500), nullable=True)
-    glassdoor_url = Column(String(500), nullable=True)
-    twitter_url = Column(String(500), nullable=True)
-    portfolio_url = Column(String(500), nullable=True)
 
     # Relationships
+    company = relationship("Company", back_populates="user", uselist=False, cascade="all, delete-orphan")
+    candidate_profile = relationship("CandidateProfile", back_populates="user", uselist=False, cascade="all, delete-orphan")
     jobs_created = relationship("Job", back_populates="creator", cascade="all, delete-orphan")
     applications = relationship("Application", back_populates="candidate", cascade="all, delete-orphan")

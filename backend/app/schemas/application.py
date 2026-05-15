@@ -58,7 +58,6 @@ class ApplicationOut(BaseModel):
     resume_text: str
     cover_letter: Optional[str]
     status: str
-    ai_evaluation: Optional[str]
     applied_at: datetime
     updated_at: datetime
 

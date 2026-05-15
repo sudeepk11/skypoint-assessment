@@ -10,6 +10,8 @@ os.environ["SECRET_KEY"] = "test-secret-key-not-for-production"
 # Disable rate limiting during tests so fixtures that call /register
 # multiple times in rapid succession are not throttled.
 os.environ["RATELIMIT_ENABLED"] = "0"
+# Skip seed_data() in the app lifespan — it uses a different DB session pool
+os.environ["TESTING"] = "1"
 
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
@@ -17,6 +19,7 @@ from sqlalchemy import create_engine  # noqa: E402
 from sqlalchemy.orm import sessionmaker  # noqa: E402
 from sqlalchemy.pool import StaticPool  # noqa: E402
 
+import app.models as _models  # noqa: E402, F401 — register all models with Base
 from app.api.deps import get_db  # noqa: E402
 from app.database import Base  # noqa: E402
 from app.main import app  # noqa: E402

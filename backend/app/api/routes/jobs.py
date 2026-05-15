@@ -52,7 +52,7 @@ def list_jobs(
     for job in jobs_list:
         job_dict = JobOut.model_validate(job).model_dump()
         creator = creators.get(job.created_by)
-        job_dict['company_name'] = creator.company_name if creator and creator.company_name else None
+        job_dict['company_name'] = creator.company.name if creator and creator.company else None
         result.append(JobOut(**job_dict))
     return result
 
@@ -65,7 +65,7 @@ def get_job(job_id: UUID, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
     job_dict = JobOut.model_validate(job).model_dump()
     creator = db.query(User).filter(User.id == job.created_by).first()
-    job_dict['company_name'] = creator.company_name if creator and creator.company_name else None
+    job_dict['company_name'] = creator.company.name if creator and creator.company else None
     return JobOut(**job_dict)
 
 
@@ -170,7 +170,7 @@ def list_hr_jobs(
     for job, count in jobs:
         job_dict = JobOut.model_validate(job).model_dump()
         job_dict["applicant_count"] = count
-        job_dict["company_name"] = current_user.company_name if current_user.company_name else None
+        job_dict["company_name"] = current_user.company.name if current_user.company else None
         result.append(JobWithApplicantCount(**job_dict))
 
     return result

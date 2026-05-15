@@ -10,7 +10,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-from sqlalchemy import text as sa_text
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request as StarletteRequest
 
@@ -18,7 +17,9 @@ from app.api.routes import applications, auth, connections, dashboard, email, jo
 from app.config import settings
 from app.core.limiter import limiter
 from app.core.security import hash_password
-from app.database import Base, SessionLocal, engine
+from sqlalchemy import text as sa_text
+
+from app.database import SessionLocal, engine
 
 # Logging
 logging.basicConfig(
@@ -30,67 +31,10 @@ logger = logging.getLogger("skypoint")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Initialize database tables and seed default data on startup."""
-    Base.metadata.create_all(bind=engine)
-    # Add new columns to existing tables (idempotent)
-    try:
-        with engine.connect() as conn:
-            conn.execute(sa_text("ALTER TABLE users ADD COLUMN IF NOT EXISTS company_name VARCHAR(255)"))
-            conn.execute(sa_text("ALTER TABLE users ADD COLUMN IF NOT EXISTS company_website VARCHAR(255)"))
-            conn.execute(sa_text("ALTER TABLE users ADD COLUMN IF NOT EXISTS company_description TEXT"))
-            conn.commit()
-    except Exception as exc:
-        logger.warning("Migration (user company columns) skipped: %s", exc)
-    # Ensure skills column is JSON type (fix if was previously added as TEXT)
-    try:
-        with engine.connect() as conn:
-            conn.execute(sa_text("ALTER TABLE jobs DROP COLUMN IF EXISTS skills"))
-            conn.execute(sa_text("ALTER TABLE jobs ADD COLUMN IF NOT EXISTS skills JSON DEFAULT '[]'"))
-            conn.commit()
-    except Exception as exc:
-        logger.warning("Migration (jobs skills column) skipped: %s", exc)
-    # Social + profile columns on users (idempotent)
-    try:
-        with engine.connect() as conn:
-            for col in [
-                "ALTER TABLE users ADD COLUMN IF NOT EXISTS headline VARCHAR(255)",
-                "ALTER TABLE users ADD COLUMN IF NOT EXISTS skills JSON",
-                "ALTER TABLE users ADD COLUMN IF NOT EXISTS linkedin_url VARCHAR(500)",
-                "ALTER TABLE users ADD COLUMN IF NOT EXISTS github_url VARCHAR(500)",
-                "ALTER TABLE users ADD COLUMN IF NOT EXISTS glassdoor_url VARCHAR(500)",
-                "ALTER TABLE users ADD COLUMN IF NOT EXISTS twitter_url VARCHAR(500)",
-                "ALTER TABLE users ADD COLUMN IF NOT EXISTS portfolio_url VARCHAR(500)",
-            ]:
-                conn.execute(sa_text(col))
-            conn.commit()
-    except Exception as exc:
-        logger.warning("Migration (user profile columns) skipped: %s", exc)
-    # Convert users.skills from TEXT to JSON if it was added before this fix
-    try:
-        with engine.connect() as conn:
-            conn.execute(sa_text(
-                "ALTER TABLE users ALTER COLUMN skills TYPE JSON USING skills::JSON"
-            ))
-            conn.commit()
-    except Exception as exc:
-        logger.warning("Migration (users skills TEXT→JSON) skipped: %s", exc)
-    # Connections table: add job_id and message columns, drop old unique constraint and recreate
-    try:
-        with engine.connect() as conn:
-            conn.execute(sa_text("ALTER TABLE connections ADD COLUMN IF NOT EXISTS job_id UUID REFERENCES jobs(id) ON DELETE SET NULL"))
-            conn.execute(sa_text("ALTER TABLE connections ADD COLUMN IF NOT EXISTS message TEXT"))
-            # Drop old unique constraint if it exists, add new one
-            conn.execute(sa_text("ALTER TABLE connections DROP CONSTRAINT IF EXISTS uq_connection_pair"))
-            conn.execute(sa_text(
-                "DO $$ BEGIN "
-                "IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_invite_per_job') THEN "
-                "ALTER TABLE connections ADD CONSTRAINT uq_invite_per_job UNIQUE (requester_id, receiver_id, job_id); "
-                "END IF; END $$"
-            ))
-            conn.commit()
-    except Exception as exc:
-        logger.warning("Migration (connections columns) skipped: %s", exc)
-    seed_data()
+    """Seed default data on startup. Schema is managed by Alembic."""
+    import os
+    if os.environ.get("TESTING") != "1":
+        seed_data()
     yield
 
 
@@ -217,6 +161,8 @@ def root():
 
 def seed_data() -> None:
     """Seed default users and sample jobs on first startup."""
+    from app.models.candidate_profile import CandidateProfile
+    from app.models.company import Company
     from app.models.job import Job
     from app.models.user import User
 
@@ -230,26 +176,24 @@ def seed_data() -> None:
                 password_hash=hash_password("HR@1234"),
                 full_name="Priya Sharma",
                 role="hr",
-                company_name="SkyPoint.Ai",
-                company_website="https://skypoint.ai",
-                company_description=(
+            )
+            db.add(hr_user)
+            db.flush()
+
+        if not hr_user.company:
+            db.add(Company(
+                user_id=hr_user.id,
+                name="SkyPoint.Ai",
+                website="https://skypoint.ai",
+                description=(
                     "SkyPoint.Ai is India's leading full-stack financial solutions company. "
                     "We help businesses accept, process and disburse payments and manage their "
                     "finances. Trusted by 8 million+ businesses including Zomato, IRCTC, Ola "
                     "and thousands of startups across India."
                 ),
-            )
-            db.add(hr_user)
+                linkedin_url="https://linkedin.com/company/skypoint-ai",
+            ))
             db.flush()
-        else:
-            # Update existing seed user with company info if missing
-            if not hr_user.company_name:
-                hr_user.company_name = "SkyPoint.Ai"
-                hr_user.company_website = "https://skypoint.ai"
-                hr_user.company_description = (
-                    "SkyPoint.Ai is India's leading full-stack financial solutions company. "
-                    "Trusted by 8 million+ businesses including Zomato, IRCTC and Ola."
-                )
 
         # ── Candidate user ───────────────────────────────────────────────────
         candidate_user = db.query(User).filter(User.email == "candidate@test.com").first()
@@ -261,6 +205,16 @@ def seed_data() -> None:
                 role="candidate",
             )
             db.add(candidate_user)
+            db.flush()
+
+        if not candidate_user.candidate_profile:
+            db.add(CandidateProfile(
+                user_id=candidate_user.id,
+                headline="Full-Stack Engineer | Python & React",
+                skills=["Python", "React", "FastAPI", "PostgreSQL", "Docker"],
+                github_url="https://github.com/arjunmehta",
+                linkedin_url="https://linkedin.com/in/arjunmehta",
+            ))
             db.flush()
 
         # ── Sample jobs ──────────────────────────────────────────────────────

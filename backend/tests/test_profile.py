@@ -72,12 +72,13 @@ def test_update_headline_and_skills(client: TestClient, candidate_token: str):
 
 
 def test_update_social_links(client: TestClient, candidate_token: str):
-    """Candidate should be able to set social profile URLs."""
+    """Candidate should be able to set personal social URLs."""
     resp = client.put(
         "/api/profile",
         json={
             "linkedin_url": "https://linkedin.com/in/test",
             "github_url": "https://github.com/test",
+            "twitter_url": "https://twitter.com/test",
             "portfolio_url": "https://test.dev",
         },
         headers=auth_headers(candidate_token),
@@ -113,7 +114,7 @@ def test_partial_update_preserves_other_fields(client: TestClient):
 
 
 def test_hr_can_update_company_fields(client: TestClient):
-    """HR user should be able to update company_name and company_website."""
+    """HR user should be able to update company fields and social links."""
     token = _register(client, "hr")
     resp = client.put(
         "/api/profile",
@@ -121,6 +122,8 @@ def test_hr_can_update_company_fields(client: TestClient):
             "company_name": "Acme Corp",
             "company_website": "https://acme.example.com",
             "company_description": "We build things.",
+            "company_linkedin_url": "https://linkedin.com/company/acme",
+            "company_glassdoor_url": "https://glassdoor.com/acme",
         },
         headers=auth_headers(token),
     )
@@ -128,6 +131,8 @@ def test_hr_can_update_company_fields(client: TestClient):
     data = resp.json()
     assert data["company_name"] == "Acme Corp"
     assert data["company_website"] == "https://acme.example.com"
+    assert data["company_linkedin_url"] == "https://linkedin.com/company/acme"
+    assert data["company_glassdoor_url"] == "https://glassdoor.com/acme"
 
 
 def test_candidate_cannot_set_company_fields(client: TestClient):

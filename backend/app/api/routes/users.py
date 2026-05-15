@@ -7,7 +7,7 @@ from sqlalchemy import or_, and_
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user, get_db
-from app.api.routes.connections import UserPublic, UserWithStatus, _existing_connection
+from app.api.routes.connections import UserPublic, UserWithStatus, _existing_connection, _user_public
 from app.models.user import User
 
 router = APIRouter(tags=["users"])
@@ -43,7 +43,7 @@ def get_public_user(
         conn_id = None
 
     return UserWithStatus(
-        user=UserPublic.model_validate(target),
+        user=_user_public(target),
         connection_status=conn_status,
         connection_id=conn_id,
     )

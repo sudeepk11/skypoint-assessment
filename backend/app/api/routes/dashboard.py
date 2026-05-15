@@ -179,7 +179,6 @@ def candidate_dashboard(
             "resume_text": app.resume_text,
             "cover_letter": app.cover_letter,
             "status": app.status,
-            "ai_evaluation": app.ai_evaluation,
             "applied_at": app.applied_at.isoformat(),
             "updated_at": app.updated_at.isoformat(),
             "job": {

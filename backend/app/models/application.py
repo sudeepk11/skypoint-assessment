@@ -3,7 +3,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, Enum, ForeignKey, Text, UniqueConstraint
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, Text, UniqueConstraint  # noqa: F401
 from sqlalchemy.orm import relationship
 
 from app.database import Base
@@ -25,7 +25,6 @@ class Application(Base):
         nullable=False,
         default="pending",
     )
-    ai_evaluation = Column(Text, nullable=True)  # Stores JSON string
     applied_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(
         DateTime,

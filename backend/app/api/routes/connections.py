@@ -17,19 +17,19 @@ router = APIRouter(prefix="/connections", tags=["connections"])
 
 
 class UserPublic(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
     id: UUID
     full_name: str
     role: str
     headline: Optional[str] = None
     skills: Optional[List[str]] = None
     linkedin_url: Optional[str] = None
-    github_url: Optional[str] = None
-    glassdoor_url: Optional[str] = None
     twitter_url: Optional[str] = None
+    github_url: Optional[str] = None
     portfolio_url: Optional[str] = None
     company_name: Optional[str] = None
+    company_linkedin_url: Optional[str] = None
+    company_twitter_url: Optional[str] = None
+    company_glassdoor_url: Optional[str] = None
 
 
 class JobBrief(BaseModel):
@@ -57,16 +57,13 @@ class ConnectionOut(BaseModel):
 
 class CandidateOut(BaseModel):
     """Candidate profile shown to HR in the talent pool."""
-    model_config = ConfigDict(from_attributes=True)
-
     id: UUID
     full_name: str
     headline: Optional[str] = None
     skills: Optional[List[str]] = None
     linkedin_url: Optional[str] = None
-    github_url: Optional[str] = None
-    glassdoor_url: Optional[str] = None
     twitter_url: Optional[str] = None
+    github_url: Optional[str] = None
     portfolio_url: Optional[str] = None
 
 
@@ -83,6 +80,40 @@ class UserWithStatus(BaseModel):
     connection_id: Optional[str] = None
 
 
+def _user_public(user: User) -> UserPublic:
+    p = user.candidate_profile
+    c = user.company
+    return UserPublic(
+        id=user.id,
+        full_name=user.full_name,
+        role=user.role,
+        headline=p.headline if p else None,
+        skills=p.skills if p else None,
+        linkedin_url=p.linkedin_url if p else None,
+        twitter_url=p.twitter_url if p else None,
+        github_url=p.github_url if p else None,
+        portfolio_url=p.portfolio_url if p else None,
+        company_name=c.name if c else None,
+        company_linkedin_url=c.linkedin_url if c else None,
+        company_twitter_url=c.twitter_url if c else None,
+        company_glassdoor_url=c.glassdoor_url if c else None,
+    )
+
+
+def _candidate_out(user: User) -> CandidateOut:
+    p = user.candidate_profile
+    return CandidateOut(
+        id=user.id,
+        full_name=user.full_name,
+        headline=p.headline if p else None,
+        skills=p.skills if p else None,
+        linkedin_url=p.linkedin_url if p else None,
+        twitter_url=p.twitter_url if p else None,
+        github_url=p.github_url if p else None,
+        portfolio_url=p.portfolio_url if p else None,
+    )
+
+
 def _existing_connection(db: Session, a: UUID, b: UUID) -> Optional[Connection]:
     return (
         db.query(Connection)
@@ -97,14 +128,27 @@ def _existing_connection(db: Session, a: UUID, b: UUID) -> Optional[Connection]:
 
 
 def _enrich_connection(conn: Connection, db: Session) -> ConnectionOut:
-    """Build ConnectionOut, injecting company_name into the job brief."""
-    out = ConnectionOut.model_validate(conn)
+    """Build ConnectionOut with flattened user and job data."""
+    job_brief = None
     if conn.job:
         creator = db.query(User).filter(User.id == conn.job.created_by).first()
-        brief = JobBrief.model_validate(conn.job)
-        brief.company_name = creator.company_name if creator else None
-        out.job = brief
-    return out
+        job_brief = JobBrief(
+            id=conn.job.id,
+            title=conn.job.title,
+            location=conn.job.location,
+            employment_type=conn.job.employment_type,
+            salary_range=conn.job.salary_range,
+            company_name=creator.company.name if creator and creator.company else None,
+        )
+    return ConnectionOut(
+        id=conn.id,
+        status=conn.status,
+        message=conn.message,
+        job_id=conn.job_id,
+        job=job_brief,
+        requester=_user_public(conn.requester),
+        receiver=_user_public(conn.receiver),
+    )
 
 
 @router.get("/candidates", response_model=List[CandidateOut])
@@ -113,7 +157,8 @@ def list_candidates(
     current_user: User = Depends(require_hr),
 ):
     """Return all candidates — visible to HR only."""
-    return db.query(User).filter(User.role == "candidate").all()
+    candidates = db.query(User).filter(User.role == "candidate").all()
+    return [_candidate_out(c) for c in candidates]
 
 
 @router.post("/{candidate_id}", response_model=ConnectionOut, status_code=201)
