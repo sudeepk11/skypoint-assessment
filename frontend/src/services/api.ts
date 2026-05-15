@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import type { AuthResponse, User, Job, Application, ApplicationStatus, JobStatus, Connection, Suggestion, UserWithStatus } from '../types';
+import type { AuthResponse, User, Job, Application, ApplicationStatus, JobStatus, Connection, UserPublic, UserWithStatus } from '../types';
 
 const api = axios.create({
   baseURL: '/api',
@@ -98,13 +98,14 @@ export const publicUsers = {
   get: (userId: string) => api.get<UserWithStatus>(`/users/${userId}`).then((r) => r.data),
 };
 
-/** Connections — suggestions, invite, accept, decline, list. */
+/** Connections — HR invites candidates to apply for a job. */
 export const connections = {
-  suggestions: () => api.get<Suggestion[]>('/connections/suggestions').then((r) => r.data),
+  candidates: () => api.get<UserPublic[]>('/connections/candidates').then((r) => r.data),
   list: () => api.get<Connection[]>('/connections').then((r) => r.data),
   pending: () => api.get<Connection[]>('/connections/pending').then((r) => r.data),
   sent: () => api.get<Connection[]>('/connections/sent').then((r) => r.data),
-  invite: (userId: string) => api.post<Connection>(`/connections/${userId}`).then((r) => r.data),
+  invite: (candidateId: string, jobId?: string, message?: string) =>
+    api.post<Connection>(`/connections/${candidateId}`, { job_id: jobId, message }).then((r) => r.data),
   accept: (connectionId: string) => api.patch<Connection>(`/connections/${connectionId}/accept`).then((r) => r.data),
   decline: (connectionId: string) => api.patch<Connection>(`/connections/${connectionId}/decline`).then((r) => r.data),
   remove: (connectionId: string) => api.delete(`/connections/${connectionId}`).then((r) => r.data),

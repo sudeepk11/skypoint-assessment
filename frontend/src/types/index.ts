@@ -39,17 +39,23 @@ export interface UserPublic {
   company_name?: string;
 }
 
+export interface JobBrief {
+  id: string;
+  title: string;
+  location: string;
+  employment_type: string;
+  salary_range?: string;
+  company_name?: string;
+}
+
 export interface Connection {
   id: string;
   status: ConnectionStatus;
+  message?: string;
   requester: UserPublic;
   receiver: UserPublic;
-}
-
-export interface Suggestion {
-  user: UserPublic;
-  overlap: number;
-  shared_skills: string[];
+  job_id?: string;
+  job?: JobBrief;
 }
 
 export interface UserWithStatus {

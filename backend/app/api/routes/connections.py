@@ -1,10 +1,9 @@
-"""Connections — peer networking between users (invite, accept, decline, list, suggest)."""
+"""Connections — HR invites candidates to apply for a specific job."""
 
 import json
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 
-from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import or_, and_
@@ -12,30 +11,41 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user, get_db
 from app.models.connection import Connection
+from app.models.job import Job
 from app.models.user import User
 
 router = APIRouter(prefix="/connections", tags=["connections"])
 
 
 # ---------------------------------------------------------------------------
-# Schemas (inline — small enough not to need a separate file)
+# Schemas
 # ---------------------------------------------------------------------------
 
 class UserPublic(BaseModel):
-    """Minimal public view of a user shown in connection cards."""
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
     full_name: str
     role: str
-    headline: str | None = None
-    skills: str | None = None          # JSON string
-    linkedin_url: str | None = None
-    github_url: str | None = None
-    glassdoor_url: str | None = None
-    twitter_url: str | None = None
-    portfolio_url: str | None = None
-    company_name: str | None = None
+    headline: Optional[str] = None
+    skills: Optional[str] = None
+    linkedin_url: Optional[str] = None
+    github_url: Optional[str] = None
+    glassdoor_url: Optional[str] = None
+    twitter_url: Optional[str] = None
+    portfolio_url: Optional[str] = None
+    company_name: Optional[str] = None
+
+
+class JobBrief(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    title: str
+    location: str
+    employment_type: str
+    salary_range: Optional[str] = None
+    company_name: Optional[str] = None   # filled manually
 
 
 class ConnectionOut(BaseModel):
@@ -43,42 +53,55 @@ class ConnectionOut(BaseModel):
 
     id: UUID
     status: str
+    message: Optional[str] = None
     requester: UserPublic
     receiver: UserPublic
+    job_id: Optional[UUID] = None
+    job: Optional[JobBrief] = None
 
 
-class SuggestionOut(BaseModel):
+class CandidateOut(BaseModel):
+    """Candidate profile shown to HR in the talent pool."""
     model_config = ConfigDict(from_attributes=True)
 
-    user: UserPublic
-    overlap: int          # number of shared skills
-    shared_skills: List[str]
+    id: UUID
+    full_name: str
+    headline: Optional[str] = None
+    skills: Optional[str] = None
+    linkedin_url: Optional[str] = None
+    github_url: Optional[str] = None
+    glassdoor_url: Optional[str] = None
+    twitter_url: Optional[str] = None
+    portfolio_url: Optional[str] = None
+
+
+class InviteRequest(BaseModel):
+    job_id: Optional[UUID] = None
+    message: Optional[str] = None
 
 
 class UserWithStatus(BaseModel):
-    """Public user profile + connection status relative to the caller."""
     model_config = ConfigDict(from_attributes=True)
 
     user: UserPublic
-    connection_status: str                    # "none" | "pending_sent" | "pending_received" | "connected"
-    connection_id: Optional[str] = None       # set when a connection row exists
+    connection_status: str
+    connection_id: Optional[str] = None
 
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
-def _parse_skills(skills_json: str | None) -> set[str]:
-    if not skills_json:
+def _parse_skills(s: Optional[str]) -> set:
+    if not s:
         return set()
     try:
-        return {s.strip().lower() for s in json.loads(skills_json) if s.strip()}
+        return {x.strip().lower() for x in json.loads(s) if x.strip()}
     except Exception:
         return set()
 
 
-def _existing_connection(db: Session, a: UUID, b: UUID) -> Connection | None:
-    """Return any connection row between two users regardless of direction."""
+def _existing_connection(db: Session, a: UUID, b: UUID) -> Optional[Connection]:
     return (
         db.query(Connection)
         .filter(
@@ -91,91 +114,94 @@ def _existing_connection(db: Session, a: UUID, b: UUID) -> Connection | None:
     )
 
 
+def _enrich_connection(conn: Connection, db: Session) -> ConnectionOut:
+    """Build ConnectionOut, injecting company_name into the job brief."""
+    out = ConnectionOut.model_validate(conn)
+    if conn.job:
+        creator = db.query(User).filter(User.id == conn.job.created_by).first()
+        brief = JobBrief.model_validate(conn.job)
+        brief.company_name = creator.company_name if creator else None
+        out.job = brief
+    return out
+
+
 # ---------------------------------------------------------------------------
-# Routes
+# HR: talent pool (candidates only)
 # ---------------------------------------------------------------------------
 
-@router.get("/suggestions", response_model=List[SuggestionOut])
-def get_suggestions(
+@router.get("/candidates", response_model=List[CandidateOut])
+def list_candidates(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """
-    Return up to 20 users who share skills with the current user.
-    Already-connected and pending-invite users are excluded.
-    """
-    my_skills = _parse_skills(current_user.skills)
-
-    # IDs already in a connection with me (any status)
-    existing_ids: set[UUID] = set()
-    for conn in db.query(Connection).filter(
-        or_(
-            Connection.requester_id == current_user.id,
-            Connection.receiver_id == current_user.id,
-        )
-    ).all():
-        existing_ids.add(conn.requester_id)
-        existing_ids.add(conn.receiver_id)
-    existing_ids.discard(current_user.id)
-
-    # All other users (exclude self + already connected)
-    others = (
-        db.query(User)
-        .filter(User.id != current_user.id)
-        .all()
-    )
-    others = [u for u in others if u.id not in existing_ids]
-
-    suggestions = []
-    for user in others:
-        their_skills = _parse_skills(user.skills)
-        shared = my_skills & their_skills
-        # If current user has no skills yet, show everyone (overlap = 0)
-        suggestions.append(
-            SuggestionOut(
-                user=UserPublic.model_validate(user),
-                overlap=len(shared),
-                shared_skills=sorted(shared),
-            )
-        )
-
-    # Sort by overlap desc, then name asc; cap at 20
-    suggestions.sort(key=lambda s: (-s.overlap, s.user.full_name))
-    return suggestions[:20]
+    """Return all candidates — visible to HR only."""
+    if current_user.role != "hr":
+        raise HTTPException(status_code=403, detail="HR only.")
+    return db.query(User).filter(User.role == "candidate").all()
 
 
-@router.post("/{user_id}", response_model=ConnectionOut, status_code=status.HTTP_201_CREATED)
+# ---------------------------------------------------------------------------
+# Send invite (HR → candidate)
+# ---------------------------------------------------------------------------
+
+@router.post("/{candidate_id}", response_model=ConnectionOut, status_code=201)
 def send_invite(
-    user_id: UUID,
+    candidate_id: UUID,
+    body: InviteRequest = InviteRequest(),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Send a connection invite to another user."""
-    if user_id == current_user.id:
-        raise HTTPException(status_code=400, detail="Cannot connect with yourself.")
+    """HR sends a job invite to a candidate."""
+    if current_user.role != "hr":
+        raise HTTPException(status_code=403, detail="Only HR can send invites.")
 
-    target = db.query(User).filter(User.id == user_id).first()
-    if not target:
-        raise HTTPException(status_code=404, detail="User not found.")
+    candidate = db.query(User).filter(User.id == candidate_id, User.role == "candidate").first()
+    if not candidate:
+        raise HTTPException(status_code=404, detail="Candidate not found.")
 
-    existing = _existing_connection(db, current_user.id, user_id)
+    # Validate job belongs to this HR (if provided)
+    if body.job_id:
+        job = db.query(Job).filter(Job.id == body.job_id, Job.created_by == current_user.id).first()
+        if not job:
+            raise HTTPException(status_code=404, detail="Job not found or not yours.")
+
+    # Allow multiple invites for different jobs; block duplicate for same job
+    existing = (
+        db.query(Connection)
+        .filter(
+            Connection.requester_id == current_user.id,
+            Connection.receiver_id == candidate_id,
+            Connection.job_id == body.job_id,
+        )
+        .first()
+    )
     if existing:
-        raise HTTPException(status_code=409, detail="Connection already exists.")
+        raise HTTPException(status_code=409, detail="Invite already sent for this job.")
 
-    conn = Connection(requester_id=current_user.id, receiver_id=user_id, status="pending")
+    conn = Connection(
+        requester_id=current_user.id,
+        receiver_id=candidate_id,
+        job_id=body.job_id,
+        message=body.message,
+        status="pending",
+    )
     db.add(conn)
     db.commit()
     db.refresh(conn)
-    return conn
+    return _enrich_connection(conn, db)
 
+
+# ---------------------------------------------------------------------------
+# List endpoints
+# ---------------------------------------------------------------------------
 
 @router.get("", response_model=List[ConnectionOut])
-def list_connections(
+def list_accepted(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """List all accepted connections for the current user."""
-    return (
+    """Accepted invites — for both HR and candidate."""
+    rows = (
         db.query(Connection)
         .filter(
             Connection.status == "accepted",
@@ -186,6 +212,7 @@ def list_connections(
         )
         .all()
     )
+    return [_enrich_connection(r, db) for r in rows]
 
 
 @router.get("/pending", response_model=List[ConnectionOut])
@@ -193,8 +220,8 @@ def list_pending(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Invites received by the current user that are still pending."""
-    return (
+    """Pending invites received by current user (candidates see HR invites here)."""
+    rows = (
         db.query(Connection)
         .filter(
             Connection.receiver_id == current_user.id,
@@ -202,6 +229,7 @@ def list_pending(
         )
         .all()
     )
+    return [_enrich_connection(r, db) for r in rows]
 
 
 @router.get("/sent", response_model=List[ConnectionOut])
@@ -209,60 +237,64 @@ def list_sent(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Invites sent by the current user."""
-    return (
+    """Invites sent by current user."""
+    rows = (
         db.query(Connection)
         .filter(Connection.requester_id == current_user.id)
         .all()
     )
+    return [_enrich_connection(r, db) for r in rows]
 
+
+# ---------------------------------------------------------------------------
+# Accept / Decline / Remove
+# ---------------------------------------------------------------------------
 
 @router.patch("/{connection_id}/accept", response_model=ConnectionOut)
-def accept_connection(
+def accept_invite(
     connection_id: UUID,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     conn = db.query(Connection).filter(Connection.id == connection_id).first()
     if not conn:
-        raise HTTPException(status_code=404, detail="Connection not found.")
+        raise HTTPException(status_code=404, detail="Invite not found.")
     if conn.receiver_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorised.")
     if conn.status != "pending":
-        raise HTTPException(status_code=400, detail="Connection is not pending.")
+        raise HTTPException(status_code=400, detail="Invite is not pending.")
     conn.status = "accepted"
     db.commit()
     db.refresh(conn)
-    return conn
+    return _enrich_connection(conn, db)
 
 
 @router.patch("/{connection_id}/decline", response_model=ConnectionOut)
-def decline_connection(
+def decline_invite(
     connection_id: UUID,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     conn = db.query(Connection).filter(Connection.id == connection_id).first()
     if not conn:
-        raise HTTPException(status_code=404, detail="Connection not found.")
+        raise HTTPException(status_code=404, detail="Invite not found.")
     if conn.receiver_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorised.")
     conn.status = "declined"
     db.commit()
     db.refresh(conn)
-    return conn
+    return _enrich_connection(conn, db)
 
 
 @router.delete("/{connection_id}", status_code=204)
-def remove_connection(
+def remove_invite(
     connection_id: UUID,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Remove / cancel a connection (either party can do this)."""
     conn = db.query(Connection).filter(Connection.id == connection_id).first()
     if not conn:
-        raise HTTPException(status_code=404, detail="Connection not found.")
+        raise HTTPException(status_code=404, detail="Invite not found.")
     if conn.requester_id != current_user.id and conn.receiver_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorised.")
     db.delete(conn)

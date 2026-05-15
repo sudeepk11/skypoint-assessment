@@ -182,7 +182,7 @@ export const CandidateLayout: React.FC<CandidateLayoutProps> = ({ children }) =>
     { to: '/candidate/dashboard',    label: 'Dashboard',       icon: LayoutDashboard },
     { to: '/candidate/jobs',         label: 'Browse Jobs',     icon: Briefcase },
     { to: '/candidate/applications', label: 'My Applications', icon: FileText },
-    { to: '/candidate/connections',  label: 'Connections',     icon: Users },
+    { to: '/candidate/connections',  label: 'Job Invites',     icon: Users },
     { to: '/profile',                label: 'My Profile',      icon: UserCircle },
   ];
 

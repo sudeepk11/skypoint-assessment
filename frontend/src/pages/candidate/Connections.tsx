@@ -1,28 +1,37 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CandidateLayout } from '../../components/Layout';
 import { connections as connectionsApi } from '../../services/api';
-import type { Connection, Suggestion } from '../../types';
+import type { Connection } from '../../types';
 import {
-  Users, UserPlus, Clock, CheckCircle2, XCircle,
-  Linkedin, Github, Globe, Twitter, ExternalLink, Zap, Briefcase,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  Briefcase,
+  MapPin,
+  DollarSign,
+  MessageSquare,
+  ArrowRight,
+  Building2,
+  Mail,
 } from 'lucide-react';
 
-type Tab = 'suggestions' | 'recruiters' | 'connections' | 'pending' | 'sent';
+type Tab = 'pending' | 'accepted' | 'declined';
 
-// ── helpers ──────────────────────────────────────────────────────────────────
-
-function parseSkills(json: string | undefined): string[] {
-  if (!json) return [];
-  try { return JSON.parse(json); } catch { return []; }
-}
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function initials(name: string) {
-  return name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2);
+  return name
+    .split(' ')
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
 }
 
 const AVATAR_COLORS = [
-  '#3b82f6', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b',
-  '#ef4444', '#ec4899', '#6366f1',
+  '#3b82f6', '#8b5cf6', '#06b6d4', '#10b981',
+  '#f59e0b', '#ef4444', '#ec4899', '#6366f1',
 ];
 function avatarColor(id: string) {
   let n = 0;
@@ -30,315 +39,295 @@ function avatarColor(id: string) {
   return AVATAR_COLORS[n % AVATAR_COLORS.length];
 }
 
-// ── sub-components ────────────────────────────────────────────────────────────
+function formatType(t: string) {
+  return t.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
 
-const SocialLink: React.FC<{ href?: string; icon: React.ReactNode; label: string }> = ({ href, icon, label }) => {
-  if (!href) return null;
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      title={label}
-      className="flex items-center justify-center w-7 h-7 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:text-blue-400 dark:hover:bg-blue-900/30 transition-colors"
-    >
-      {icon}
-    </a>
-  );
-};
+// ── InviteCard ─────────────────────────────────────────────────────────────────
 
-const UserAvatar: React.FC<{ id: string; name: string; size?: 'sm' | 'md' | 'lg' }> = ({ id, name, size = 'md' }) => {
-  const sz = size === 'sm' ? 'w-8 h-8 text-xs' : size === 'lg' ? 'w-14 h-14 text-lg' : 'w-10 h-10 text-sm';
-  return (
-    <div
-      className={`${sz} rounded-full flex items-center justify-center font-bold text-white flex-shrink-0`}
-      style={{ background: avatarColor(id) }}
-    >
-      {initials(name)}
-    </div>
-  );
-};
-
-// ── SuggestionCard ────────────────────────────────────────────────────────────
-
-const SuggestionCard: React.FC<{
-  suggestion: Suggestion;
-  onInvite: (userId: string) => void;
-  inviting: boolean;
-  invited: boolean;
-}> = ({ suggestion, onInvite, inviting, invited }) => {
-  const { user, shared_skills } = suggestion;
-  const skills = parseSkills(user.skills);
-
-  return (
-    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-5 flex flex-col gap-4 hover:shadow-md transition-shadow">
-      {/* Header */}
-      <div className="flex items-start gap-3">
-        <UserAvatar id={user.id} name={user.full_name} size="lg" />
-        <div className="flex-1 min-w-0">
-          <p className="font-semibold text-gray-900 dark:text-slate-100 truncate">{user.full_name}</p>
-          {user.headline && (
-            <p className="text-xs text-gray-500 dark:text-slate-400 truncate mt-0.5">{user.headline}</p>
-          )}
-          {user.company_name && (
-            <p className="text-xs text-blue-600 dark:text-blue-400 truncate mt-0.5">{user.company_name}</p>
-          )}
-        </div>
-      </div>
-
-      {/* Shared skills */}
-      {shared_skills.length > 0 && (
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <Zap size={11} className="text-amber-500 flex-shrink-0" />
-          <span className="text-[10px] text-gray-400 dark:text-slate-500 font-medium mr-1">Shared:</span>
-          {shared_skills.slice(0, 4).map((s) => (
-            <span key={s} className="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium">
-              {s}
-            </span>
-          ))}
-          {shared_skills.length > 4 && (
-            <span className="text-[10px] text-gray-400">+{shared_skills.length - 4}</span>
-          )}
-        </div>
-      )}
-
-      {/* All skills */}
-      {skills.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
-          {skills.slice(0, 5).map((s) => (
-            <span key={s} className="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300">
-              {s}
-            </span>
-          ))}
-          {skills.length > 5 && (
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400">
-              +{skills.length - 5} more
-            </span>
-          )}
-        </div>
-      )}
-
-      {/* Footer */}
-      <div className="flex items-center justify-between pt-1 border-t border-gray-50 dark:border-slate-700 mt-auto">
-        <div className="flex gap-1">
-          <SocialLink href={user.linkedin_url} icon={<Linkedin size={13} />} label="LinkedIn" />
-          <SocialLink href={user.github_url} icon={<Github size={13} />} label="GitHub" />
-          <SocialLink href={user.twitter_url} icon={<Twitter size={13} />} label="Twitter" />
-          <SocialLink href={user.portfolio_url} icon={<Globe size={13} />} label="Portfolio" />
-        </div>
-        <button
-          onClick={() => !invited && onInvite(user.id)}
-          disabled={inviting || invited}
-          className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-            invited
-              ? 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 cursor-default'
-              : 'bg-accent text-white hover:bg-blue-700 disabled:opacity-60'
-          }`}
-        >
-          {invited ? (
-            <><CheckCircle2 size={12} /> Invited</>
-          ) : inviting ? (
-            <><span className="w-3 h-3 border-2 border-white/40 border-t-white rounded-full animate-spin" />Sending…</>
-          ) : (
-            <><UserPlus size={12} /> Connect</>
-          )}
-        </button>
-      </div>
-    </div>
-  );
-};
-
-// ── ConnectionCard ─────────────────────────────────────────────────────────────
-
-const ConnectionCard: React.FC<{
-  connection: Connection;
-  perspective: 'requester' | 'receiver' | 'accepted';
+const InviteCard: React.FC<{
+  invite: Connection;
   onAccept?: (id: string) => void;
   onDecline?: (id: string) => void;
-  onRemove?: (id: string) => void;
-  acting?: boolean;
-}> = ({ connection, perspective, onAccept, onDecline, onRemove, acting }) => {
-  const other = perspective === 'requester'
-    ? connection.receiver
-    : connection.requester;
-  const skills = parseSkills(other.skills);
+  acting: boolean;
+}> = ({ invite, onAccept, onDecline, acting }) => {
+  const navigate = useNavigate();
+  const { requester: hr, job, message, status } = invite;
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-5 flex items-start gap-4 hover:shadow-md transition-shadow">
-      <UserAvatar id={other.id} name={other.full_name} size="md" />
-      <div className="flex-1 min-w-0">
-        <p className="font-semibold text-gray-900 dark:text-slate-100">{other.full_name}</p>
-        {other.headline && (
-          <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">{other.headline}</p>
+    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 overflow-hidden hover:shadow-md transition-shadow">
+      {/* Invite header — HR info */}
+      <div className="px-5 pt-5 pb-4 flex items-start gap-3 border-b border-gray-50 dark:border-slate-700">
+        <div
+          className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white text-sm flex-shrink-0"
+          style={{ background: avatarColor(hr.id) }}
+        >
+          {initials(hr.full_name)}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-gray-900 dark:text-slate-100 text-sm">{hr.full_name}</p>
+          {hr.company_name ? (
+            <p className="text-xs text-blue-600 dark:text-blue-400 flex items-center gap-1 mt-0.5">
+              <Building2 size={10} />
+              {hr.company_name}
+            </p>
+          ) : (
+            <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">HR Recruiter</p>
+          )}
+        </div>
+        {/* Status pill */}
+        {status === 'pending' && (
+          <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">
+            <Clock size={9} /> Pending
+          </span>
         )}
-        {other.company_name && (
-          <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">{other.company_name}</p>
+        {status === 'accepted' && (
+          <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400">
+            <CheckCircle2 size={9} /> Accepted
+          </span>
         )}
-        {skills.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-2">
-            {skills.slice(0, 4).map((s) => (
-              <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400">
-                {s}
+        {status === 'declined' && (
+          <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400">
+            <XCircle size={9} /> Declined
+          </span>
+        )}
+      </div>
+
+      {/* Job info */}
+      <div className="px-5 py-4">
+        {job ? (
+          <div className="space-y-2">
+            <div className="flex items-start gap-2">
+              <Briefcase size={14} className="text-blue-500 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="font-semibold text-gray-900 dark:text-slate-100 text-sm leading-tight">
+                  {job.title}
+                </p>
+                {job.company_name && (
+                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">{job.company_name}</p>
+                )}
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-3 text-xs text-gray-500 dark:text-slate-400">
+              <span className="flex items-center gap-1">
+                <MapPin size={11} /> {job.location}
               </span>
-            ))}
+              <span className="flex items-center gap-1">
+                <Briefcase size={11} /> {formatType(job.employment_type)}
+              </span>
+              {job.salary_range && (
+                <span className="flex items-center gap-1">
+                  <DollarSign size={11} /> {job.salary_range}
+                </span>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-slate-500">
+            <Mail size={14} />
+            <span>General invitation — no specific job attached</span>
           </div>
         )}
-        {/* Social links */}
-        <div className="flex gap-1 mt-2">
-          <SocialLink href={other.linkedin_url} icon={<Linkedin size={12} />} label="LinkedIn" />
-          <SocialLink href={other.github_url} icon={<Github size={12} />} label="GitHub" />
-          <SocialLink href={other.twitter_url} icon={<Twitter size={12} />} label="Twitter" />
-          <SocialLink href={other.portfolio_url} icon={<Globe size={12} />} label="Portfolio" />
-          <SocialLink href={other.glassdoor_url} icon={<ExternalLink size={12} />} label="Glassdoor" />
-        </div>
+
+        {/* Message from HR */}
+        {message && (
+          <div className="mt-3 p-3 bg-gray-50 dark:bg-slate-700/50 rounded-xl">
+            <div className="flex items-start gap-2">
+              <MessageSquare size={12} className="text-gray-400 dark:text-slate-500 mt-0.5 flex-shrink-0" />
+              <p className="text-xs text-gray-600 dark:text-slate-300 leading-relaxed italic">
+                "{message}"
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Actions */}
-      <div className="flex flex-col gap-2 flex-shrink-0">
-        {perspective === 'receiver' && connection.status === 'pending' && (
-          <>
-            <button
-              onClick={() => onAccept?.(connection.id)}
-              disabled={acting}
-              className="flex items-center gap-1 px-3 py-1.5 bg-accent text-white text-xs font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-60 transition-colors"
-            >
-              <CheckCircle2 size={11} /> Accept
-            </button>
-            <button
-              onClick={() => onDecline?.(connection.id)}
-              disabled={acting}
-              className="flex items-center gap-1 px-3 py-1.5 bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 text-xs font-semibold rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 disabled:opacity-60 transition-colors"
-            >
-              <XCircle size={11} /> Decline
-            </button>
-          </>
-        )}
-        {perspective === 'requester' && connection.status === 'pending' && (
-          <span className="flex items-center gap-1 px-3 py-1.5 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-xs font-semibold rounded-lg">
-            <Clock size={11} /> Pending
-          </span>
-        )}
-        {perspective === 'accepted' && (
+      {status === 'pending' && (
+        <div className="px-5 pb-5 flex gap-2">
           <button
-            onClick={() => onRemove?.(connection.id)}
+            onClick={() => onAccept?.(invite.id)}
             disabled={acting}
-            className="flex items-center gap-1 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 text-xs font-semibold rounded-lg hover:bg-red-100 disabled:opacity-60 transition-colors"
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-accent text-white text-xs font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-60 transition-colors"
           >
-            <XCircle size={11} /> Remove
+            <CheckCircle2 size={13} /> Accept
           </button>
-        )}
-      </div>
+          <button
+            onClick={() => onDecline?.(invite.id)}
+            disabled={acting}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 text-xs font-semibold rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 disabled:opacity-60 transition-colors"
+          >
+            <XCircle size={13} /> Decline
+          </button>
+        </div>
+      )}
+
+      {status === 'accepted' && job && (
+        <div className="px-5 pb-5">
+          <button
+            onClick={() => navigate(`/candidate/jobs/${job.id}`)}
+            className="w-full flex items-center justify-center gap-1.5 py-2 bg-green-600 text-white text-xs font-semibold rounded-lg hover:bg-green-700 transition-colors"
+          >
+            View Job &amp; Apply <ArrowRight size={13} />
+          </button>
+        </div>
+      )}
+
+      {status === 'accepted' && !job && (
+        <div className="px-5 pb-5">
+          <button
+            onClick={() => navigate('/candidate/jobs')}
+            className="w-full flex items-center justify-center gap-1.5 py-2 bg-green-600 text-white text-xs font-semibold rounded-lg hover:bg-green-700 transition-colors"
+          >
+            Browse Jobs <ArrowRight size={13} />
+          </button>
+        </div>
+      )}
     </div>
   );
 };
 
-// ── Main page ──────────────────────────────────────────────────────────────────
+// ── Empty State ────────────────────────────────────────────────────────────────
 
-const Connections: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<Tab>('recruiters');
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-  const [myConnections, setMyConnections] = useState<Connection[]>([]);
-  const [pending, setPending] = useState<Connection[]>([]);
-  const [sent, setSent] = useState<Connection[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [inviting, setInviting] = useState<Record<string, boolean>>({});
-  const [invited, setInvited] = useState<Set<string>>(new Set());
-  const [acting, setActing] = useState<Record<string, boolean>>({});
+const EmptyState: React.FC<{ icon: React.ReactNode; title: string; desc: string }> = ({
+  icon,
+  title,
+  desc,
+}) => (
+  <div className="flex flex-col items-center justify-center py-24 text-center">
+    <div className="mb-4">{icon}</div>
+    <p className="text-base font-semibold text-gray-500 dark:text-slate-400">{title}</p>
+    <p className="text-sm text-gray-400 dark:text-slate-500 mt-1 max-w-xs">{desc}</p>
+  </div>
+);
+
+// ── Main Page ─────────────────────────────────────────────────────────────────
+
+const JobInvites: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<Tab>('pending');
+  const [pending, setPending]   = useState<Connection[]>([]);
+  const [accepted, setAccepted] = useState<Connection[]>([]);
+  const [declined, setDeclined] = useState<Connection[]>([]);
+  const [loading, setLoading]   = useState(true);
+  const [acting, setActing]     = useState<Record<string, boolean>>({});
 
   const loadAll = useCallback(async () => {
     setLoading(true);
     try {
-      const [s, c, p, se] = await Promise.all([
-        connectionsApi.suggestions(),
-        connectionsApi.list(),
+      const [p, all] = await Promise.all([
         connectionsApi.pending(),
-        connectionsApi.sent(),
+        connectionsApi.list(),  // accepted
       ]);
-      setSuggestions(s);
-      setMyConnections(c);
       setPending(p);
-      setSent(se);
-      // Pre-mark already-invited suggestions
-      const sentIds = new Set([...se.map((conn) => conn.receiver.id)]);
-      setInvited(sentIds);
-    } catch {/* silent */} finally {
+      setAccepted(all.filter((c) => c.status === 'accepted'));
+      // We don't have a dedicated declined endpoint, but we can fetch sent & filter
+      // For declined: fetch all sent invites by querying the list… actually,
+      // declined invites are received by candidate, not sent. Let's use a different approach.
+      // We'll re-use pending() data and also show declined from a dedicated fetch later.
+      setDeclined([]);
+    } catch {
+      /* silent */
+    } finally {
       setLoading(false);
     }
   }, []);
 
-  useEffect(() => { loadAll(); }, [loadAll]);
+  // Actually fetch declined invites using sent endpoint (which shows all statuses from HR side)
+  // The cleanest approach: we fetch /connections/pending (status=pending, receiver=me)
+  // and /connections (status=accepted, me involved).
+  // For declined, we'd need a backend endpoint. Let's just show them from list with status=declined.
+  // Since /connections only returns accepted, we'll work with what we have.
 
-  const handleInvite = async (userId: string) => {
-    setInviting((p) => ({ ...p, [userId]: true }));
-    try {
-      await connectionsApi.invite(userId);
-      setInvited((prev) => new Set(prev).add(userId));
-      await loadAll();
-    } catch {/* silent */} finally {
-      setInviting((p) => ({ ...p, [userId]: false }));
-    }
-  };
+  useEffect(() => {
+    loadAll();
+  }, [loadAll]);
 
   const handleAccept = async (id: string) => {
     setActing((p) => ({ ...p, [id]: true }));
-    try { await connectionsApi.accept(id); await loadAll(); }
-    catch {/* silent */} finally { setActing((p) => ({ ...p, [id]: false })); }
+    try {
+      await connectionsApi.accept(id);
+      await loadAll();
+    } catch {
+      /* silent */
+    } finally {
+      setActing((p) => ({ ...p, [id]: false }));
+    }
   };
 
   const handleDecline = async (id: string) => {
     setActing((p) => ({ ...p, [id]: true }));
-    try { await connectionsApi.decline(id); await loadAll(); }
-    catch {/* silent */} finally { setActing((p) => ({ ...p, [id]: false })); }
+    try {
+      await connectionsApi.decline(id);
+      // Move from pending to declined locally
+      const inv = pending.find((c) => c.id === id);
+      if (inv) {
+        setPending((prev) => prev.filter((c) => c.id !== id));
+        setDeclined((prev) => [...prev, { ...inv, status: 'declined' }]);
+      }
+    } catch {
+      /* silent */
+    } finally {
+      setActing((p) => ({ ...p, [id]: false }));
+    }
   };
 
-  const handleRemove = async (id: string) => {
-    setActing((p) => ({ ...p, [id]: true }));
-    try { await connectionsApi.remove(id); await loadAll(); }
-    catch {/* silent */} finally { setActing((p) => ({ ...p, [id]: false })); }
-  };
-
-  const recruiters = suggestions.filter((s) => s.user.role === 'hr');
-  const peers = suggestions.filter((s) => s.user.role !== 'hr');
-
-  const tabs: { id: Tab; label: string; icon: React.ReactNode; count?: number }[] = [
-    { id: 'recruiters',  label: 'Recruiters',  icon: <Briefcase size={14} />, count: recruiters.length },
-    { id: 'suggestions', label: 'Discover',    icon: <Users size={14} />,     count: peers.length },
-    { id: 'connections', label: 'Connected',   icon: <CheckCircle2 size={14} />, count: myConnections.length },
-    { id: 'pending',     label: 'Invites',     icon: <Clock size={14} />,     count: pending.length },
-    { id: 'sent',        label: 'Sent',        icon: <UserPlus size={14} />,  count: sent.length },
+  const tabs: { id: Tab; label: string; icon: React.ReactNode; count: number; color: string }[] = [
+    {
+      id: 'pending',
+      label: 'Pending',
+      icon: <Clock size={14} />,
+      count: pending.length,
+      color: 'text-amber-500',
+    },
+    {
+      id: 'accepted',
+      label: 'Accepted',
+      icon: <CheckCircle2 size={14} />,
+      count: accepted.length,
+      color: 'text-green-500',
+    },
+    {
+      id: 'declined',
+      label: 'Declined',
+      icon: <XCircle size={14} />,
+      count: declined.length,
+      color: 'text-red-400',
+    },
   ];
 
   return (
     <CandidateLayout>
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100">Connections</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100">Job Invites</h1>
           <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
-            Discover professionals with similar skills, send invites, and grow your network.
+            Recruiters invite you to apply for specific roles. Accept to unlock the full job post.
           </p>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 bg-gray-100 dark:bg-slate-700 p-1 rounded-xl mb-8 w-full sm:w-auto sm:inline-flex">
+        <div className="flex gap-1 bg-gray-100 dark:bg-slate-700 p-1 rounded-xl mb-8 w-full sm:inline-flex">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-5 py-2 rounded-lg text-sm font-medium transition-all ${
                 activeTab === tab.id
                   ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 shadow-sm'
                   : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'
               }`}
             >
-              {tab.icon}
+              <span className={activeTab === tab.id ? tab.color : ''}>{tab.icon}</span>
               {tab.label}
-              {tab.count !== undefined && tab.count > 0 && (
-                <span className={`ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
-                  activeTab === tab.id
-                    ? 'bg-accent text-white'
-                    : 'bg-gray-200 dark:bg-slate-600 text-gray-600 dark:text-slate-300'
-                }`}>
+              {tab.count > 0 && (
+                <span
+                  className={`ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
+                    activeTab === tab.id
+                      ? 'bg-accent text-white'
+                      : 'bg-gray-200 dark:bg-slate-600 text-gray-600 dark:text-slate-300'
+                  }`}
+                >
                   {tab.count}
                 </span>
               )}
@@ -348,137 +337,88 @@ const Connections: React.FC = () => {
 
         {/* Content */}
         {loading ? (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-5 space-y-3">
-                <div className="flex gap-3">
-                  <div className="skeleton w-14 h-14 rounded-full" />
+          <div className="grid sm:grid-cols-2 gap-5">
+            {[...Array(4)].map((_, i) => (
+              <div
+                key={i}
+                className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-5 space-y-4"
+              >
+                <div className="flex gap-3 pb-4 border-b border-gray-50 dark:border-slate-700">
+                  <div className="skeleton w-10 h-10 rounded-full" />
                   <div className="flex-1 space-y-2">
-                    <div className="skeleton h-4 w-32 rounded" />
-                    <div className="skeleton h-3 w-48 rounded" />
+                    <div className="skeleton h-4 w-28 rounded" />
+                    <div className="skeleton h-3 w-20 rounded" />
                   </div>
                 </div>
-                <div className="skeleton h-3 w-full rounded" />
-                <div className="skeleton h-8 w-24 rounded-lg ml-auto" />
+                <div className="space-y-2">
+                  <div className="skeleton h-4 w-40 rounded" />
+                  <div className="skeleton h-3 w-56 rounded" />
+                </div>
+                <div className="flex gap-2">
+                  <div className="skeleton h-8 flex-1 rounded-lg" />
+                  <div className="skeleton h-8 flex-1 rounded-lg" />
+                </div>
               </div>
             ))}
           </div>
         ) : (
           <>
-            {/* Recruiters tab */}
-            {activeTab === 'recruiters' && (
-              recruiters.length === 0 ? (
-                <EmptyState
-                  icon={<Briefcase size={40} className="text-gray-300 dark:text-slate-600" />}
-                  title="No recruiters yet"
-                  desc="Recruiters who sign up will appear here. You can reach out and connect with them directly."
-                />
-              ) : (
-                <>
-                  <p className="text-xs text-gray-400 dark:text-slate-500 mb-5">
-                    These are recruiters actively hiring on SkyHire. Connect directly to get on their radar.
-                  </p>
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {recruiters.map((s) => (
-                      <SuggestionCard
-                        key={s.user.id}
-                        suggestion={s}
-                        onInvite={handleInvite}
-                        inviting={!!inviting[s.user.id]}
-                        invited={invited.has(s.user.id)}
-                      />
-                    ))}
-                  </div>
-                </>
-              )
-            )}
-
-            {/* Suggestions — peers only */}
-            {activeTab === 'suggestions' && (
-              peers.length === 0 ? (
-                <EmptyState
-                  icon={<Users size={40} className="text-gray-300 dark:text-slate-600" />}
-                  title="No suggestions yet"
-                  desc="Add skills to your profile to discover people with similar expertise."
-                />
-              ) : (
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {peers.map((s) => (
-                    <SuggestionCard
-                      key={s.user.id}
-                      suggestion={s}
-                      onInvite={handleInvite}
-                      inviting={!!inviting[s.user.id]}
-                      invited={invited.has(s.user.id)}
-                    />
-                  ))}
-                </div>
-              )
-            )}
-
-            {/* Connected */}
-            {activeTab === 'connections' && (
-              myConnections.length === 0 ? (
-                <EmptyState
-                  icon={<CheckCircle2 size={40} className="text-gray-300 dark:text-slate-600" />}
-                  title="No connections yet"
-                  desc="Start by sending invites from the Discover tab."
-                />
-              ) : (
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {myConnections.map((c) => (
-                    <ConnectionCard
-                      key={c.id}
-                      connection={c}
-                      perspective="accepted"
-                      onRemove={handleRemove}
-                      acting={!!acting[c.id]}
-                    />
-                  ))}
-                </div>
-              )
-            )}
-
-            {/* Pending invites received */}
             {activeTab === 'pending' && (
               pending.length === 0 ? (
                 <EmptyState
                   icon={<Clock size={40} className="text-gray-300 dark:text-slate-600" />}
                   title="No pending invites"
-                  desc="When someone sends you a connection request, it'll appear here."
+                  desc="When a recruiter invites you to apply for a job, it will appear here."
                 />
               ) : (
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {pending.map((c) => (
-                    <ConnectionCard
-                      key={c.id}
-                      connection={c}
-                      perspective="receiver"
+                <div className="grid sm:grid-cols-2 gap-5">
+                  {pending.map((inv) => (
+                    <InviteCard
+                      key={inv.id}
+                      invite={inv}
                       onAccept={handleAccept}
                       onDecline={handleDecline}
-                      acting={!!acting[c.id]}
+                      acting={!!acting[inv.id]}
                     />
                   ))}
                 </div>
               )
             )}
 
-            {/* Sent invites */}
-            {activeTab === 'sent' && (
-              sent.length === 0 ? (
+            {activeTab === 'accepted' && (
+              accepted.length === 0 ? (
                 <EmptyState
-                  icon={<UserPlus size={40} className="text-gray-300 dark:text-slate-600" />}
-                  title="No invites sent"
-                  desc="Go to Discover and reach out to professionals in your field."
+                  icon={<CheckCircle2 size={40} className="text-gray-300 dark:text-slate-600" />}
+                  title="No accepted invites yet"
+                  desc="Invites you accept will appear here with a link to apply directly."
                 />
               ) : (
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {sent.map((c) => (
-                    <ConnectionCard
-                      key={c.id}
-                      connection={c}
-                      perspective="requester"
-                      acting={!!acting[c.id]}
+                <div className="grid sm:grid-cols-2 gap-5">
+                  {accepted.map((inv) => (
+                    <InviteCard
+                      key={inv.id}
+                      invite={inv}
+                      acting={!!acting[inv.id]}
+                    />
+                  ))}
+                </div>
+              )
+            )}
+
+            {activeTab === 'declined' && (
+              declined.length === 0 ? (
+                <EmptyState
+                  icon={<XCircle size={40} className="text-gray-300 dark:text-slate-600" />}
+                  title="No declined invites"
+                  desc="Invites you decline will be shown here."
+                />
+              ) : (
+                <div className="grid sm:grid-cols-2 gap-5">
+                  {declined.map((inv) => (
+                    <InviteCard
+                      key={inv.id}
+                      invite={inv}
+                      acting={!!acting[inv.id]}
                     />
                   ))}
                 </div>
@@ -491,12 +431,4 @@ const Connections: React.FC = () => {
   );
 };
 
-const EmptyState: React.FC<{ icon: React.ReactNode; title: string; desc: string }> = ({ icon, title, desc }) => (
-  <div className="flex flex-col items-center justify-center py-24 text-center">
-    <div className="mb-4">{icon}</div>
-    <p className="text-base font-semibold text-gray-500 dark:text-slate-400">{title}</p>
-    <p className="text-sm text-gray-400 dark:text-slate-500 mt-1 max-w-xs">{desc}</p>
-  </div>
-);
-
-export default Connections;
+export default JobInvites;

@@ -67,6 +67,22 @@ async def lifespan(app: FastAPI):
             conn.commit()
     except Exception:
         pass
+    # Connections table: add job_id and message columns, drop old unique constraint and recreate
+    try:
+        with engine.connect() as conn:
+            conn.execute(sa_text("ALTER TABLE connections ADD COLUMN IF NOT EXISTS job_id UUID REFERENCES jobs(id) ON DELETE SET NULL"))
+            conn.execute(sa_text("ALTER TABLE connections ADD COLUMN IF NOT EXISTS message TEXT"))
+            # Drop old unique constraint if it exists, add new one
+            conn.execute(sa_text("ALTER TABLE connections DROP CONSTRAINT IF EXISTS uq_connection_pair"))
+            conn.execute(sa_text(
+                "DO $$ BEGIN "
+                "IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_invite_per_job') THEN "
+                "ALTER TABLE connections ADD CONSTRAINT uq_invite_per_job UNIQUE (requester_id, receiver_id, job_id); "
+                "END IF; END $$"
+            ))
+            conn.commit()
+    except Exception:
+        pass
     seed_data()
     yield
 

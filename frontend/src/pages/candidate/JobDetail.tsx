@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, MapPin, Clock, DollarSign, CheckCircle, AlertCircle, Send, Building2, UserPlus, Linkedin, Github, Globe, Twitter } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, DollarSign, CheckCircle, AlertCircle, Send, Building2, Linkedin, Github, Globe, Twitter } from 'lucide-react';
 import { CandidateLayout } from '../../components/Layout';
 import StatusBadge from '../../components/StatusBadge';
-import { jobs as jobsApi, applications as appApi, publicUsers, connections as connectionsApi } from '../../services/api';
+import { jobs as jobsApi, applications as appApi, publicUsers } from '../../services/api';
 import type { Job, Application, EmploymentType, UserWithStatus } from '../../types';
 
 const formatDate = (dateStr: string) => {
@@ -33,7 +33,6 @@ const JobDetail: React.FC = () => {
   const [job, setJob] = useState<Job | null>(null);
   const [existingApp, setExistingApp] = useState<Application | null>(null);
   const [recruiter, setRecruiter] = useState<UserWithStatus | null>(null);
-  const [connectingRecruiter, setConnectingRecruiter] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'description' | 'requirements'>('description');
@@ -103,17 +102,6 @@ const JobDetail: React.FC = () => {
       }
     } finally {
       setApplyLoading(false);
-    }
-  };
-
-  const handleConnectRecruiter = async () => {
-    if (!recruiter || recruiter.connection_status !== 'none') return;
-    setConnectingRecruiter(true);
-    try {
-      await connectionsApi.invite(recruiter.user.id);
-      setRecruiter({ ...recruiter, connection_status: 'pending_sent' });
-    } catch { /* silent */ } finally {
-      setConnectingRecruiter(false);
     }
   };
 
@@ -340,33 +328,6 @@ const JobDetail: React.FC = () => {
                     </a>
                   )}
                 </div>
-              </div>
-              {/* Connect button */}
-              <div className="flex-shrink-0">
-                {recruiter.connection_status === 'connected' ? (
-                  <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400">
-                    <CheckCircle size={12} /> Connected
-                  </span>
-                ) : recruiter.connection_status === 'pending_sent' ? (
-                  <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">
-                    <Clock size={12} /> Invite Sent
-                  </span>
-                ) : recruiter.connection_status === 'pending_received' ? (
-                  <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
-                    <UserPlus size={12} /> They reached out!
-                  </span>
-                ) : (
-                  <button
-                    onClick={handleConnectRecruiter}
-                    disabled={connectingRecruiter}
-                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold bg-accent text-white hover:bg-blue-700 disabled:opacity-60 transition-colors"
-                  >
-                    {connectingRecruiter
-                      ? <><span className="w-3 h-3 border-2 border-white/40 border-t-white rounded-full animate-spin" />Sending…</>
-                      : <><UserPlus size={12} /> Connect</>
-                    }
-                  </button>
-                )}
               </div>
             </div>
           </div>
