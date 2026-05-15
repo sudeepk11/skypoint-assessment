@@ -149,6 +149,13 @@ def update_application_status(
     if not application:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Application not found")
 
+    # Ensure this HR user owns the job the application is for
+    if application.job and application.job.created_by != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorised to update this application",
+        )
+
     application.status = status_in.status
     db.commit()
     db.refresh(application)
