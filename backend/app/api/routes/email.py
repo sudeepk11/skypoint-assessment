@@ -4,7 +4,7 @@ from typing import List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, require_hr
@@ -19,8 +19,8 @@ class BulkEmailRequest(BaseModel):
     """Request schema for sending bulk emails to applicants."""
 
     application_ids: List[UUID]
-    subject: str
-    body: str
+    subject: str = Field(..., min_length=1, max_length=200)
+    body: str = Field(..., min_length=1, max_length=10_000)
 
 
 @router.post("/bulk")
