@@ -121,7 +121,7 @@ The database is automatically seeded with the following test accounts on first s
 | Filter applications by job or status | Applications page → filter toolbar |
 | View application detail (resume + cover letter) | Applications → "View" on any row |
 | Change application status | Application Detail → Status buttons |
-| **Bulk Email** | Applications → select candidates → "Send Bulk Email" (requires AWS SES config) |
+| **Bulk Email** *(requested by Avinash)* | Applications → select candidates → "Send Bulk Email" — requires AWS SES credentials in `.env` (see setup below) |
 | Talent Network — browse candidates | Sidebar → "Talent Network" |
 | Send job invite to a candidate | Talent Network → "Invite" button |
 | Edit profile & company info | Top-right avatar → "Profile" |
@@ -200,8 +200,23 @@ docker compose exec backend pytest tests/ -v --tb=short
 
 ---
 
+## Bulk Email Setup *(requested by Avinash)*
+
+The bulk email feature is fully implemented using AWS SES. To enable it, add the following to your `.env` file:
+
+```env
+AWS_ACCESS_KEY_ID=your-access-key
+AWS_SECRET_ACCESS_KEY=your-secret-key
+AWS_SES_REGION=us-east-1
+AWS_SES_FROM_EMAIL=verified-sender@yourdomain.com
+```
+
+Without these credentials, clicking "Send Bulk Email" will show: *"Email service not configured."* — the UI and API are fully wired up and ready.
+
+---
+
 ## Known Limitations
 
-- **Bulk email** requires AWS SES credentials. Without them, clicking "Send Emails" shows: *"Email service not configured — please add AWS SES credentials to your .env file."* The UI and backend code are fully implemented.
+- **Bulk email** requires AWS SES credentials as described above.
 - Resume upload is text-based (paste resume content). File upload (PDF/DOCX) is out of scope for this assessment.
 - Rate limiting is per-IP and in-memory — not shared across multiple backend replicas. A Redis-backed store would be needed for multi-instance deployments.
