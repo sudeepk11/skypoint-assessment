@@ -435,22 +435,26 @@ const Profile: React.FC = () => {
               <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">Shown to connections and recruiters on your profile.</p>
             </div>
             <div className="px-6 py-5 space-y-4">
-              <div>
-                <label className="block text-xs font-medium text-gray-600 dark:text-slate-300 mb-1.5 uppercase tracking-wide">Headline</label>
-                <input
-                  type="text"
-                  value={headline}
-                  onChange={(e) => setHeadline(e.target.value)}
-                  placeholder="e.g. Senior React Developer · Open to work"
-                  maxLength={255}
-                  className={inputCls}
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-600 dark:text-slate-300 mb-1.5 uppercase tracking-wide">Skills</label>
-                <SkillPicker selected={skills} onChange={setSkills} />
-                <p className="text-xs text-gray-400 dark:text-slate-500 mt-1.5">Pick from the list or type to add custom skills. Shown to recruiters.</p>
-              </div>
+              {user?.role === 'candidate' && (
+                <>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 dark:text-slate-300 mb-1.5 uppercase tracking-wide">Headline</label>
+                    <input
+                      type="text"
+                      value={headline}
+                      onChange={(e) => setHeadline(e.target.value)}
+                      placeholder="e.g. Senior React Developer · Open to work"
+                      maxLength={255}
+                      className={inputCls}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 dark:text-slate-300 mb-1.5 uppercase tracking-wide">Skills</label>
+                    <SkillPicker selected={skills} onChange={setSkills} />
+                    <p className="text-xs text-gray-400 dark:text-slate-500 mt-1.5">Pick from the list or type to add custom skills. Shown to recruiters.</p>
+                  </div>
+                </>
+              )}
               <div className="pt-2 border-t border-gray-50 dark:border-slate-700 space-y-3">
                 <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">Social Links</p>
                 {[
