@@ -94,6 +94,10 @@ def list_applications(
 
     if current_user.role == "candidate":
         query = query.filter(Application.candidate_id == current_user.id)
+    elif current_user.role == "hr":
+        query = query.join(Job, Application.job_id == Job.id).filter(
+            Job.created_by == current_user.id
+        )
 
     if job_id:
         query = query.filter(Application.job_id == job_id)
@@ -127,6 +131,11 @@ def get_application(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Application not found")
 
     if current_user.role == "candidate" and application.candidate_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Application not found")
+
+    if current_user.role == "hr" and (
+        not application.job or application.job.created_by != current_user.id
+    ):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Application not found")
 
     return application

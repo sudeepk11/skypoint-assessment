@@ -74,8 +74,8 @@ def test_apply_to_closed_job_blocked(client: TestClient, hr_token: str, candidat
     assert "closed" in resp.json()["detail"].lower()
 
 
-def test_hr_views_all_applications(client: TestClient, hr_token: str, candidate_token: str):
-    """HR should be able to list all applications."""
+def test_hr_views_own_job_applications(client: TestClient, hr_token: str, candidate_token: str):
+    """HR should only see applications for jobs they created."""
     job_id = _create_job(client, hr_token)
     client.post(
         f"/api/jobs/{job_id}/apply",
@@ -163,3 +163,62 @@ def test_hr_views_application_detail(
     resp = client.get(f"/api/applications/{app_id}", headers=auth_headers(hr_token))
     assert resp.status_code == 200
     assert resp.json()["id"] == app_id
+
+
+# ---------------------------------------------------------------------------
+# BOLA — HR must not read applications from another HR's jobs
+# ---------------------------------------------------------------------------
+
+import uuid as _uuid
+
+
+def _register_hr(client):
+    email = f"hr_{_uuid.uuid4().hex[:8]}@test.com"
+    resp = client.post(
+        "/api/auth/register",
+        json={"email": email, "password": "Password@1234", "full_name": "Other HR", "role": "hr"},
+    )
+    assert resp.status_code == 200
+    return resp.json()["access_token"]
+
+
+def _register_candidate(client):
+    email = f"cand_{_uuid.uuid4().hex[:8]}@test.com"
+    resp = client.post(
+        "/api/auth/register",
+        json={"email": email, "password": "Password@1234", "full_name": "Candidate", "role": "candidate"},
+    )
+    assert resp.status_code == 200
+    return resp.json()["access_token"]
+
+
+def test_hr_cannot_list_other_hr_applications(client: TestClient):
+    """HR_A must not see applications submitted to HR_B's jobs."""
+    hr_a = _register_hr(client)
+    hr_b = _register_hr(client)
+    candidate = _register_candidate(client)
+
+    # HR_B creates a job; candidate applies
+    job_id = _create_job(client, hr_b)
+    client.post(f"/api/jobs/{job_id}/apply", json=APPLICATION_PAYLOAD, headers=auth_headers(candidate))
+
+    # HR_A should see an empty list
+    resp = client.get("/api/applications", headers=auth_headers(hr_a))
+    assert resp.status_code == 200
+    assert resp.json() == []
+
+
+def test_hr_cannot_fetch_other_hr_application_by_id(client: TestClient):
+    """HR_A must get 404 when fetching an application on HR_B's job."""
+    hr_a = _register_hr(client)
+    hr_b = _register_hr(client)
+    candidate = _register_candidate(client)
+
+    job_id = _create_job(client, hr_b)
+    apply_resp = client.post(
+        f"/api/jobs/{job_id}/apply", json=APPLICATION_PAYLOAD, headers=auth_headers(candidate)
+    )
+    app_id = apply_resp.json()["id"]
+
+    resp = client.get(f"/api/applications/{app_id}", headers=auth_headers(hr_a))
+    assert resp.status_code == 404

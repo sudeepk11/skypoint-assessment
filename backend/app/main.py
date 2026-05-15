@@ -5,7 +5,7 @@ import time
 import uuid
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, status as http_status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from slowapi import _rate_limit_exceeded_handler
@@ -139,15 +139,12 @@ def health_check():
         logger.error("DB health check failed: %s", exc)
         db_status = "unhealthy"
 
-    status = "healthy" if db_status == "healthy" else "degraded"
-    return {
-        "status": status,
-        "version": "1.0.0",
-        "services": {
-            "database": db_status,
-            "api": "healthy",
-        },
-    }
+    if db_status != "healthy":
+        return JSONResponse(
+            status_code=http_status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={"status": "degraded", "version": "1.0.0", "services": {"database": db_status, "api": "healthy"}},
+        )
+    return {"status": "healthy", "version": "1.0.0", "services": {"database": "healthy", "api": "healthy"}}
 
 
 @app.get("/", include_in_schema=False)

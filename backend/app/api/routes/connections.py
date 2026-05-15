@@ -166,11 +166,9 @@ def send_invite(
     candidate_id: UUID,
     body: InviteRequest = InviteRequest(),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_hr),
 ):
     """HR sends a job invite to a candidate."""
-    if current_user.role != "hr":
-        raise HTTPException(status_code=403, detail="Only HR can send invites.")
 
     candidate = db.query(User).filter(User.id == candidate_id, User.role == "candidate").first()
     if not candidate:
