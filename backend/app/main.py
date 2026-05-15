@@ -158,6 +158,8 @@ def root():
 
 def seed_data() -> None:
     """Seed default users and sample jobs on first startup."""
+    from sqlalchemy.exc import IntegrityError
+
     from app.models.candidate_profile import CandidateProfile
     from app.models.company import Company
     from app.models.job import Job
@@ -572,5 +574,8 @@ def seed_data() -> None:
 
         db.commit()
         logger.info("Seed data applied — %d jobs checked.", len(sample_jobs))
+    except IntegrityError:
+        db.rollback()
+        logger.info("Seed skipped — another worker already seeded the database.")
     finally:
         db.close()
